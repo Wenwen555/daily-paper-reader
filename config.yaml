@@ -26,39 +26,54 @@ subscriptions:
     diff_threshold_pct: 15
   keyword_recall_mode: or
   intent_profiles:
-    - tag: 视频数据
-      description: 请帮我查大视频-语言模型和多模态模型中，围绕数据集的工作，我想清楚地了解关于生成高质量视频指导数据的拓扑结构
+    - tag: VLM Data
+      description: 请帮我搜索当前的large video language model论文，我想要了解当前文献如何生成高质量的视频指示数据
       enabled: true
       paper_sources:
-        - biorxiv
+        - arxiv
       keywords:
         - keyword: data centric
           keyword_cn: ''
           query: d
-        - keyword: data curation
-          keyword_cn: 数据策展
-          query: processes for selecting and preparing datasets
-        - keyword: data augmentation
-          keyword_cn: 数据增强
-          query: d
-        - keyword: Large Video language model
+        - keyword: large video language model
           keyword_cn: ''
-          query: L
+          query: l
+        - keyword: multimodal datasets
+          keyword_cn: 多模态数据集
+          query: creation of multimodal video-text datasets for training
+        - keyword: video understanding
+          keyword_cn: 视频理解
+          query: techniques for video understanding and instruction alignment
+        - keyword: instruction tuning
+          keyword_cn: 指令调优
+          query: instruction tuning strategies for video language models
       intent_queries:
-        - query: topology structure of video instruction data
-          query_cn: 我想要了解视频数据的拓扑结构，例如树或图
+        - query: methods for generating high quality video instruction data
+          query_cn: 生成高质量视频指示数据的方法
           enabled: true
           source: manual
           note: ''
-      updated_at: '2026-03-29T17:44:36.950Z'
+        - query: current approaches to video instruction dataset creation
+          query_cn: 当前视频指示数据集创建的方法
+          enabled: true
+          source: manual
+          note: ''
+        - query: techniques for synthetic video instruction generation
+          query_cn: 合成视频指示生成的技术
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-03-29T17:51:18.166Z'
 source_backends:
-  biorxiv:
-    papers_table: biorxiv_papers
+  arxiv:
+    papers_table: arxiv_papers
     use_vector_rpc: true
-    vector_rpc: match_biorxiv_papers_exact
-    vector_rpc_exact: match_biorxiv_papers_exact
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
     use_bm25_rpc: true
-    bm25_rpc: match_biorxiv_papers_bm25
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
     schema: public
     kind: supabase
     enabled: true

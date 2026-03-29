@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.20887v1/fig-001.webp",
+      "caption": "Fig. 1: An example to illustrate the difference between the segmentation and captioning method and our approach, which allows users to provide a bounding box to generate multimodal outputs that are tailored to the user’s intent.",
+      "page": 1,
+      "index": 1,
+      "width": 524,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20887v1/fig-002.webp",
+      "caption": "TABLE I: Performance comparison with the advanced video captioning methods. where the results on the LV-VIS and OVIS are reproduced and that on the YouCook2 is cited from the references.",
+      "page": 7,
+      "index": 2,
+      "width": 1060,
+      "height": 181
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20887v1/fig-003.webp",
+      "caption": "Fig. 6: Visualization of several challenging and failure cases, including heavy occlusion, motion blur, visual ambiguity, and long-term target disappearance.",
+      "page": 10,
+      "index": 3,
+      "width": 1060,
+      "height": 560
+    }
+  ]
+}

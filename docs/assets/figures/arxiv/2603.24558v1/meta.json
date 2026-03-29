@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-001.webp",
+      "caption": "Table 1. Comparison on long video benchmarks. For LensWalk, “(·/·)” denotes Rasoner/Observer; “(M )” means “(M /M )”.",
+      "page": 6,
+      "index": 1,
+      "width": 725,
+      "height": 508
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-002.webp",
+      "caption": "Figure 16. Example of Scope Partitioning behavior.",
+      "page": 25,
+      "index": 2,
+      "width": 719,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-003.webp",
+      "caption": "Figure 10. Subject Table Memory–Update prompt and required JSON output.",
+      "page": 15,
+      "index": 3,
+      "width": 1036,
+      "height": 802
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-004.webp",
+      "caption": "Figure 1. Comparison of video understanding paradigms: (a) Single Forward of model with one-off context selection. (b) Retrieval-Based Video Agent. (c) LensWalk, an agent framework that actively plans observations to fulfill subsequent reasoning, explores iteratively, and self-regulates its observation budget. (d) By actively planning observations only on video segments essential to its reasoning process, LensWalk simultaneously achieves high accuracy and exceptional efficiency.",
+      "page": 2,
+      "index": 4,
+      "width": 872,
+      "height": 465
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-005.webp",
+      "caption": "Table 4. Ablation on the Observation Tools and Reasoning coherence modules of ours(o3/GPT-4.1) on Video-MME (long split).",
+      "page": 7,
+      "index": 5,
+      "width": 495,
+      "height": 276
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-006.webp",
+      "caption": "Table 2. Comparison on video reasoning benchmarks. For LensWalk, “(·/·)” denotes Reasoner/Observer; “(M )” means “(M /M )”.",
+      "page": 7,
+      "index": 6,
+      "width": 561,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-007.webp",
+      "caption": "Figure 20. Example of Failure mode: Persistent Ambiguity.",
+      "page": 29,
+      "index": 7,
+      "width": 719,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-008.webp",
+      "caption": "Figure 5. System prompt used for the LensWalk Reasoner.",
+      "page": 14,
+      "index": 8,
+      "width": 1036,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-009.webp",
+      "caption": "Figure 4. Tool-call behavior of LensWalk across model recipes, visualized following [63]. We group behaviour into six strategy types and show their ratio (sector angle), average frame cost (dashed polygon), and accuracy (noted as score; sector radius), revealing adaptive allocation of more frames to harder queries and diverse exploration under uncertainty.",
+      "page": 8,
+      "index": 9,
+      "width": 913,
+      "height": 319
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-010.webp",
+      "caption": "Figure 2. Illustration of LensWalk’s reasoning-scheduled active observation on a real trace. The LLM reasoner alternates Scan Search and Segment Focus to seek question-relevant evidence, initially misclassifies a mole as the queried water vole and records conflicting memories in the subject table (red text), then invokes Stitch Verify to inspect key segments, resolve the contradiction, and arrive at the correct answer.",
+      "page": 4,
+      "index": 10,
+      "width": 920,
+      "height": 531
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-011.webp",
+      "caption": "Figure 11. JSON Tool Schema used for Reasoner of LensWalk (part 1).",
+      "page": 19,
+      "index": 11,
+      "width": 1036,
+      "height": 1502
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-012.webp",
+      "caption": "Table 6. Shared-backbone comparison on LVBench using o3 as the reasoner. We report accuracy, online inference time, offline preprocessing time, and average frames consumed per query. Retrieval-based agents require dense pre-processing of the full video, while LensWalk does not.",
+      "page": 17,
+      "index": 12,
+      "width": 1020,
+      "height": 219
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24558v1/fig-013.webp",
+      "caption": "Table 5. Models used in our experiments.",
+      "page": 16,
+      "index": 13,
+      "width": 775,
+      "height": 306
+    }
+  ]
+}

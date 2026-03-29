@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-001.webp",
+      "caption": "Figure 1. Illustration of VMR challenges and our approach. (a) Text-driven methods often mislocalize multi-verb queries due to ambiguous temporal cues. (b) Static image augmentation (e.g., ICQ [11]) improves semantic expressiveness but overlooks motion sequences, leading to errors in dynamic events. (c) Our temporal video-driven method accurately captures implicit motion, enabling precise grounding.",
+      "page": 1,
+      "index": 1,
+      "width": 496,
+      "height": 384
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-002.webp",
+      "caption": "Table 1. Quantitative results on TVR and ActivityNet-Captions. More details can be found in the appendix due to space limits.",
+      "page": 6,
+      "index": 2,
+      "width": 998,
+      "height": 225
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-003.webp",
+      "caption": "Figure 8. Ablation on fusion parameter θ.",
+      "page": 10,
+      "index": 3,
+      "width": 496,
+      "height": 246
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-004.webp",
+      "caption": "Figure 2. The overall architecture of our proposed framework. It first utilizes LLaMA-3.1 for subtitle selection and query decomposition by verbs (Sec. 3.2). Next, a Temporal-Prior Generator produces a short video clip from the fused query and subtitles (Sec. 3.3). The augmented inputs are then processed by the Mamba network for contextualized features (Sec. 3.4). Finally, frame activation scores are computed, thresholded with NMS, and refined via MLP to output the moment boundaries.",
+      "page": 3,
+      "index": 4,
+      "width": 952,
+      "height": 424
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-005.webp",
+      "caption": "Figure 3. Example of LLM-guided query decomposition. The original query is segmented into verb-centered sub-events with inferred additional context to enrich temporal details.",
+      "page": 3,
+      "index": 5,
+      "width": 496,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-006.webp",
+      "caption": "Figure 6. Comparison of memory consumption for Mamba-TVR and classic Transformer and Longformer counterparts under varying motion sequence lengths. The classic Transformer runs out of GPU memory when the sequence length reaches 700.",
+      "page": 8,
+      "index": 6,
+      "width": 496,
+      "height": 293
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-007.webp",
+      "caption": "Figure 7. Qualitative results on Charades-STA, showcasing accurate temporal moment localization for multi-verb queries.",
+      "page": 8,
+      "index": 7,
+      "width": 496,
+      "height": 442
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-008.webp",
+      "caption": "Figure 4. Architecture of the Multi-Modal Controlled Mamba Network. Inputs include target video embedding eo, text query embedding eq , and generated video embedding eg . Relational embeddings ro are added via GCN and normalization. The bidirectional SSM processes the sequence with video-guided gating (fusing pooled eg and eq) to produce contextualized features fo for moment prediction.",
+      "page": 4,
+      "index": 8,
+      "width": 496,
+      "height": 385
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-009.webp",
+      "caption": "Figure 9. Visualizations of grounding for 1-verb (a), 2-verb (b), and multi-verb (c) cases. Timelines compare GT (green), SgLFT (red), ICQ (yellow), and Ours (blue), with subtitles and generated video frames shown.",
+      "page": 12,
+      "index": 9,
+      "width": 496,
+      "height": 487
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22121v1/fig-010.webp",
+      "caption": "Figure 10. Impact of generation methods: Query-only, subtitlefused, and query decomposition, with resulting video frames and grounding improvements.",
+      "page": 12,
+      "index": 10,
+      "width": 496,
+      "height": 533
+    }
+  ]
+}

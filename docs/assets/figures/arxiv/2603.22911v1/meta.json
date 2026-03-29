@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-001.webp",
+      "caption": "Figure 1. Comparison between the proposed ForestPrune (Ours) and the existing compression methods [6, 13, 20, 59] on VideoMME. The base model used is LLaVA-Video-7B. As pruning ratio increases, existing methods will encounter obvious performance drops, while ForestPrune is still robust.",
+      "page": 1,
+      "index": 1,
+      "width": 477,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-002.webp",
+      "caption": "Table 1. Comparison between ForestPrune and existing compression methods on LLaVA-Video-7B and LLaVA-OV 7B. Compression Ratio denotes the target reduction of visual tokens. Retain reflects the degree to which MLLM retains performance.",
+      "page": 6,
+      "index": 2,
+      "width": 1031,
+      "height": 919
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-003.webp",
+      "caption": "Figure 2. Visualization of token pruning by G-Prune [20] and our ForestPrune. The image-centric G-Prune can well keep the important tokens for each frame, but also leads to obvious redundancy across frames. In contrast, our ForestPrune can obtain a globally optimal pruning via spatial-temporal forest modeling.",
+      "page": 2,
+      "index": 3,
+      "width": 475,
+      "height": 370
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-004.webp",
+      "caption": "Figure 4. Efficiency comparison between ForestPrune and three existing methods. It is using LLaVA-Video with 90% compression ratio. GPU memory records the peak usage.",
+      "page": 7,
+      "index": 4,
+      "width": 492,
+      "height": 397
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-005.webp",
+      "caption": "Table 4. Ablation of the semantic and spatial hyper-parameters of ForestPrune on LLaVA-Video-7B, i.e., τs and τp.",
+      "page": 7,
+      "index": 5,
+      "width": 496,
+      "height": 245
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-006.webp",
+      "caption": "Table 2. Comparison between LLaVA-Video using ForestPrune and existing SOTA MLLMs. Keeping the same amount of input tokens, we use ForestPrune to scale up the input video frames, and achieve obvious performance gains.",
+      "page": 7,
+      "index": 6,
+      "width": 491,
+      "height": 308
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-007.webp",
+      "caption": "Figure 5. Visualized results of ForestPrune. Subfigure-(a) shows the spatial-temporal tree built by ForestPrune and the compression results, which show ForestPrune’s global spatial-temporal modeling capabilities. Subfigure-(b) shows the compression results of ForestPrune, GPrune, and VisionZip, showcasing ForestPrune’s ability to reduce temporal redundancy compared to image compression methods. The ORANGE and BLUE trees are the spatial-temporal trees. Frames with scene changes occur are shown with GREEN boxes.",
+      "page": 8,
+      "index": 7,
+      "width": 1006,
+      "height": 712
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22911v1/fig-008.webp",
+      "caption": "Figure 3. Illustration of the proposed ForestPrune. Input video frames are first encoded by the visual encoder, based on which ForestPrune will select a set of tokens of each frame as the candidate nodes. Afterwards, ForestPrune constructs the token trees based on the semantic similarity τs, spatial distance τp and the frame temporal orders, thereby forming the spatial-temporal forest (a). When obtaining excessive trees (root nodes), we will merge them before pruning (b). Then, we sort the trees in a descending order of depth (c) and then progressively prune the leaf and tail nodes until meeting the compression budget (d). Via the spatial-temporal modeling, ForestPrune can well estimate the frame-wise redundancy and obtain a globally optimal pruning decision.",
+      "page": 4,
+      "index": 8,
+      "width": 1036,
+      "height": 444
+    }
+  ]
+}

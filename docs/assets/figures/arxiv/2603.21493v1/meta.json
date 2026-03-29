@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-001.webp",
+      "caption": "Figure 1: Illustration of the conventional offline video understanding paradigm versus the streaming paradigm. Top: offline inference with full access to the video. Middle: pseudo-streaming inference, which truncates videos at query timestamps but still processes each clip in an offline manner. Bottom: realistic streaming inference with real-time incremental input and limited memory bank.",
+      "page": 1,
+      "index": 1,
+      "width": 444,
+      "height": 376
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-002.webp",
+      "caption": "Table 7: Detailed experimental results for the experiments reported in Section 4.4",
+      "page": 15,
+      "index": 2,
+      "width": 846,
+      "height": 398
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-003.webp",
+      "caption": "Table 6: Detailed experimental results for the experiments reported in Section 4.4",
+      "page": 15,
+      "index": 3,
+      "width": 789,
+      "height": 597
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-004.webp",
+      "caption": "Table 1: Overall results on OVO-Bench and StreamingBench. For OVO-Bench, we report the average scores of the Real-Time, Backward, and Forward task clusters; for StreamingBench, we report the overall Real-time average score, where the streaming score is computed following the definition described in the main text. Detailed results are provided in Table 3.",
+      "page": 7,
+      "index": 4,
+      "width": 950,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-005.webp",
+      "caption": "Table 5: Hardware factors affecting performance",
+      "page": 14,
+      "index": 5,
+      "width": 461,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-006.webp",
+      "caption": "Table 3: Detailed experimental results for the experiments reported in Section 4.3",
+      "page": 13,
+      "index": 6,
+      "width": 950,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21493v1/fig-007.webp",
+      "caption": "Figure 2: Overview of the StreamingEval framework. The framework standardizes streaming video understanding by modeling continuous input ingestion, incremental visual memory updates, and query-driven inference within a unified protocol.",
+      "page": 4,
+      "index": 7,
+      "width": 754,
+      "height": 540
+    }
+  ]
+}

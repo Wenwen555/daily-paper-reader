@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-001.webp",
+      "caption": "Table 2: (Left) Linear probe PR-AUC of classifying a demonstration as correct or incorrect for soccer, basketball, and rock climbing. We compare CLIP ViT-B/32 with the same model trained with the SportSkills dataset. Our learned representation gives better results. (Right) Evaluating visual instructional feedback. We report average Cohen’s d and pairwise concordance for the same sports. We see that our method outperforms both trained (Video Cont., CrossTrainer [9]) and zero-shot baselines (ZS VLM [13]).",
+      "page": 11,
+      "index": 1,
+      "width": 714,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-002.webp",
+      "caption": "Fig. 2: Examples of the annotation questions for CoachGT. We provide examples of the annotation questions for the experts to understand the task better.",
+      "page": 25,
+      "index": 2,
+      "width": 719,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-003.webp",
+      "caption": "Fig. 3: Screenshot of the question. We ask the expert to watch the learner video, read the expert feedback, and watch each of the five candidate corrective instructional videos to rate each of them as very relevant, somewhat relevant, or not relevant.",
+      "page": 26,
+      "index": 3,
+      "width": 725,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-004.webp",
+      "caption": "Fig. 1: Our proposed SportSkills, sourced from YouTube [90], contains paired videos and instructional narrations describing the correct execution of a skill (top), totaling 638, 399 video clips. All the visuals are meant for skill-improvement. We propose this dataset to enable video models to learn physical skills. SportSkills contains 55 popular sports (bottom), ranging from judo, sprinting, to tennis and handball.",
+      "page": 2,
+      "index": 4,
+      "width": 725,
+      "height": 510
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-005.webp",
+      "caption": "Fig. 5: Retrieval-based skill corrections. We show representative outputs from our proposed model that provides visual feedback on a suboptimal learner performance, given only their video (left column). We do not input the expert commentary (second column) during either training or testing; it is given here for illustration. We see that the retrievals by our method provide personalized corrective feedback. On the other hand, retrievals from the zero-shot retrieval baseline are not helpful in skill improvement. (Last row) We also include a few failure cases that showcase the difficulty of the task. Recall that the learner videos are sourced from [34], and the feedback videos are from our proposed SportSkills.",
+      "page": 13,
+      "index": 5,
+      "width": 725,
+      "height": 727
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25163v1/fig-006.webp",
+      "caption": "Fig. 4: Histogram plot of the number of videos in SportSkills per sport. We see that the number of videos per sport ranges from 2k to 14k with 6.7k videos on average.",
+      "page": 27,
+      "index": 6,
+      "width": 711,
+      "height": 232
+    }
+  ]
+}

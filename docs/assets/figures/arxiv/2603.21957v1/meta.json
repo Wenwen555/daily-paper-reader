@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.21957v1/fig-001.webp",
+      "caption": "Figure 1. (a) Previous method remove redundant tokens via separate spatial and temporal stages. (b) Our method maintains a global retention pool for unified spatiotemporal redundancy removal. (c) Response of LLaVA-OneVision-7B to video content understanding. (d) At 5% token retention, HoliTom retains redundant tokens and misses critical ones, leading to misunderstanding (red). (e) Our method effectively mitigates these issues and yields the correct response (green).",
+      "page": 1,
+      "index": 1,
+      "width": 494,
+      "height": 634
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21957v1/fig-002.webp",
+      "caption": "Table 2. Cross-backbone Method Comparison. Performance comparison of our method against state-of-the-art methods across different backbones, demonstrating consistent effectiveness.",
+      "page": 7,
+      "index": 2,
+      "width": 994,
+      "height": 606
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21957v1/fig-003.webp",
+      "caption": "Figure 2. Overview of our method. 1) The Unified Spatiotemporal Compression module filters tokens with high contribution and low semantic redundancy, incorporating them into the retention pool. At the same time, it performs clustering and merging on tokens in the recycle pool to preserve the integrity of visual semantic information. 2) The Text-Aware Merging mechanism further enhances answer accuracy by guiding the LLM to focus on visual tokens that are most relevant to the input query.",
+      "page": 3,
+      "index": 3,
+      "width": 1027,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21957v1/fig-004.webp",
+      "caption": "Table 5. Module Ablations for Unified Spatiotemporal Token Compression.",
+      "page": 8,
+      "index": 4,
+      "width": 938,
+      "height": 221
+    }
+  ]
+}

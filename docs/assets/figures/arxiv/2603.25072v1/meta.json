@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-001.webp",
+      "caption": "Figure 1. Average accuracy of LLaVA-Video-7B on Video-MME, LongVideoBench and MLVU for different methods: uniform sampling, BOLT [30], AKS [40], and our GIFT.",
+      "page": 1,
+      "index": 1,
+      "width": 482,
+      "height": 353
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-002.webp",
+      "caption": "Table 1. Comparison of state-of-the-art methods across video understanding benchmarks on LLaVA-Video-7B. Our GIFT consistently outperforms competing approaches across all frame budgets, demonstrating superior performance especially under tight budget constraints. Best results are highlighted in bold, second best underlined.",
+      "page": 6,
+      "index": 2,
+      "width": 1026,
+      "height": 665
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-003.webp",
+      "caption": "Table 2. Performance comparison of state-of-the-art VLMs with and without our GIFT enhancement. GIFT delivers consistent and significant performance gains across all base models, benchmarks and frame budgets (8 and 32), demonstrating its strong generalizability as a model-agnostic, plug-and-play solution.",
+      "page": 7,
+      "index": 3,
+      "width": 1029,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-004.webp",
+      "caption": "Table 3. Ablation study on the refinement batch size B for our Budget-Aware Refinement (BAR) module. Frames are selected iteratively in batches of B in BAR module. Vanilla represents the performance of uniform sampling for comparison.",
+      "page": 8,
+      "index": 4,
+      "width": 483,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-005.webp",
+      "caption": "Figure 3. Ablation study of GIFT’s modules on LLaVA-Video (Frame Budget:32). The y-axis shows performance relative to Uniform Sampling (100%). “Standard Diversity” refers to using the decoupled evaluation criteria with standard diversity instead of our proposed directed diversity. “Without BAR” refers to disabling the Budget-Aware Refinement module.",
+      "page": 8,
+      "index": 5,
+      "width": 475,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25072v1/fig-006.webp",
+      "caption": "Figure 2. The overall framework of our GIFT. Given an input video and user query, GIFT first calculates each frame’s query-relevance(r) and directed diversity(d) to quantify its irreplaceability(detailed in the left panel). The core of GIFT is a two-stage selection process (detailed in the right panel). Stage 1 performs the initial selection by identifying frames with high scores (s = r × d). If the sampling budget (K) exceeds batch-size (B), the Budget-Aware Refinement in Stage 2 is triggered. This stage iteratively Selects a batch of B frames, Removes them, and Updates the d for all remaining frames until the budget is met. This iterative update process continuously Releases previously suppressed frames, progressively building a rich temporal context.",
+      "page": 4,
+      "index": 6,
+      "width": 1029,
+      "height": 569
+    }
+  ]
+}

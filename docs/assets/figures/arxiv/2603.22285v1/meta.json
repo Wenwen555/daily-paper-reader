@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-001.webp",
+      "caption": "Table 1. Effectiveness Analysis across Different Backbones. We compare VideoDetective with four representative long-video understanding frameworks using two different backbones (all with 32 frames sampling to answer) on VideoMME-long w/o subtitle. Ours achieves the best performance across both model scales.",
+      "page": 6,
+      "index": 1,
+      "width": 500,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-002.webp",
+      "caption": "Figure 2. Performance improvements across different backbones on VideoMME-long w/o subtitle. VideoDetective consistently enhances various vision-language models across different architectures and parameter scales, demonstrating its plug-and-play capability.",
+      "page": 6,
+      "index": 2,
+      "width": 865,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-003.webp",
+      "caption": "Figure 1. Overview of VideoDetective. Given a query, we (1) divide the video into segments and construct a spatio-temporal affinity graph from visual similarity and temporal proximity; (2) iteratively observe video segments and propagate the relevance scores over the graph to update a global belief field, guiding next observation via a hypothesis–verification–refinement loop to recover missing clues; and (3) aggregate a compact multimodal evidence set (query-relevant frames + related text) for MLLM to produce a clue-grounded answer.",
+      "page": 2,
+      "index": 3,
+      "width": 1017,
+      "height": 435
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-004.webp",
+      "caption": "Table 3. Ablation Study on VideoMME-long w/o subtitle. Contribution of each core component in VideoDetective.",
+      "page": 7,
+      "index": 4,
+      "width": 454,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-005.webp",
+      "caption": "Table 2. Comparison with State-of-the-Art Models. We report the accuracy (%) on four challenging long-video benchmarks of our methods and other baseline models. And the number of frames finally fed to MLLM to generate answer is 32.",
+      "page": 7,
+      "index": 5,
+      "width": 800,
+      "height": 515
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-006.webp",
+      "caption": "Figure 3. Token Efficiency. Comparison of accuracy versus average token consumption. VideoDetective achieves the optimal position on the efficiency-accuracy Pareto frontier.",
+      "page": 8,
+      "index": 6,
+      "width": 492,
+      "height": 344
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-007.webp",
+      "caption": "Figure 4. An example of VideoDetective",
+      "page": 12,
+      "index": 7,
+      "width": 1017,
+      "height": 575
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-008.webp",
+      "caption": "Table 7. Evidence selection and scoring parameters.",
+      "page": 16,
+      "index": 8,
+      "width": 508,
+      "height": 262
+    },
+    {
+      "url": "assets/figures/arxiv/2603.22285v1/fig-009.webp",
+      "caption": "Table 8. Model configurations for main experiments (Qwen3-30B + SeedVL-1.5).",
+      "page": 16,
+      "index": 9,
+      "width": 412,
+      "height": 502
+    }
+  ]
+}

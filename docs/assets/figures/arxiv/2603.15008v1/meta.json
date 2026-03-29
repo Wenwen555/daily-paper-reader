@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-001.webp",
+      "caption": "Table 1: SOTA method comparison on STAR and NExT-QA: multiple-choice task accuracy (%). Best and second-best results are bolded and underlined. Total (Tot) denotes the overall accuracy over all test samples.",
+      "page": 11,
+      "index": 1,
+      "width": 448,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-002.webp",
+      "caption": "Fig. 1: Overall framework of the proposed ClueNet, which mimics the hierarchical human visual cognitive process to enable explicit clue-aware video reasoning.",
+      "page": 2,
+      "index": 2,
+      "width": 664,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-003.webp",
+      "caption": "Table 3: Evaluation on the MVBench benchmark. Best and second-best results are bolded and underlined, respectively. ClueNet achieves the highest average score, excelling particularly in fine-grained temporal and object interaction tasks.",
+      "page": 13,
+      "index": 3,
+      "width": 702,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-004.webp",
+      "caption": "Table 2: Evaluation on the NExT-OE generative task using WUPS. Best and secondbest results are bolded and underlined.",
+      "page": 12,
+      "index": 4,
+      "width": 644,
+      "height": 210
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-005.webp",
+      "caption": "Fig. 6: Refining clues and visual information during the training and inference stages.",
+      "page": 9,
+      "index": 5,
+      "width": 650,
+      "height": 254
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-006.webp",
+      "caption": "Fig. 2: MLLM attention heatmaps and paired VideoQA results: misaligned attention strongly correlates with incorrect answers, confirming visual perception bias.",
+      "page": 5,
+      "index": 6,
+      "width": 650,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2603.15008v1/fig-007.webp",
+      "caption": "Fig. 3: Intermediate layers top-probability output token visualization: erroneous visual clue semantic interpretation in intermediate layers propagates to hallucinated reasoning and incorrect final answers, confirming clue cognition bias.",
+      "page": 5,
+      "index": 7,
+      "width": 686,
+      "height": 181
+    }
+  ]
+}

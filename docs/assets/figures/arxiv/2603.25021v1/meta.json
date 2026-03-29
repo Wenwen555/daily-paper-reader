@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-001.webp",
+      "caption": "Fig. 7: Distribution and Task Range of Curated Datasets (VideoSIAM is not included in). We selected 4 general tasks that potentially need tools for finer perception. We also sythetic a high quality trajectories as the SFT dataset for 3B model cold starting.",
+      "page": 11,
+      "index": 1,
+      "width": 723,
+      "height": 194
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-002.webp",
+      "caption": "Fig. 1: We propose VideoTIR , a tool-integrated reasoning framework that flexibly and hierarchically retrieves relevant video segments through endogenous tool invocation to support long-video understanding. Furthermore, to enable SFT cold start, we introduce a sandbox-based trajectory synthesis framework. We also present TAGPO to address the inefficiency in early-stage RL exploration caused by tool misuse and overuse.",
+      "page": 2,
+      "index": 2,
+      "width": 721,
+      "height": 329
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-003.webp",
+      "caption": "Fig. 4: Hierarchical Visual Toolkits containing both Global and Local Tools. When there’s a need for more information, the textual router calls global-level browsing tools for the general questions and detail-level tools for the questions targeting at finer perception of the videos.",
+      "page": 7,
+      "index": 3,
+      "width": 719,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-004.webp",
+      "caption": "Fig. 8: Training dynamics analysis. (a) At early stages, response length increases while format quality drops, indicating the model prioritizes rational tool exploration. Once response length stabilizes, format quality gradually improves, suggesting a balance between rationality and formality. (b) TAGPO accelerates valid tool learning. The valid tool reward rises significantly faster than episode-level GRPO, reducing the steps required to exceed 0.45 by approximately 50%.",
+      "page": 13,
+      "index": 4,
+      "width": 725,
+      "height": 199
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-005.webp",
+      "caption": "Fig. 6: Framework of Data Synthesis. For video-text grounding datasets, we first convert them into QA datasets. Then, for the easy question, we synthesize trajectories that answer directly with no tool calls. For hard questions that model answers wrong, they are processed through a sandbox to generate tool calling trajectories. Finally, a large LLM is used to judge the rationality of the trajectories and we only keep the reasonable ones.",
+      "page": 8,
+      "index": 5,
+      "width": 721,
+      "height": 328
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-006.webp",
+      "caption": "Table 1: Main Results of the comparison and our method. Our method surpasses the base Qwen2.5-VL-7B model and many comparison methods that require more frames and higher resolution (Res.) as inputs. † Following [49], we observe that enabling thinking mode in small MLLMs (<7B) degrades LVU performance. For fairness, we also report thinking-mode results. ‡ These methods are SFTed on approximately 100k TIR and non-TIR trajectories.",
+      "page": 12,
+      "index": 6,
+      "width": 720,
+      "height": 372
+    },
+    {
+      "url": "assets/figures/arxiv/2603.25021v1/fig-007.webp",
+      "caption": "Fig. 2: Framework of our methods. VideoTIR adopts a multi-turn manner to deal with the users’ input videos and questions. When the model fails to conclude an answer based on current visual information, it calls tools to perceive the absent vision clues, which is combined with the former context as the input for the next-turn reasoning.",
+      "page": 5,
+      "index": 7,
+      "width": 723,
+      "height": 288
+    }
+  ]
+}

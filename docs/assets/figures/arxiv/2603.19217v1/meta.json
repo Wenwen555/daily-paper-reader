@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-001.webp",
+      "caption": "Fig. 3: Distribution of videos. Left: Videos in LVOmniBench span five primary categories encompassing 21 fine-grained subcategories. Each video is selected to ensure sufficient audio-visual information and dynamic variations. Right: The durations of the collected videos range from 10 to 90 minutes, with most between 20 and 50 minutes.",
+      "page": 6,
+      "index": 1,
+      "width": 723,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-002.webp",
+      "caption": "Fig. 6: Results across various audio categories and difficulty levels. The findings demonstrate that proprietary models consistently outperform open-source models across all evaluated dimensions. Furthermore, OmniLLMs generally face greater challenges in perceiving musical audio; specifically, at high difficulty levels, the performance of opensource models declines to a level approaching random chance.",
+      "page": 11,
+      "index": 2,
+      "width": 713,
+      "height": 395
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-003.webp",
+      "caption": "Fig. 1: We introduce LVOmniBench to provide a rigorous assessment of the performance of OmniLLMs on long audio-visual inputs, comprising strictly manually curated videos and annotations. Each question is assigned a specific difficulty level to facilitate hierarchical evaluation of model performance. In the first example, the model should comprehend the entire audio-visual context. Solving this question initially requires cross-modal alignment to identify “Toby” and finally necessitates visual counting and scene recognition. Even SoTA models, such as Gemini 3 Pro, struggle to answer this question correctly. The second example presents questions at two additional difficulty tiers, demonstrating that a correct answer requires a combination of audio and visual.",
+      "page": 2,
+      "index": 3,
+      "width": 723,
+      "height": 490
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-004.webp",
+      "caption": "Fig. 4: Distribution of questions. Left: LVOmniBench comprises nine question subcategories, with each demonstrating a balanced distribution across difficulty levels and video durations. Right: This panel illustrates the distribution of question difficulty and the corresponding audio types required to answer the questions.",
+      "page": 7,
+      "index": 4,
+      "width": 719,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-005.webp",
+      "caption": "Fig. 8: Cases of perception errors. We present examples of failures that arise from the misperception of underlying visual or audio information by models.",
+      "page": 22,
+      "index": 5,
+      "width": 723,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-006.webp",
+      "caption": "Fig. 5: Comparison between proprietary models and open-source models on LVOmniBench across different tasks. The blue, red, orange, and gray in the outer circle stands for perception, logical, inference, and understanding tasks. As can be observed, proprietary models demonstrate a substantial performance advantage over their open-source counterparts. Furthermore, across all models, significant vulnerabilities remain in specific sub-tasks, notably Counting and Music Perception.",
+      "page": 10,
+      "index": 6,
+      "width": 710,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-007.webp",
+      "caption": "Table 1: Comparison of different benchmarks. The modalities V, I, and A denote video, image, and audio, respectively. The open-domain metric indicates whether the video sources span a broad range of real-world scenarios. The annotation method (Anno.) specifies whether the dataset was curated manually (M) or automatically (A). We also report the video duration and the average temporal duration for each dataset, both measured in seconds. Multi-dimension (Multi-D) indicates whether the benchmark questions are hierarchically stratified by varying levels of cognitive difficulty, and multitype indicates whether the problem involves multiple aspects.",
+      "page": 3,
+      "index": 7,
+      "width": 714,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-008.webp",
+      "caption": "Fig. 9: Cases of localization errors. It is observed that models are unable to accurately locate the temporal occurrences of events within long-form audio and video inputs, leading to incorrect predictions.",
+      "page": 23,
+      "index": 8,
+      "width": 723,
+      "height": 230
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-009.webp",
+      "caption": "Table 4: The impact of audio and video information. (a) The evaluation of performance across various capabilities. The abbreviations are defined as follows: AP: Attribute Perception, EU: Event Understanding, HU: Human-Centric Understanding, LR: Logical Reasoning, MP: Music Perception, SI: Sound Inference, SpI: Spatial Inference, and TI: Temporal Inference. (b) Experiments are conducted across three input configurations: video-only, video with ASR, and video with original audio.",
+      "page": 12,
+      "index": 9,
+      "width": 714,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-010.webp",
+      "caption": "Fig. 10: Cases of cross-modal semantic gaps and reasoning errors. For complex problems, models fail to fully exploit audio and video information; instead, they often overrely on a single modality during reasoning, hindering the alignment of cross-modal features. Addressing this limitation represents a critical direction for future enhancements to OmniLLMs. Furthermore, models frequently exhibit errors in reasoning tasks, such as spatial localization.",
+      "page": 24,
+      "index": 10,
+      "width": 723,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-011.webp",
+      "caption": "Table 3: The performance of models on LVOmniBench. We evaluate OmniLLMs, utilizing both Video LLMs and Audio LLMs as specialized baselines. During inference, each model is evaluated using the maximum permissible number of input frames. The results demonstrate that long-form audio-visual comprehension remains a significant challenge for current SoTA models.",
+      "page": 9,
+      "index": 11,
+      "width": 714,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19217v1/fig-012.webp",
+      "caption": "Fig. 2: The construction of LVOmniBench follows a rigorous pipeline encompassing video collection, filtering, and question annotation. To guarantee both high-fidelity data quality and sufficient challenge for OmniLLMs, every component, from raw videos to the final questions, underwent meticulous manual selection and annotation.",
+      "page": 5,
+      "index": 12,
+      "width": 723,
+      "height": 294
+    }
+  ]
+}

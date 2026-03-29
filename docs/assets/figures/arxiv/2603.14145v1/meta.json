@@ -1,0 +1,134 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-001.webp",
+      "caption": "Figure 14. Prompt used for training our custom LLM Judge.",
+      "page": 25,
+      "index": 1,
+      "width": 975,
+      "height": 1264
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-002.webp",
+      "caption": "Figure 10. Synthetic Response Generation Prompt: Part (a)",
+      "page": 21,
+      "index": 2,
+      "width": 975,
+      "height": 1260
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-003.webp",
+      "caption": "Figure 2. Illustrative examples from MMOU, demonstrating the different skill types evaluated in the benchmark.",
+      "page": 2,
+      "index": 3,
+      "width": 975,
+      "height": 515
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-004.webp",
+      "caption": "Table 3. Performance breakdown across video domains and video durations for closed-source, open access, and open-source audio-visual MLLMs, video-only, audio-only MLLMs, and text-only LLMs.",
+      "page": 7,
+      "index": 4,
+      "width": 1010,
+      "height": 606
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-005.webp",
+      "caption": "Figure 11. Synthetic Response Generation Prompt: Part (b)",
+      "page": 22,
+      "index": 5,
+      "width": 975,
+      "height": 1268
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-006.webp",
+      "caption": "Figure 3. Distribution of MMOU. (a) Video category distribution in MMOU, covering 10 major domains and 36 fine-grained subdomains. (b) Co-occurrence matrix of QA task types, illustrating how multiple reasoning skills are jointly required within individual questions. (c) Distribution of the relative temporal positions (average of start–end time-stamps) of answer evidence within videos, showing that answers are spread across the entire video timeline. (d) Distribution of QA instances across the 13 skill/task types in MMOU. (e) Video duration distribution, highlighting the prevalence of long and complex real-world videos.",
+      "page": 3,
+      "index": 6,
+      "width": 975,
+      "height": 383
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-007.webp",
+      "caption": "Table 8. Detailed Overview of Skill/Task Types",
+      "page": 18,
+      "index": 7,
+      "width": 1008,
+      "height": 1292
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-008.webp",
+      "caption": "Figure 12. Synthetic Response Generation Prompt: Part (c) — Prompt used to generate synthetic model responses for our custom LLM judge training (shown in three parts, (a), (b) and (c)). The prompt provides the question, reference answer, and audio-visual caption and asks to produce exactly 12 responses with controlled error types and ratings on correctness, completeness, faithfulness, and clarity.",
+      "page": 23,
+      "index": 8,
+      "width": 975,
+      "height": 1068
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-009.webp",
+      "caption": "Table 5. Distribution of Questions in MMOU",
+      "page": 13,
+      "index": 9,
+      "width": 492,
+      "height": 832
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-010.webp",
+      "caption": "Figure 5. Skill-wise performance comparison of various models on MMOU. Frontier models still struggle with basic skills like counting and finding temporal relationships between distinct events.",
+      "page": 8,
+      "index": 10,
+      "width": 452,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-011.webp",
+      "caption": "Table 1. Comparison of MMOU with image (I), audio (A), video (V), and omni-modal QA benchmarks, highlighting MMOU’s scale, long-form videos and question type (Multiple Choice / Open Ended) in addition to strong audio-visual correspondence. ∗ denotes that only the number of available videos is reported.",
+      "page": 4,
+      "index": 11,
+      "width": 1017,
+      "height": 392
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-012.webp",
+      "caption": "Figure 8. Prompt used for generating distractor options for questions in the MMOU benchmark.",
+      "page": 19,
+      "index": 12,
+      "width": 975,
+      "height": 1306
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-013.webp",
+      "caption": "Table 7. Detailed Overview of Skill/Task Types",
+      "page": 17,
+      "index": 13,
+      "width": 1008,
+      "height": 1324
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-014.webp",
+      "caption": "Figure 13. Two examples of synthetic model responses and their four-criterion rubric ratings (correctness, completeness, faithfulness, clarity), illustrating a faithfulness corruption and a combined failure.",
+      "page": 24,
+      "index": 14,
+      "width": 975,
+      "height": 1043
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-015.webp",
+      "caption": "Figure 9. Prompt used for open-ended evaluation with the GPT-5 LLM judge. The judge receives the question, ground truth answer, model response, and detailed audio-visual caption, and returns scores and reasons for the four criteria.",
+      "page": 20,
+      "index": 15,
+      "width": 995,
+      "height": 1292
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14145v1/fig-016.webp",
+      "caption": "Figure 4. Overview of the dataset-construction pipeline for MMOU.",
+      "page": 5,
+      "index": 16,
+      "width": 975,
+      "height": 421
+    }
+  ]
+}

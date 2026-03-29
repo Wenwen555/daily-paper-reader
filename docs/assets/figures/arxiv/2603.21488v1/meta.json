@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.21488v1/fig-001.webp",
+      "caption": "Fig. 1. Comparison of existing diagram [10], [11] and ours. (a) learns MLLM via unidirectional alignment (“text-to-trajectory”). Ours considers “text-to-trajectory” and “trajectory-to-text” to enhance their correspondence (□ is the placeholder for trajectory features). Moreover, (b) uses a framecontent integration (FCI) module to refine trajectory tokenization with framespecific clues. For mask generation, (a) segments key and non-key frames with separately optimized models. (b) supports flexible inputs and unifies all frame segmentation in a single structure, enabling a simplified and end-to-end trainable framework.",
+      "page": 1,
+      "index": 1,
+      "width": 516,
+      "height": 439
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21488v1/fig-002.webp",
+      "caption": "TABLE I QUANTITATIVE COMPARISONS ON REFERRING VIDEO SEGMENTATION BENCHMARKS (REF-YOUTUBE-VOS, REF-DAVIS, AND MEVIS).",
+      "page": 7,
+      "index": 2,
+      "width": 1091,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21488v1/fig-003.webp",
+      "caption": "TABLE II QUANTITATIVE COMPARISONS ON REASONING VIDEO SEGMENTATION BENCHMARKS (REVOS).",
+      "page": 7,
+      "index": 3,
+      "width": 1091,
+      "height": 281
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-001.webp",
+      "caption": "Fig. 4: MVBench Subtask Delta Heatmap. Each cell shows the final displayed difference between a GDO profile and the fixed Uni-10x branch on the same MVBench subtask. The heatmap complements the subtask summary in Table 4 by making both gain concentration and boundary trade-offs visible across the full subtask map.",
+      "page": 11,
+      "index": 1,
+      "width": 703,
+      "height": 278
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-002.webp",
+      "caption": "Fig. 10: Difficult Cases for Both. Cases that remain hard for both models under the fixed train/eval contract, including finish-order recognition in VideoMME, subtle temperature inference in State Change, small-object counting in Moving Count, and next-action prediction in Action Prediction. These rows make the remaining failure modes concrete.",
+      "page": 25,
+      "index": 2,
+      "width": 660,
+      "height": 887
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-003.webp",
+      "caption": "Fig. 11: Uni-10x Wins. Cases where the 10× uniform control remains better, including esports action reasoning in VideoMME, object-heavy next-action prediction, subtle water-temperature inference, and repeated-action counting. These rows show that the gain from temporal allocation is not uniform across all question types.",
+      "page": 26,
+      "index": 3,
+      "width": 660,
+      "height": 887
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-004.webp",
+      "caption": "Fig. 8: Subtask Trajectories. Panels show persistent temporal gains and adverse subtasks against the fixed 512k-sample Uni-10x baseline.",
+      "page": 21,
+      "index": 4,
+      "width": 709,
+      "height": 364
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-005.webp",
+      "caption": "Fig. 7: Ablation Trajectories. Each curve removes one or more Temp+ score contributions while keeping the rest of the train/eval contract fixed.",
+      "page": 21,
+      "index": 5,
+      "width": 704,
+      "height": 372
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-006.webp",
+      "caption": "Table 3: Temporal Subtask Gains. For each released GDO profile, rows list the five temporal-related subtasks with the largest gains over the fixed 512k-sample Uni10x baseline. Scores are Accuracy (%), and ∆ is the pp difference relative to Uni-10x.",
+      "page": 10,
+      "index": 6,
+      "width": 723,
+      "height": 627
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-007.webp",
+      "caption": "Fig. 1: Peak Match with Less Data. Accuracy is plotted against training samples for MVBench, VideoMME, and MLVU, comparing the GDO trajectory with the fixed Uni-10x baseline. The dashed line marks the Uni-10x reference, and the star marks the first displayed GDO point that reaches it. Table 1 reports the corresponding Peak Match and Reduction values; all four benchmarks exceed 10× reduction relative to the 512k-sample Uni-10x reference.",
+      "page": 3,
+      "index": 7,
+      "width": 707,
+      "height": 195
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-008.webp",
+      "caption": "Table 5: Temp+ Ablation. The first row is the full Temp+ builder. Each subsequent row removes one or more score contributions while keeping the same training and evaluation contract; parentheses report the pp change relative to full Temp+.",
+      "page": 13,
+      "index": 8,
+      "width": 723,
+      "height": 186
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-009.webp",
+      "caption": "Fig. 5: Trajectories. Each panel compares GDO with the fixed 512k-sample Uni10x baseline on one benchmark. Stars denote the earliest peak-match point.",
+      "page": 19,
+      "index": 9,
+      "width": 706,
+      "height": 380
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-010.webp",
+      "caption": "Table 4: Subtask Deltas. Values are subtask deltas in pp relative to the fixed 512ksample Uni-10x baseline. Unlike Table 3, which highlights the largest temporal wins, this table summarizes the main subtasks while keeping adverse subtasks visible.",
+      "page": 12,
+      "index": 10,
+      "width": 723,
+      "height": 186
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-011.webp",
+      "caption": "Fig. 9: GDO Wins. Representative cases where GDO resolves the decisive cue before Uni-10x: causal interpretation in VideoMME, repeated-action counting in MVBench Action Count, collision counting in Moving Count, and temperature-based state inference in State Change. Each row shows sampled frames, the question, the answer, and both model outputs.",
+      "page": 24,
+      "index": 11,
+      "width": 660,
+      "height": 888
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-012.webp",
+      "caption": "Fig. 3: Frontier Shifts by Goal. For each benchmark, the dots mark the strongest operating points attained by the four released GDO profiles, while the square marks the fixed 512k-sample Uni-10x baseline. Different allocation goals populate different parts of the frontier under the same training and evaluation contract.",
+      "page": 9,
+      "index": 12,
+      "width": 705,
+      "height": 508
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-013.webp",
+      "caption": "Fig. 6: Goal Profiles. Each panel overlays MinLoss, Diverse, Temp, and Temp+ against the same fixed 512k-sample Uni-10x anchor.",
+      "page": 20,
+      "index": 13,
+      "width": 706,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.12478v1/fig-014.webp",
+      "caption": "Fig. 2: Subset Construction. GDO computes six sample descriptors over one shared pool, applies a shared score and goal-specific feasibility presets to build 1× optimized subsets, and compares them against Uni-10x under the same fixed backbone, SFT recipe, checkpoints, and benchmarks. The figure visualizes the paper’s comparison contract: only data allocation changes.",
+      "page": 5,
+      "index": 14,
+      "width": 723,
+      "height": 340
+    }
+  ]
+}

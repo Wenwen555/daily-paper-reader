@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.11423v1/fig-001.webp",
+      "caption": "Figure 3: Per-task teacher variance and Pass@k behavior on Video-MMMU. Left: Teacher quality distribution by task type; box plots over 200 teacher responses across six task families highlight that high-stability closed-ended tasks (e.g., MCQ, numerical) have lower variance, while higher-variance tasks such as visual QA exhibit wider spreads. Right: Pass@k accuracy on Video-MMMU as a function of k (number of sampled student responses per query); our method achieves +3.2% higher Pass@1 accuracy than Qwen3-VL-4B while converging to a similar upper bound as k increases.",
+      "page": 11,
+      "index": 1,
+      "width": 808,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11423v1/fig-002.webp",
+      "caption": "Figure 1: Teacher sampling variance in video understanding. Left: Temporal QA example: four teacher responses with their temporal IoU to ground truth, showing substantial quality variation across samples of the same question. Right: Global statistics over 200 teacher responses from eight task types: (a) cross-question variance and (b) within-question sampling variance. Both dimensions undermine single-sample distillation and motivate our multi-sample approach.",
+      "page": 2,
+      "index": 2,
+      "width": 826,
+      "height": 399
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11423v1/fig-003.webp",
+      "caption": "Table 1: Main results on video and image QA benchmarks. Metrics follow official protocols (accuracy for QA and ∆knowledge for Video-MMMU). Frames denotes test-time frames. Under the same 4B scale and frame budget, R-MSD outperforms both the base model and an original SFT+RL baseline.",
+      "page": 7,
+      "index": 3,
+      "width": 829,
+      "height": 402
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11423v1/fig-004.webp",
+      "caption": "Table 2: Results on V-STaR [Cheng et al., 2025]. We report When (temporal IoU) and Where (visual IoU) under the official evaluation. Frames denotes test-time frames. Improvements indicate better spatio-temporal grounding under teacher sampling variance.",
+      "page": 8,
+      "index": 4,
+      "width": 768,
+      "height": 332
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11423v1/fig-005.webp",
+      "caption": "Figure 2: Overview of the R-MSD framework (Stage 2: RL-based Adversarial Distillation). The pipeline utilizes a multi-sample teacher collection to provide diverse references. A critic-as-discriminator mechanism is employed to perform task-adaptive sampling, matching student rollouts with teacher responses. The student policy is then iteratively refined through adversarial distillation, using a weighted combination of discriminator, format, and task-specific scores as the reward signal.",
+      "page": 5,
+      "index": 5,
+      "width": 790,
+      "height": 341
+    }
+  ]
+}

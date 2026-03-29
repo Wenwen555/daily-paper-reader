@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.02748v1/fig-001.webp",
+      "caption": "Figure 1. Visualization of vision features. We employ Grad-CAM to visualize the vision encoders of the two branches in iGVLM, highlighting the regions most relevant to the correct answer. As shown in the figure, the instruction-guided branch distinctly focuses on areas that are more closely associated with the correct answer.",
+      "page": 1,
+      "index": 1,
+      "width": 392,
+      "height": 655
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02748v1/fig-002.webp",
+      "caption": "Table 1. Comparison among dynamic visual perception methods on MMStar, evaluated across six perception dimensions (CP, FP, IR, LR, ST, MA), average accuracy (Avg.), and throughput (it/s). Our iGVLM consistently outperforms prior approaches under both Vicuna and Qwen2.5 backbones, achieving the best overall balance between accuracy and efficiency. ∆ indicates improvement over LLaVA-1.5 under the same backbone. Bold and underlined values indicate the best and second-best results, respectively.",
+      "page": 6,
+      "index": 2,
+      "width": 717,
+      "height": 375
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02748v1/fig-003.webp",
+      "caption": "Figure 3. Representative Examples from MM4. Deceptively simple questions demand multiperspective reasoning. Correct answers (highlighted) are uniformly distributed across options to prevent positional bias. More examples can be found in Section C.",
+      "page": 7,
+      "index": 3,
+      "width": 797,
+      "height": 581
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02748v1/fig-004.webp",
+      "caption": "Figure 2. (a): The proposed iGVLM architecture. The Text Encoder extracts features from the input instructions to guide the Vision Encoder, enabling dynamic modulation of visual representations. These instruction-conditioned features are then fused with static visual features. The fused representation is aligned with a Large Language Model (LLM) to generate responses. The illustrated example comes from a real-world VQA scenario rather than the MM4 benchmark. (b): AdaLN-Modified ViT. We leverage textual information to modulate the multi-head attention and MLP modules within the ViT the AdaLN adapter, enabling instruction-aware adjustment of visual attention.",
+      "page": 3,
+      "index": 4,
+      "width": 912,
+      "height": 394
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02748v1/fig-005.webp",
+      "caption": "Figure 4. Different questions similarity heatmap.",
+      "page": 12,
+      "index": 5,
+      "width": 880,
+      "height": 710
+    }
+  ]
+}

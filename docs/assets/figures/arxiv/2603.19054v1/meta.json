@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-001.webp",
+      "caption": "Table 6. Performance comparison on Real-time understanding and Backward Tracing tasks of OVO-Bench",
+      "page": 15,
+      "index": 1,
+      "width": 967,
+      "height": 575
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-002.webp",
+      "caption": "Figure 12. Prompt for RL Response time generation",
+      "page": 21,
+      "index": 2,
+      "width": 997,
+      "height": 894
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-003.webp",
+      "caption": "Figure 1. Demonstration of our model v.s. existing Streaming VideoLLMs on the Proactive Streaming Understanding task. While existing models solve a complicated response/silence decision-making problem at every timestep, we turn the problem into a simple perception problem with query-time semantic parsing, allowing for efficient and accurate proactive response timing.",
+      "page": 2,
+      "index": 3,
+      "width": 1011,
+      "height": 831
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-004.webp",
+      "caption": "Table 1. Proactive Response Timing comparison on OVO-Bench Future Active Responding tasks. Our model significantly outperforms existing proactive streaming models and prompt-based proactive response methods. Dispider (Qian et al., 2025) and StreamAgent (Yang et al., 2025) are not evaluated due to lack of open-source proactive decision code.",
+      "page": 7,
+      "index": 4,
+      "width": 1017,
+      "height": 208
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-005.webp",
+      "caption": "Figure 7. Example of a degenerate policy that achieves high offline accuracy on OVO-Bench. We prompt StreamForest (Zeng et al., 2025) at 2 fps to predict whether the information needed to answer the query is ready, and it always answers ”yes”. OVO-Bench reports the answer accuracy at the five red timesteps, among which StreamForest answers three correctly (60% accuracy). However, we cannot make a correct triggering decision from these answers.",
+      "page": 14,
+      "index": 5,
+      "width": 709,
+      "height": 367
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-006.webp",
+      "caption": "Figure 9. More examples of comparison of IGPP proposals before and after RL",
+      "page": 18,
+      "index": 6,
+      "width": 973,
+      "height": 703
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-007.webp",
+      "caption": "Figure 6. A demo of proactive streaming understanding. In this proactive response task, our model is asked to describe the steps of making hummus in a 3-minute tutorial video. The model correctly identified most of the key steps and gave timely responses, while keeping silent when no new events occur or the content is irrelevant.",
+      "page": 13,
+      "index": 7,
+      "width": 1004,
+      "height": 580
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-008.webp",
+      "caption": "Figure 3. Throughput-Performance comparison on the Proactive Streaming Understanding task. The performance is measured by the average F1 Score on OVO-Bench. Models with * means that the throughput degrade as the context grows without KV Cache truncation. We show the throughput without degrading.",
+      "page": 8,
+      "index": 8,
+      "width": 464,
+      "height": 339
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-009.webp",
+      "caption": "Figure 10. Prompt for proactive query generation",
+      "page": 19,
+      "index": 9,
+      "width": 1000,
+      "height": 919
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-010.webp",
+      "caption": "Figure 8. Streaming inference latency over video duration in logarithmic scale",
+      "page": 17,
+      "index": 10,
+      "width": 695,
+      "height": 530
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-011.webp",
+      "caption": "Figure 11. Prompt for SFT Proposal generation",
+      "page": 20,
+      "index": 11,
+      "width": 998,
+      "height": 917
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-012.webp",
+      "caption": "Figure 2. Overview of the Em-Garde Framework: IGPP (Orange) receives the Instrcution I and a low-fps video context before query time, and parse the instruction into perceptually-grounded visual cues. LPMM (Blue) runs in the streaming loop, matching the current sliding-window video segment to the proposal in the embedding space. The similarity scores are utilized as the temporal signal for response triggering decision. Together, the two modules separate semantic understanding from the streaming loop, allowing for efficient and accurate response time decision.",
+      "page": 5,
+      "index": 12,
+      "width": 1006,
+      "height": 394
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19054v1/fig-013.webp",
+      "caption": "Table 7. Full evaluation results of real-time understanding tasks on StreamingBench.",
+      "page": 16,
+      "index": 13,
+      "width": 954,
+      "height": 554
+    }
+  ]
+}

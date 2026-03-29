@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.11481v1/fig-001.webp",
+      "caption": "Figure 4: Base accuracy vs. average reliability score under inductions. Base accuracy is measured in Mode I and averaged over faithfulness and factuality. The average reliability score under induction aggregates RR over Modes II–III and TSS over Mode IV.",
+      "page": 6,
+      "index": 1,
+      "width": 448,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11481v1/fig-002.webp",
+      "caption": "Figure 1: Examples of Faithfulness and Factuality Hallucinations. Top: Faithfulness items are verified by video evidence, covering Static Entities & Attributes, Dynamic Actions & Motions, and Spatio-Temporal Relations. Bottom: Factuality items require consistency with world knowledge and cover Domain Knowledge (Know-WHAT), Procedural Knowledge (Know-HOW), and Physical Knowledge (Know-WHY).",
+      "page": 2,
+      "index": 2,
+      "width": 883,
+      "height": 561
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11481v1/fig-003.webp",
+      "caption": "Figure 6: Effect of the number of sampled frames. Left: Base accuracy under {2, 8, 16, 24, 32} uniformly sampled frames. Right: induced metrics (RRdeg, RRcor, TSS) under {8, 16, 24, 32} frames.",
+      "page": 8,
+      "index": 3,
+      "width": 935,
+      "height": 181
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11481v1/fig-004.webp",
+      "caption": "Figure 2: Overview of the INFACT construction process. Left: Candidate videos and QA pairs are collected from multiple sources, including video QA datasets, instructional datasets, and synthetic videos. Middle: Samples are organized into fine-grained faithfulness and factuality dimensions, and filtered to remove ambiguous or non-videogrounded items, followed by human-in-the-loop quality verification. Right: The resulting benchmark supports four evaluation modes: Base, Visual Degradation, Evidence Corruption, and Temporal Intervention.",
+      "page": 4,
+      "index": 4,
+      "width": 942,
+      "height": 502
+    },
+    {
+      "url": "assets/figures/arxiv/2603.11481v1/fig-005.webp",
+      "caption": "Figure 3: Dataset composition of INFACT. Distribution over the fine-grained taxonomy for faithfulness (top) and factuality (bottom).",
+      "page": 5,
+      "index": 5,
+      "width": 450,
+      "height": 564
+    }
+  ]
+}

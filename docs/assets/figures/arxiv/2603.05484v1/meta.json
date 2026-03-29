@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-001.webp",
+      "caption": "Figure 1. Physical Temporal Span vs. Scale. The x-axis represents the Physical Temporal Span (Tspan), while bubble size indicates Observational Duration (Tdur). Unlike existing datasets clustered in the bottom-left (short clips, Tspan ≈ Tdur), MMLifelong occupies the unique Lifelong Regime (top-right). This regime is characterized by high temporal sparsity (Tspan ≫ Tdur), requiring models to bridge unobserved gaps across days to months.",
+      "page": 1,
+      "index": 1,
+      "width": 494,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-002.webp",
+      "caption": "Table 3. Comparison with representative multimodal datasets with increasing context lengths. We categorize existing datasets into Short-Context, Long-Context, and Lifelong horizon. Max. Dur (Tdur) denotes the maximum playback duration of processed clips, while Max. Span (Tspan) represents the actual physical timeline covered by the event. Unlike prior datasets where Tspan ≈ Tdur , MM-Lifelong introduces the Lifelong Horizon (Tspan ≫ Tdur), requiring reasoning over unobserved temporal gaps spanning up to 2 months. Notably, it is one of the few datasets providing manual, clue-grounded annotations (Clue) for continuous audio-visual streams.",
+      "page": 6,
+      "index": 2,
+      "width": 1010,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-003.webp",
+      "caption": "Table 15. Performance comparison on train@month, val@month, test@week, and test@day set of MM-Lifelong.",
+      "page": 21,
+      "index": 3,
+      "width": 995,
+      "height": 472
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-004.webp",
+      "caption": "Figure 2. Performance Scaling Analysis. As the number of input frames increases, end-to-end MLLMs initially improve but soon exhibit performance oscillation and even sharp degradation due to context saturation and noise accumulation. In contrast, ReMA consistently scales with more recursion rounds, effectively mitigating this bottleneck via dynamic memory management and demonstrating superior scaling potential and stability.",
+      "page": 2,
+      "index": 4,
+      "width": 479,
+      "height": 389
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-005.webp",
+      "caption": "Figure 6. The Architecture of the Recursive Multimodal Agent (ReMA). ReMA follows an offline two-phase architecture for long-form multimodal reasoning. The agent maintains a global Memory Bank for belief state aggregation and leverages a Multimodal Toolkit (e.g., MMInspect and MemManage), backed by foundation models (e.g., Whisper, Qwen3-VL), to perform global perception and iterative control for query answering.",
+      "page": 7,
+      "index": 5,
+      "width": 1009,
+      "height": 264
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-006.webp",
+      "caption": "Table 9. Video Timeline Accumulation of Gamer’s Journey Subset.",
+      "page": 14,
+      "index": 6,
+      "width": 475,
+      "height": 822
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-007.webp",
+      "caption": "Table 10. Video Timeline Accumulation of Live Stream Subset.",
+      "page": 14,
+      "index": 7,
+      "width": 508,
+      "height": 622
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-008.webp",
+      "caption": "Table 4. Performance comparison on val@month, test@week, and test@day set of MM-Lifelong.",
+      "page": 8,
+      "index": 8,
+      "width": 1000,
+      "height": 451
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-009.webp",
+      "caption": "Figure 3. 1) Live stream subset of MM-Lifelong comprises 105.6 hours of broadcast footage spanning 51 days. 2) An example of a multi-clue (hop) reasoning question with an ultra-long temporal certificate: The task requires identifying all occurrences where the streamer sings a specific song on subways across multiple cities. Successfully answering this requires persistent memory and the ability to perform multi-event inference over more than 10 hours of continuous livestream data.",
+      "page": 4,
+      "index": 9,
+      "width": 990,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-010.webp",
+      "caption": "Table 13. QA example of each category.",
+      "page": 17,
+      "index": 10,
+      "width": 967,
+      "height": 710
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-011.webp",
+      "caption": "Figure 8. Ref@N performance under different N settings across four data splits: (a) Day-scale subset, (b) Week-scale subset, (c) Month-scale subset, and (d) the Full dataset.",
+      "page": 24,
+      "index": 11,
+      "width": 1006,
+      "height": 751
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-012.webp",
+      "caption": "Table 7. Judge Consistency (vs. Human).",
+      "page": 9,
+      "index": 12,
+      "width": 494,
+      "height": 987
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-013.webp",
+      "caption": "Figure 7. Ablation on Recursive Depth. Impact of the maximum allowed tool-call rounds on Answer Accuracy. Performance saturates around 4-5 rounds.",
+      "page": 9,
+      "index": 13,
+      "width": 473,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-014.webp",
+      "caption": "Table 2. Statistics of the MM-Lifelong dataset.",
+      "page": 5,
+      "index": 14,
+      "width": 492,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05484v1/fig-015.webp",
+      "caption": "Table 12. Statistics and definitions of question categories. The categories are sorted by the total number of samples.",
+      "page": 16,
+      "index": 15,
+      "width": 1004,
+      "height": 512
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-001.webp",
+      "caption": "Figure 1. Systematic failures in proprietary models’ temporal perception. (a) Gemini-2.5-Pro incorrectly describes a simple geometric shape’s motion trajectory. (b) When used to annotate real-world videos, such flawed descriptions propagate errors into training data. (Erroneous phrases in red.)",
+      "page": 1,
+      "index": 1,
+      "width": 394,
+      "height": 561
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-002.webp",
+      "caption": "Table 1. Performance comparison on diverse video benchmarks.",
+      "page": 6,
+      "index": 2,
+      "width": 832,
+      "height": 333
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-003.webp",
+      "caption": "Table 2. Performance comparison on additional video benchmarks.",
+      "page": 6,
+      "index": 3,
+      "width": 832,
+      "height": 272
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-004.webp",
+      "caption": "Figure 4. mIoP Performance comparison on NExTGQA and RexTime benchmarks.",
+      "page": 7,
+      "index": 4,
+      "width": 486,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-005.webp",
+      "caption": "Table 3. Performance comparison on NExTGQA and RexTime benchmarks. It can be observed that SynRL outperforms existing SFTbased methods trained with large-scale data.",
+      "page": 7,
+      "index": 5,
+      "width": 994,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-006.webp",
+      "caption": "Table 9. Per-category ablation study showing capability-specific transfer patterns of each synthetic primitive type. TOM. = TOMATO; MV. = MVBench; VE. = VideoMME; TB = TemporalBench; VSI = VSIBench. Best results in each column are in bold.",
+      "page": 10,
+      "index": 6,
+      "width": 882,
+      "height": 196
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-007.webp",
+      "caption": "Figure 2. Overview of SynRL framework. (Left) Programmatic Generation Pipeline: Object properties and motion dynamics are specified in Python code to generate videos with accurate frame-level metadata. Videos are rendered at 30 FPS, and QA pairs are instantiated from hand-crafted templates conditioned on the same metadata, yielding temporally grounded synthetic video-QA triples. (Middle) Chain-of-Thought Augmentation: Given a synthetic video, its metadata, and its QA pair, a multimodal LLM generates step-by-step reasoning chains. A Judger verifies their consistency with the event timeline, filtering out incorrect outputs. The verified reasoning chains are then passed to a Polisher, which refines them into more natural and fluent CoT annotations while preserving factual correctness. (Right) Training Strategy: The target model is first trained via supervised fine-tuning on the polished CoT data to learn explicit temporal reasoning patterns. It is then optimized with group relative policy optimization (GRPO) on synthetic video-QA samples with verifiable rewards, so that reinforcement learning further improves reasoning quality under strictly correct supervisory signals.",
+      "page": 3,
+      "index": 7,
+      "width": 964,
+      "height": 397
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-008.webp",
+      "caption": "Figure 5. Real-world motion understanding examples. The base model fails on direction recognition and speed perception, while the SynRL-trained model answers both correctly, indicating that temporal skills acquired from synthetic videos can transfer to real-world video understanding.",
+      "page": 8,
+      "index": 8,
+      "width": 477,
+      "height": 637
+    },
+    {
+      "url": "assets/figures/arxiv/2603.17693v1/fig-009.webp",
+      "caption": "Figure 3. (a) Training Examples: We generate diverse synthetic videos spanning 8 major categories with 18 subcategories, covering short-term perceptual primitives (speed perception, motion tracking, direction identification) and long-term cognitive primitives (gridbased object tracking, symbol manipulation, code execution, mathematical operations, container management). Each video is procedurally generated with verifiable ground-truth answers. (b) Constructing CoT using Meta Information: Using a grid-based object tracking game as an example, we provide the video with its code-derived metadata (initial state, swap events, timestamps) to a VLM. The model generates step-by-step reasoning chains that track each object through every swap operation, explicitly referencing frame timestamps (e.g., “at 00:00”, “at 00:02”) and logging state transitions. This metadata-conditioned generation ensures temporal grounding and verifiable correctness, as the reasoning must align with the documented event sequence.",
+      "page": 4,
+      "index": 9,
+      "width": 922,
+      "height": 684
+    }
+  ]
+}

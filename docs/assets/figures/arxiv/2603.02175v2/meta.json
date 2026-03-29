@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-001.webp",
+      "caption": "Table 2. OpenVE-Bench Results evaluated on Gemini-2.5-Pro.",
+      "page": 6,
+      "index": 1,
+      "width": 1012,
+      "height": 244
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-002.webp",
+      "caption": "Figure 9. Examples of our RefVIE.",
+      "page": 15,
+      "index": 2,
+      "width": 883,
+      "height": 1110
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-003.webp",
+      "caption": "Figure 6. Qualitative results in OpenVE-Bench and VIE-Bench. Please zoom in for more details.",
+      "page": 7,
+      "index": 3,
+      "width": 962,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-004.webp",
+      "caption": "Figure 8. Examples of our RefVIE.",
+      "page": 14,
+      "index": 4,
+      "width": 898,
+      "height": 1222
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-005.webp",
+      "caption": "Figure 12. Visual comparison on VIE-Bench. The bottom instruction not only replaces the man with a robot but also changes the tree in the background to a red maple tree. Only our method precisely follows this instruction, as highlighted in the red box.",
+      "page": 18,
+      "index": 5,
+      "width": 899,
+      "height": 1277
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-006.webp",
+      "caption": "Figure 7. Qualitative results in our proposed RefVIE-Bench. Please zoom in for more details.",
+      "page": 8,
+      "index": 6,
+      "width": 993,
+      "height": 846
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-007.webp",
+      "caption": "Figure 4. RefVIE statistics and sample visualization. (a) Distribution of editing task types. (b) Distribution of video durations. (c) Example reference images for different editing categories.",
+      "page": 4,
+      "index": 7,
+      "width": 491,
+      "height": 391
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-008.webp",
+      "caption": "Figure 2. Workflow of the reference image synthesis pipeline. We first ground the editing region in the target video frame using specialized grounding and segmentation models. Subsequently, we leverage a specialized image editing model to synthesize a high-quality reference image that maintains identity consistency with the instruction.",
+      "page": 4,
+      "index": 8,
+      "width": 914,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-009.webp",
+      "caption": "Figure 3. Pipeline of RefVIE curation. We process 3.7M raw samples through four stages: source aggregation and filtering, grounding and segmentation, reference image synthesis, and quality control, yielding 477K high-quality quadruplets.",
+      "page": 4,
+      "index": 9,
+      "width": 492,
+      "height": 287
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-010.webp",
+      "caption": "Figure 11. Visual comparison on OpenVE-Bench.",
+      "page": 17,
+      "index": 10,
+      "width": 902,
+      "height": 1286
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-011.webp",
+      "caption": "Figure 5. Overview of our unified editing framework. We integrate a frozen MLLM (Qwen2.5-VL-3B) to encode multimodal instructions, injecting semantic conditions into the pre-trained Diffusion Transformer (Wan2.2-TI2V-5B) via dual learnable projectors for query and reference latents. To preserve consistency of source video, we employ a hybrid injection strategy within the DiT: source video features are added element-wise, while reference image features are concatenated to the input sequence.",
+      "page": 5,
+      "index": 11,
+      "width": 931,
+      "height": 300
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02175v2/fig-012.webp",
+      "caption": "Figure 10. Examples of our RefVIE.",
+      "page": 16,
+      "index": 12,
+      "width": 829,
+      "height": 1201
+    }
+  ]
+}

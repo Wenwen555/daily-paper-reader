@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-001.webp",
+      "caption": "Figure 1. Challenges in continual unlearning of large visionlanguage models emerge as sequential unlearning updates distort entangled visual-language representations, making it difficult to preserve contextually appropriate refusal behavior across tasks. (a) Irrelevant refusal: Learning new forget tasks overwrites prior refusal patterns, generating contextually misaligned refusals. (b) Over-refusal: The model inappropriately refuses retain queries.",
+      "page": 1,
+      "index": 1,
+      "width": 496,
+      "height": 266
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-002.webp",
+      "caption": "Table 1. Results of the proposed and compared methods using the Vicuna-based LVLM. The performance is reported in terms of Avg and Last. (↑) and (↓) indicate that higher and lower values are better, respectively.",
+      "page": 6,
+      "index": 2,
+      "width": 1036,
+      "height": 435
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-003.webp",
+      "caption": "Figure 3. Performance across sequential unlearning steps. We report average performance on the LVLM benchmarks and retain data (top) and the forget data (bottom) after each unlearning step.",
+      "page": 6,
+      "index": 3,
+      "width": 1014,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-004.webp",
+      "caption": "Table 3. Ablation results with different component combinations.",
+      "page": 7,
+      "index": 4,
+      "width": 494,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-005.webp",
+      "caption": "Table 2. Results of using the Llama-2-based LVLM. B+C+R denotes the average of B, C and R scores, respectively.",
+      "page": 7,
+      "index": 5,
+      "width": 496,
+      "height": 385
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-006.webp",
+      "caption": "Figure 2. An illustration of the proposed continual unlearning framework. For each vision-language pair to forget in the t-th task, (i) the concept modules produce activations for visual attributes and textual intents accumulated across tasks, and the concept modulator reweights them to emphasize relevant concepts by suppressing irrelevant ones. (ii) Given these concept activations, we compute their similarity with concepts from previous tasks to measure conceptual relevance. Based on this relevance, we leverage refusers associated with conceptually similar previous tasks or activate new ones for guiding the language model to generate concept-aware refusal responses.",
+      "page": 3,
+      "index": 6,
+      "width": 1034,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2603.21484v1/fig-007.webp",
+      "caption": "Figure 5. Response changes during sequential unlearning for randomly selected forget (top) and retain (middle and bottom) samples. Comparison methods often produce semantically misaligned refusals for forget queries or mistakenly reject retain queries (red boxes), whereas ours consistently yields appropriate refusals for forget samples and suitable responses for retain samples.",
+      "page": 8,
+      "index": 7,
+      "width": 1032,
+      "height": 502
+    }
+  ]
+}

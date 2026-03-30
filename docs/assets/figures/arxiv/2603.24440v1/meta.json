@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-001.webp",
+      "caption": "Figure 1: CUA-SUITE Overview. Human GUI trajectories are recorded across desktop platforms, expert-verified, and annotated with keyframes, bounding boxes, and interaction logs. The resulting CUA-SUITE comprises UI-VISION, a comprehensive benchmark to evaluate grounding and planning capabilities of computer-use agents; GROUNDCUA, which consists of densely labeled UI screenshots with 3.6 million annotations; VIDEOCUA, which comprises 55 hours of video of humans performing computer-use tasks with detailed action trajectories.",
+      "page": 2,
+      "index": 1,
+      "width": 826,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-002.webp",
+      "caption": "Table 2: Comparison of VIDEOCUA with existing GUI trajectory and agent datasets. VIDEOCUA is the only large-scale, human-curated dataset providing continuous 30 fps expert video for professional desktop applications with long multi-layered CoT annotations. Video: continuous video recordings released with the dataset (not per-step screenshots). CoT: chain-of-thought annotations (ℓ= long multi-layered, s= short). Though not released directly, VIDEOCUA has annotations dense enough for CoT generation with the code released. Scale: approximate data volume (SS = screenshots; h = video hours; fr. = video frames). OmniACT provides single-step tasks. OSWorld is an evaluation benchmark without training trajectories. “–” indicates not reported.",
+      "page": 7,
+      "index": 2,
+      "width": 806,
+      "height": 431
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-003.webp",
+      "caption": "Table 5: UI element categories in CUA-SUITE with descriptions and representative examples.",
+      "page": 18,
+      "index": 3,
+      "width": 822,
+      "height": 397
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-004.webp",
+      "caption": "Table 6: Per-Application Performance (OpenCUA-32B). Applications exhibiting the lowest and highest @50px success rates (minimum 3 coordinate predictions). Performance varies widely, from under 5% to over 70%, reflecting the diversity of desktop application interfaces.",
+      "page": 19,
+      "index": 4,
+      "width": 632,
+      "height": 540
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-005.webp",
+      "caption": "Table 4: Categories of desktop applications and their corresponding applications.",
+      "page": 17,
+      "index": 5,
+      "width": 827,
+      "height": 694
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-006.webp",
+      "caption": "Figure 2: Representative Prediction Failures. Green circles indicate ground truth and red circles show model predictions. These examples illustrate desktop-specific challenges for CUAs.",
+      "page": 9,
+      "index": 6,
+      "width": 829,
+      "height": 543
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-007.webp",
+      "caption": "Table 7: Distribution of Prediction Distances >50px. Both models show a substantial proportion of high-distance predictions, with roughly one-third exceeding 500 pixels.",
+      "page": 20,
+      "index": 7,
+      "width": 486,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2603.24440v1/fig-008.webp",
+      "caption": "Table 1: Element Grounding Performance on UI-VISION. Models are ranked in descending order by their average score. Results are drawn from their respective original publications, with the exception of Qwen3-VL, which is reported as evaluated in Zhou et al. (2025b).",
+      "page": 5,
+      "index": 8,
+      "width": 656,
+      "height": 377
+    }
+  ]
+}

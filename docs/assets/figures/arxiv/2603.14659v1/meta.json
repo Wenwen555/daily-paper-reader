@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-001.webp",
+      "caption": "Figure 4: More analysis of VISIONCOACH. We provide analysis including (a) statistics of visual prompting, (b) inference latency, and (c) the effect of visual prompting on spatial grounding reward.",
+      "page": 11,
+      "index": 1,
+      "width": 829,
+      "height": 198
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-002.webp",
+      "caption": "Figure 5: Spatio-temporal attention map. Visual prompting (VP) improves grounding in both temporal and spatial dimensions. The green box indicates the key frame, while the red box highlights the corresponding spatial region. Temporally, VP increases attention on the correct key frame containing the cowboy. Spatially, VP concentrates attention on the region corresponding to the queried visual attributes (e.g., the cowboy wearing specific clothing), while suppressing irrelevant regions.",
+      "page": 11,
+      "index": 2,
+      "width": 809,
+      "height": 274
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-003.webp",
+      "caption": "Figure 10: Prompt for extracting key object from question and answer pair.",
+      "page": 25,
+      "index": 3,
+      "width": 829,
+      "height": 699
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-004.webp",
+      "caption": "Figure 1: Comparison with previous video reasoning methods and VISIONCOACH. VISIONCOACH leverages visual-prompt guided RL with self-distillation to internalize improved spatiotemporal grounding behaviors induced by visual guidance. During inference, it maintains a single forward-pass reasoning while achieving enhanced grounding performance.",
+      "page": 2,
+      "index": 4,
+      "width": 810,
+      "height": 379
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-005.webp",
+      "caption": "Table 13: Ablation of visual prompting assignment to hard samples on V-STAR and VideoMME.",
+      "page": 23,
+      "index": 5,
+      "width": 652,
+      "height": 210
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-006.webp",
+      "caption": "Table 2: Performance on the V-STAR benchmark. VISIONCOACH achieve strong spatio-temporal reasoning across overall dimensions.",
+      "page": 8,
+      "index": 6,
+      "width": 812,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-007.webp",
+      "caption": "Figure 2: Detailed Architecture of VISIONCOACH. We introduce VISIONCOACH, a visual-prompt-guided RL framework for training a spatio-temporally grounded reasoner (Section 3.2). The framework includes Visual Prompt Selector (VP-SELECTOR) that predicts optimal visual prompts (Section 3.3), and object-aware spatial grounding rewards that enforce object identity consistency and multiple predicted bounding boxes (Section 3.4).",
+      "page": 4,
+      "index": 7,
+      "width": 818,
+      "height": 550
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-008.webp",
+      "caption": "Figure 9: Prompt to proxy reasoner.",
+      "page": 24,
+      "index": 8,
+      "width": 829,
+      "height": 669
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14659v1/fig-009.webp",
+      "caption": "Table 3: Performance across different general video understanding/reasoning benchmarks. * indicates our implementation performance.",
+      "page": 9,
+      "index": 9,
+      "width": 812,
+      "height": 323
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.14953v1/fig-001.webp",
+      "caption": "Fig. 1: An overview of our proposed question-aware keyframe selection framework. The model processes the video with an image encoder and the question with a text encoder. The question embedding is then used in two parallel streams: (1) it is fed into a Gaussian Generator to create an initial keyframe distribution, and (2) it is used to generate synthetic keyframes via CLIP similarity and VLM ranking, which serve as weak supervision. To adapt the selection process, the LMM’s own backbone is re-purposed with a prompt to determine the question type. This information guides the Question-Conditioned Coverage Regularization (QCCR) module, which refines the initial distribution. Finally, the predicted keyframes are passed to the downstream LMM to generate the final answer.",
+      "page": 2,
+      "index": 1,
+      "width": 1011,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2603.14953v1/fig-002.webp",
+      "caption": "Table 1: Performance comparison with state-of-the-art methods on the NEXT-QA benchmark. All methods are evaluated on accuracy across three question categories. Our method achieves the highest average accuracy, demonstrating its overall effectiveness.",
+      "page": 3,
+      "index": 2,
+      "width": 484,
+      "height": 411
+    }
+  ]
+}

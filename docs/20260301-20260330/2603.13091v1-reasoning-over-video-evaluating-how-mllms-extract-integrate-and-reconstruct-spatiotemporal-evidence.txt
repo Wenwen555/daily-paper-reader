@@ -1,0 +1,851 @@
+Title: Reasoning over Video: Evaluating How MLLMs Extract, Integrate, and Reconstruct Spatiotemporal Evidence
+
+URL Source: https://arxiv.org/pdf/2603.13091v1
+
+Published Time: Mon, 16 Mar 2026 01:10:06 GMT
+
+Number of Pages: 35
+
+Markdown Content:
+# Reasoning over Video: Evaluating How MLLMs Extract, Integrate, and Reconstruct Spatiotemporal Evidence 
+
+Seunghwan Bang 1∗ and Hwanjun Song 2† 
+
+> 1
+
+Ulsan National Institute of Science and Technology (UNIST) Ulsan, Republic of Korea  
+
+> 2
+
+Korea Advanced Institute of Science and Technology (KAIST) Daejeon, Republic of Korea 
+
+songhwanjun@kaist.ac.kr 1                
+
+> 2345
+> 6
+> 7
+> 8
+> 910
+> Storage
+> Lounge
+> Living room Bedroom
+> Kitchen
+> A: 10 cups
+> (5 in kitchen, 2 in living room, 3 in bedroom)
+> Locker room Bathroom
+> A: East
+> (right side: North àbottom side: East )
+> Q. How many cups are observed across
+> all rooms ?
+> Q. Based on this heading, what is the
+> direction of lounge relative to storage?
+> 1
+> 2
+> 3
+> 4
+> 1
+> 6
+> 5
+> 2
+> 3
+> 4
+
+Fig. 1: Two examples of abstractive spatiotemporal queries from VAEX-Bench : (Left) Global Counting, requiring aggregation of objects observed across the traversal; (Right) Map Direction, requiring inference of relative spatial directions between rooms. 
+
+Abstract. The growing interest in embodied agents increases the de-mand for spatiotemporal video understanding, yet existing benchmarks largely emphasize extractive reasoning, where answers can be explic-itly presented within spatiotemporal events. It remains unclear whether multimodal large language models can instead perform abstractive spa-tiotemporal reasoning, which requires integrating observations over time, combining dispersed cues, and inferring implicit spatial and contextual structure. To address this gap, we formalize abstractive spatiotempo-ral reasoning from videos by introducing a structured evaluation tax-onomy that systematically targets its core dimensions and construct a controllable, scenario-driven synthetic egocentric video dataset tailored to evaluate abstractive spatiotemporal reasoning capabilities, spanning object-, room-, and floor-plan–level scenarios. Based on this framework,  
+
+> ⋆
+
+This work was done while interning at KAIST.  
+
+> †
+
+Corresponding Author.      
+
+> arXiv:2603.13091v1 [cs.CV] 13 Mar 2026 2S. Bang et al. we present VAEX-Bench , a benchmark comprising five abstractive rea-soning tasks together with their extractive counterparts. Our extensive experiments compare the performance of state-of-the-art MLLMs un-der extractive and abstractive settings, exposing their limitations on ab-stractive tasks and providing a fine-grained analysis of the underlying bottlenecks. The dataset will be released soon.
+> Keywords: Video Abstractive Reasoning ·Spatiotemporal Intelligence
+
+1 Introduction 
+
+The rapid rise of embodied agents has fundamentally reshaped the demands placed on video understanding systems [7, 20, 46]. Moving beyond static image perception and short-clip recognition, modern multimodal large language models (MLLMs) are increasingly expected to reason over long-horizon egocentric video streams [12, 19, 35, 43, 48], where observations are fragmented, viewpoints shift continuously, and critical evidence may be temporally dispersed. Thus, recent video spatiotemporal benchmarks, such as VSI-Bench [49] and VSTI-Bench [15], have expanded evaluation toward spatiotemporal reasoning by emphasizing the integration of visual cues across time and three-dimensional (3D) spatial rela-tions. This evolution reflects a broader transition from identifying “what is visible in a frame?” to “what can be inferred from an evolving first-person experience,” a capability that lies at the core of embodied intelligence. Despite this progress, existing video spatiotemporal benchmarks [15,49] have primarily been designed to evaluate whether MLLMs can correctly identify ob-jects, actions, or relations that are explicitly present in spatiotemporal events (e.g. , inferring object appearance order, identifying the nearest object), a setting we refer to as extractive spatiotemporal reasoning. Although such evaluation is essential for measuring perceptual grounding and local spatiotemporal recogni-tion [22, 30], it does not directly assess whether MLLMs can form a coherent global representation of the environment or synthesize observations into a struc-tured understanding of the depicted world [11, 41, 54]. Building on this gap, we move toward abstractive spatiotemporal reasoning, which depends on constructing and maintaining a globally integrated spatiotem-poral world model to enable inference. That is, rather than reasoning about locally observable relations from a single viewpoint, MLLMs must synthesize fragmented egocentric observations into a coherent cognitive map that supports global orientation and aggregation under partial observability in Figure 1 ( e.g. ,reconstructing the underlying floor plan, counting objects across rooms). There-fore, this shift calls for a principled benchmark designed to jointly evaluate both extractive and abstractive spatiotemporal reasoning. To realize this, we depart from existing video benchmark construction [11,15, 32,42,49], where questions are annotated on top of pre-captured real-world videos (e.g. , ARKitScenes [6], ScanNet++ [51]). As the visual evidence is fixed by the captured scenes and trajectories, this post-hoc process provides limited control over scene layout, object placement, or trajectory structure, making it difficult to MLLM Spatiotemporal Reasoning 3• Environment : Single -                        
+
+> Story Residence
+> •#of r ooms : 6
+> •Room Type : {kitchen,
+> bedroom, bathroom, … }
+> •Objects : {
+> kitchen: {fridge, …},
+> bedroom: {bed, …},
+> living room: {TV, …},
+> …
+> Scenario Vacant Floor -plan Objects Rooms Floor -Plan
+> Abstractiv e
+> •Cups: {kitchen: 3, bedroom: 2, living room: 1}
+> Q. How many cups are observed across all rooms ?
+> A. 6(3 + 2 + 1)
+> (d) Trajectory (e) Rendering
+> (a) Scenario Specification (c) Objects, Rooms, Floor -plan
+> (b) Query Construction
+> Extractive
+
+(Step 1) Sceanrio -based 
+
+Query Construciton 
+
+(Step 2) Environment and 
+
+Trajectory Design 
+
+(Step 3) Rendering and 
+
+Video Recording         
+
+> •Cups: {kitchen: 3, bedroom: 2, living room: 1}
+> Q. How many cups are observed in bedroom?
+> A. 2
+
+Fig. 2: Query-conditioned video construction pipeline: (Step 1) Scenario-based Query Construction, followed by (Step 2) Environment and Trajectory Design and (Step 3) Rendering and Video Recording. 
+
+systematically target abstractive spatiotemporal reasoning. Instead, we system-atically expand five representative extractive task types in prior works [15, 49] into their abstractive counterparts under a one-to-one expansion principle (see Table 1). To enable the construction of such queries, we represent environments through a structured indoor scenario factorization over “object configuration,” “room composition,” and “floor-plan topology." This factorization allows us to explicitly specify the spatial structure and object distribution of the environ-ment before video generation, making it possible to design reasoning queries that require integrating evidence across rooms and time. As illustrated in Figure 2, we implement a query-conditioned video construc-tion pipeline. Human annotators first design reasoning queries from the scenario specification to determine what evidence must appear in the environment. The scenes are then instantiated in SketchUp 1 with specified room layouts and object placements, rendered using Enscape 2, and recorded as egocentric videos along scripted trajectories to ensure spatial and temporal consistency. After video gen-eration, the queries are human-verified against the videos to confirm that each answer is unambiguously grounded in the visual evidence. This pipeline pro-vides explicit control over scene structure and ground-truth relations, enabling systematic evaluation of both extractive and abstractive reasoning. Building on this design, we construct a novel benchmark named VAEX-Bench (Video Abstractive and EXtractive Benchmark), comprising 10 con-trolled egocentric indoor scenarios, each paired with five abstractive reasoning tasks along with their extractive counterparts. In particular, as summarized in Table 1, the abstractive tasks evaluate capabilities such as long-horizon memory, global orientation, metric reasoning, structural reconstruction, and trajectory-level aggregation, requiring models to integrate dispersed observations across the video. By contrast, the extractive tasks evaluate recognition of objects, actions, and relations that are explicitly observable in the video. 4 S. Bang et al. 
+
+Our benchmarking over 14 SOTA proprietary and open-source MLLMs re-veals previously underexplored findings: (1) Performance drops substantially when moving from extractive to abstractive reasoning across both open-source and proprietary models; (2) Accuracy is higher on multiple-choice questions than on free-form generation, indicating reliance on option cues; (3) Models exhibit unstable object perception and counting, often missing or miscounting entities across the video; (4) Models struggle to maintain long-horizon temporal memory when evidence is dispersed across the video; and (5) Models frequently fail to reconstruct globally consistent spatial layouts from egocentric observations. 
+
+2 Related Work 
+
+Video Reasoning Benchmark. Video reasoning benchmarks has progressed from clip comprehension to broader spatiotemporal evaluation [7, 15, 16, 20, 39, 46,49]. Early video benchmarks, such as MovieQA [39] and LifeQA [7], primarily assessed models’ ability to follow narrative structure in video content, ranging from story comprehension in curated media ( e.g. , movies, dramas) to under-standing event sequences in more natural, potentially noisy everyday footage. Subsequent works like TGIF-QA [20] advanced the field by shifting the focus to-ward more fine-grained understanding, introducing tasks that explicitly require spatiotemporal reasoning [11, 14, 24, 37] to analyze repeating actions and state transitions in shorter video clips. Most recently, VSI-Bench [49] extends from 2D spatiotemporal cues to 3D visual-spatial reasoning by constructing a video reasoning benchmark on real-world indoor egocentric monocular videos captured with 3D ground-truth meta-data [6,13,51], enabling evaluation of MLLMs on object-level geometric relations. Despite this progress, most existing video benchmarks remain fundamentally ex-tractive, leaving largely untested whether models can integrate temporally dis-persed visual observations into a coherent representation of the environment. To address this, we construct controllable egocentric 3D environments with scenario-driven layouts that require reconstructing the global structure of the scene from fragmented observations, enabling evaluation of long-horizon memory integra-tion, spatial consistency, and cross-room reasoning. 
+
+Abstractive Reasoning for LLMs. Recent works on LLM reasoning increas-ingly frames the challenge as moving beyond evidence present cue finding toward abstractive inference that integrates dispersed observations and compresses them into latent state estimates [9, 17, 18, 21]. Accordingly, text-based benchmarks have evaluated reasoning reliability and robustness through multi-hop question answering [8,38,50], long context integration [5,28,29], causal and counterfactual inference [47,52,55], and planning or agentic tool use [27,31,40]. However, these settings largely emphasize the composition of linguistic evidence and therefore only partially capture the demands of real-world reasoning, where an agent must maintain a state under partial observability and update an internally consistent world model over space and time. Despite this, abstractive reasoning in video, MLLM Spatiotemporal Reasoning 5
+
+the ability to reconstruct latent states and global structure beyond directly vis-ible evidence, remains relatively understudied. Recent work therefore broadens this notion to include long-horizon state tracking, consistency maintenance, and integration under uncertainty, motivating evaluation settings that can explicitly diagnose these capabilities in video. 
+
+3 Taxonomy of Video Spatiotemporal Reasoning 
+
+We distinguish two regimes of spatiotemporal reasoning from video, depending on whether answers can be derived from directly observable cues or require integrating observations to infer latent spatial and contextual structure. 
+
+Extractive Reasoning refers to settings where answers can be derived from directly observable cues in video frames, typically by localizing the relevant mo-ment and reading off visible evidence. This formulation has been the practical de-fault for prior benchmarks [15,49] because it enables scalable question construc-tion and evaluation with minimal ambiguity. For example, extractive reasoning includes tasks such as identifying the order in which objects appear (Appear-ance Order), determining relative directions or distances from a single viewpoint (Relative Direction or Distance), planning short navigation steps (Route Plan), or counting objects within a single room (Object Counting). However, such eval-uation can under-test capabilities required for embodied intelligence. 
+
+Abstractive Reasoning instead refers to settings where answers cannot be obtained from a single observation but require integrating evidence across time to infer latent spatial and contextual structure. To clarify how this setting dif-fers from extractive reasoning, we define a set of additional capabilities required for such inference and organize them into a taxonomy of spatiotemporal rea-soning tasks. In particular, these capabilities include retrieving evidence over long horizons (temporal memory), constructing a global spatial representation from egocentric observations (allocentric direction and distance reasoning), sim-ulating navigation over the inferred layout, and aggregating information across multiple locations. This formulation motivates a principled expansion of extrac-tive queries into abstractive reasoning tasks and ensures that failures can be attributed to specific reasoning bottlenecks. 
+
+3.1 Expansion from Extractive to Abstractive Tasks 
+
+Guided by the capability taxonomy above, our benchmark operationalizes the shift from extractive to abstractive reasoning through a one-to-one task expan-sion principle, as summarized in Table 1. For each common extractive task (in the 2nd column), we preserve its semantic intent while removing the assumption that the decisive cue is observable at a single moment (in the 4th column). As a result, we expand five representative extractive tasks into their abstractive counterparts: Appearance Order into long-horizon memory retrieval; Relative 6 S. Bang et al.           
+
+> Category Extractive Abstractive Expanded Capability
+> Chronology
+> Appearance Order:
+> Order of first appearance: {sofa, TV, table, cabinet}
+> Memory–Action:
+> What activity is possible in the {third} room? Frame-local perception
+> →Memory-grounded perception Direction
+> Relative Direction:
+> Facing {fridge} from {stove}, where is {stool}?
+> Map Direction:
+> [room1 is east of room2] What is the direction of {room3} from {room4}? Frame-local direction
+> →Allocentric orientation Distance
+> Relative Distance:
+> Which object is the closest to the {door}?
+> Map Scale:
+> [D2(room 1, room 2) = 1 ]What is the D2between {room3} and {room4}? Frame-local proximity
+> →Global metric estimation Planning
+> Route Plan:
+> Facing {TV} from {sofa}, what sequence of turns navigate you to {table}?
+> Simulation:
+> Which room is located directly opposite to {kitchen}? Local route planning
+> →Allocentric simulation Counting
+> Object Counting:
+> How many {chairs} are in the {dining room}?
+> Global Counting:
+> How many {chairs} are observed across all rooms? Single-room counting
+> →Multi-room aggregation
+
+Table 1: Expansion from extractive to abstractive tasks. Question examples illustrate the shift in cognitive requirements, where items blue denote variable placeholders that can be adapted to different environments. 
+
+Direction (or Distance) into allocentric spatial reasoning (or global metric esti-mation), Route Planning into navigation simulation, and Object Counting into global aggregation across multiple locations. 
+
+Memory–Action: The Appearance Order task asks in what order objects appear as the camera moves and can often be solved through local recognition with limited temporal integration. We extend this to an abstractive task, where the model must recall objects encountered across rooms and infer possible actions in each space, requiring long-horizon memory across the trajectory. 
+
+Map Direction: The Relative Direction task asks for the direction of an object from a single viewpoint within one room. We extend this to the abstractive task, where the model must reason about directions between rooms under a shared global orientation. This requires integrating egocentric observations to infer allocentric spatial relations across the environment. 
+
+Map Scale: The Relative Distance task compares distances between objects within a single scene using local perspective cues. We extend this to the abstrac-tive task, where the model must estimate distances between rooms under a given metric reference. This requires constructing a global spatial representation from observations across the trajectory. 
+
+Simulation: The Route Planning task typically involves short-horizon nav-igation decisions based on local cues ( e.g. , turn right → go straight). We extend this to the abstractive task, where the model must identify a floor-plan hypoth-esis consistent with the entire traversal. This task therefore requires reasoning about the global layout rather than making step-wise navigation decisions. 
+
+Global Counting: The Object Counting task asks for the number of ob-jects visible within a single room or frame. We extend this to the abstractive MLLM Spatiotemporal Reasoning 7
+
+task, which requires tracking object occurrences across the full trajectory and aggregating them into a global total across rooms. Note that our goal is not to replace extractive evaluation, but to jointly assess both regimes. We therefore include both abstractive and extractive tasks, enabling controlled comparisons and quantifying how performance shifts when moving from frame-grounded extraction to video abstractive reasoning. 
+
+4 VAEX-Bench Dataset 
+
+Unlike existing extractive benchmarks [15, 49], constructing benchmarks for ab-stractive reasoning directly from pre-collected videos is inherently challenging, as the decisive evidence required for such questions often spans multiple loca-tions and time steps. When questions are generated after video collection, the available evidence is already fixed, making it difficult to systematically design queries that require long-horizon integration or global spatial reasoning. To address this limitation, we propose the query-conditioned video construc-tion pipeline illustrated in Figure 2, where scenarios and questions are designed first and used to construct environments before rendering them into egocen-tric videos. Although this pipeline requires substantial manual effort, it enables controlled scenario construction necessary for reliable evaluation of abstractive reasoning. In particular, our pipeline is designed to satisfy three key properties: (1) Distributing decisive evidence across rooms and time to prevent purely ex-tractive solutions; (2) Ensuring that the correct decision criteria are uniquely determined by the scene state; and (3) Varying layouts to avoid overfitting while systematically targeting different reasoning abilities. 
+
+4.1 Data Construction Pipeline Step 1: Scenario-based Query Construction 
+
+Scenario Specification: Our benchmark begins with scenario specification prior to video synthesis. Each scenario defines the environment typology ( e.g. , single-story residence, multi-story residence, or office), the number and types of rooms, and the candidate objects associated with each room. These specifications are instantiated as both textual scenario descriptions and an empty floor plan in 
+
+SketchUp 3, which together define room connectivity and spatial relations of the environment, as illustrated in Figure 2(a). Query Construction: Based on the scenario specification, human annotators de-sign and create both extractive and abstractive queries aligned with our task suite in Table 1. The questions are designed by first enumerating scenario-level facts implied by the scenario ( i.e. , room adjacency, object placements, and func-tional relations), and then selecting queries whose answers are uniquely deter-mined by the resulting environment configuration, as illustrated in Figure 2(b). This process ensures that each query has an unambiguous answer grounded in the defined scene state. Furthermore, the queries are designed to determine what   
+
+> 3SketchUp is a widely used 3D modeling software for architectural and interior design. 8S. Bang et al.
+
+evidence must appear in the environment and how it should be distributed across the scenario, providing the foundation for constructing videos that systemati-cally evaluate both extractive and abstractive reasoning. 
+
+Step 2: Environment and Trajectory Design 
+
+Scene Construction: Based on the constructed queries, we design the environ-ment by finalizing the floor plan and placing objects within rooms so that the evidence required to answer each query is present in the scene. We then mate-rialize the scene by manually creating and placing the corresponding objects in 
+
+SketchUp , producing the complete floor plan with object inventories and place-ments, as illustrated in Figure 2(c). We then design camera trajectories that visit the necessary viewpoints and temporalize evidence acquisition, ensuring that relevant observations are revealed in a controlled order during the egocen-tric traversal, as illustrated in Figure 2(d). Trajectory Constraints: For abstractive tasks, we further impose two trajectory-level constraints. First, “temporal cue separation” places the evidence required for a query in distant parts of the scenario, inserting intervening rooms and view-point changes so that short-window recognition is insufficient. Second, “spatial mapping” constructs trajectories that cannot be solved using local navigation cues alone, requiring the model to integrate observations across the traversal into a globally consistent spatial topology. These constraints enable tasks such as Memory–Action and Global Counting, which require integrating observations across distant points in the traversal, as well as Map Direction, Map Scale, and Simulation, which require constructing a coherent and globally consistent spatial representation of the environment. From this fully specified scene and traversal, the ground-truth answers for both extractive and abstractive queries are deterministically derived. 
+
+Step 3: Rendering and Video Recording 
+
+Rendering: Once the scene configuration is finalized, we render the environment using Enscape 4 to generate photorealistic indoor scenes for egocentric video capture, as illustrated in Figure 2(e). This process converts the designed indoor environment, including the room layout and query-driven object placements, into a realistic and navigable 3D space where the camera can traverse the rooms and observe the placed objects along the predefined trajectory. Video Recording: After rendering the environment, we record egocentric videos by executing the predefined camera trajectories within the rendered 3D scene. The camera follows the navigation paths designed in Step 2, revealing observa-tions according to the planned trajectory and evidence placement. This ensures that the evidence required to answer each query appears along the traversal in the intended spatial and temporal configuration. All videos are recorded at 30 
+
+fps with a resolution of 640 × 480 .                      
+
+> 4Enscape is real-time architectural visualization engine that generates photorealistic indoor scenes with consistent lighting and material properties. MLLM Spatiotemporal Reasoning 9
+> Resolution #Query #Rooms #Objects Video Duration(s)
+> 640 ×480 30 6.7 ±1.25 73.5 ±14.27 36.81 ±6.05
+> Table 2: Dataset statistics of VAEX-Bench averaged over 10 scenarios.
+
+4.2 Dataset Overview and Human Process 
+
+VAEX-Bench consists of 10 egocentric navigation videos, each corresponding to a distinct scenario designed to support evaluation under both extractive and abstractive reasoning regimes. For each scenario, we define 10 tasks in Table 1, comprising five extractive and five abstractive tasks. For each task, three queries are constructed, resulting in a total of 30 queries grounded in a single video (5 tasks × 2 query types × 3 queries). In total, the dataset contains 300 queries across all 10 videos, with all 30 queries per scenario grounded in the same video due to our query-conditioned construction pipeline. Each query is associated with a human-annotated ground-truth answer. Except for counting-related tasks ( i.e. ,Global Counting and its extractive counterpart Object Counting), other queries are formulated as multiple-choice questions (MCQs), although they can also be evaluated in an open-ended generation setting in Section 5.2. Table 2 provides additional dataset statistics, including the average number of rooms and objects per scenario and video duration (in seconds) across the 10 scenarios. All scenarios and queries are designed through a human-driven process. We recruited graduate-level students who have each published at least one paper at a top-tier computer vision conference to design the scenarios and construct the queries. Based on the designed queries, we generate the corresponding envi-ronments and videos following our pipeline, with each video requiring approxi-mately 2–3 weeks to produce. After generation, the annotators perform a cross-verification process to ensure that the answer to every query can be correctly derived from the video, jointly reviewing the videos to confirm that each query is unambiguously grounded in the visual evidence. Further details of the human-driven process are provided in the supplementary material. 
+
+5 Evaluation 
+
+We use VAEX-Bench to quantify how current MLLMs differ in extractive vs. ab-stractive spatiotemporal reasoning from egocentric videos (see Section 5.1). Our main experiment benchmarks 14 SOTA proprietary or open-source MLLMs on five abstractive tasks and their extractive counterparts under a unified protocol, and further includes an MCQ-to-free-form generation comparison (see Section 5.2) and targeted diagnostic analyses that attribute failures to temporal, spatial, and perceptual bottlenecks (see Section 5.3). To ensure a fair comparison, we standardize the evaluation pipeline across all MLLMs whenever the interface allows explicit control over the inputs. Similar to recent works [2,10,44], we uniformly sample 32 frames from each video for all models that accept video input, except for the Gemini family, whose API does not expose controllable frame sampling [49]. We also enforce a unified prompt format 10 S. Bang et al.                                                                                                                                                                                                               
+
+> Mem.: Memory–Action, MDir.: Map Direction, MSca.: Map Scale, Sim.: Simulation, Glob.: Global Counting, Order: Appear Order, Dir.: Relative Direction, Dist.: Relative Distance, Route: Route plan, Obj.: Object Counting
+> Abstractive Extractive Models Mem. MDir. MSca. Sim. Glob. Avg. Order Dir. Dist. Route Obj. Avg.
+> Reference Baselines
+> Random 30.7 22.0 18.0 35.3 N/A 26.5 15.3 22.0 42.0 20.0 N/A 24.8 Human-Level 89.3 83.3 60.0 93.3 82.7 81.7 93.3 88.0 77.3 88.7 92.7 88.0
+> Proprietary Models
+> GPT-5.2 [36] 38.0 26.0 34.0 29.3 23.3 30.1 73.3 26.0 56.0 18.7 48.7 44.5 Gemini-3 Flash [12] 60.7 34.0 24.0 51.3 31.3 40.3 93.3 40.0 62.7 16.0 38.0 50.0 Gemini-3 Pro [12] 52.0 22.7 22.0 31.3 20.7 29.7 96.0 44.7 66.7 26.0 44.7 55.6 Claude 4.5 Haiku [3] 19.3 21.3 11.3 22.0 2.7 15.3 34.0 30.0 26.7 30.0 40.0 32.1 Claude 4.5 Sonnet [3] 30.0 19.3 19.3 40.7 11.3 24.1 72.7 24.7 28.0 13.3 30.7 33.9
+> Open-Source Models
+> Qwen3-VL-2B [4] 26.0 18.7 19.3 26.0 6.7 19.3 82.0 29.3 42.7 22.7 40.0 43.3 Qwen3-VL-8B [4] 34.0 22.0 15.3 34.0 17.3 24.5 80.0 33.3 54.0 25.3 34.0 45.3 Qwen3-VL-32B [4] 40.0 26.0 23.3 42.7 17.3 29.9 90.0 26.0 53.3 6.7 51.3 45.5 Qwen3-VL-235B †[4] 43.3 16.7 13.3 46.7 13.3 26.7 93.3 38.0 54.0 20.0 43.3 49.7 InternVL3.5-2B [43] 28.0 22.7 20.0 21.3 14.0 21.2 64.0 30.7 36.7 20.0 30.7 36.4 InternVL3.5-8B [43] 36.7 24.0 21.3 26.0 16.0 24.8 73.3 28.7 36.0 20.7 32.0 38.1 Mistral-3.2-24B [26] 28.7 16.7 10.0 18.7 14.0 17.6 28.7 28.0 40.0 17.3 40.7 30.9 Gemma-3-27B [1] 32.0 24.0 23.3 28.7 10.7 23.7 55.3 33.3 28.0 28.7 49.3 38.9 GLM-4.6V-106B [19] 35.3 18.0 20.7 37.3 6.0 23.5 85.3 29.3 58.4 10.0 52.0 46.9
+
+Table 3: Performance on VAEX-Bench over 14 SOTA MLLMs compared with Ran-dom and Human baselines. † denotes a MoE model with 22B activated parameters. 
+
+(see the supplementary material) by prepending a fixed instruction header and constraining the output format ( e.g. , selecting a single option for MCQ). 
+
+5.1 Main Result: Abstractive vs. Extractive Reasoning 
+
+Table 3 reports the performance on VAEX-Bench , highlighting a clear gap between extractive tasks grounded in explicit visual evidence and abstractive tasks requiring integration of observations across time and space. 
+
+Evaluation Setup. We evaluate in a zero-shot setting using each MLLM’s de-fault interface. Following prior work in MLLM evaluation [49], we adopt a fixed decoding configuration across MLLMs with temperature 0.7, top-p = 1 .0, and top-k = 40 . We evaluate stochastic decoding stability by reporting Accuracy@k, defined as the average accuracy across k independent generations per query. In our experiments, we set k = 5 and report Accuracy@5 for both MCQ and numerical-answer items. To provide reference points, we include two baselines: “Random” is the chance-level accuracy obtained by selecting an answer without video input for MCQ queries [49] (N/A indicates Counting questions where ran-dom chance is not applicable), while “Human” reports the average accuracy of five human annotators who first watch the corresponding egocentric video. 
+
+Performance of Humans. We include the Human reference to validate task difficulty and confirm that the questions are solvable from the provided egocen-tric evidence. While its performance is high and relatively uniform on extractive tasks (88.0% on average), it drops to 81.7% on abstractive tasks, suggesting that abstractive reaoning impose additional cognitive demands beyond recog-nizing visible cues. Within the abstractive setting, performance is particularly low on Map Scale (MSca.), reflecting the intrinsic difficulty of estimating relative metric distances even when one can mentally reconstruct an approximate floor-plan from egocentric observations. Interestingly, even in the extractive setting, MLLM Spatiotemporal Reasoning 11                        
+
+> Mem.: Memory–Action, MDir.: Map Direction, MSca.: Map Scale Models Mem. MDir. MSca. Avg. GPT-5.2 35.3 ( ↓2.7) 15.3 ( ↓10.7) 12.0 ( ↓22.0) 20.9 ( ↓11.8) Gemini-3-Flash 49.3 ( ↓11.3) 13.3 ( ↓20.7) 11.3 ( ↓12.7) 24.7 ( ↓14.9) Gemini-3-Pro 52.0 ( ↓0.0) 18.7 ( ↓4.0) 10.0 ( ↓12.0) 26.9 ( ↓5.3) Qwen3-VL-32B 38.0 ( ↓2.0) 19.3 ( ↓6.7) 11.3 ( ↓12.0) 22.9 ( ↓6.9) InternVL3.5-8B 36.0 ( ↓0.7) 18.7 ( ↓5.3) 13.3 ( ↓8.0) 22.4 ( ↓4.7) Gemma-3-27B 31.3 ( ↓0.7) 16.0 ( ↓8.0) 11.3 ( ↓12.0) 19.6 ( ↓6.9)
+
+Table 4: Performance on VAEX-Bench in free-form generation, where the MCQ-format questions of the abstractive tasks are converted into open-ended queries without providing answer choices. 0 10 20 30  
+
+> Error Ratio (%)
+> Gemma
+> Qwen
+> GPT
+> Gemini Omission
+> Hallucination
+> Miscounting
+
+Fig. 3: Error breakdown for the Global Counting task. 
+
+distance questions (Dist.) remain comparatively harder, highlighting a shared bottleneck in metric intuition from visual observations. 
+
+Performance of Proprietary MLLMs. The proprietary MLLMs outperform the Random baseline, showing fairly reasonable performance on extractive tasks. However, their performance drops substantially on abstractive tasks. Overall, the 
+
+Gemini family generally outperforms the Claude family across both settings. In-terestingly, the performance ranking also shifts between the two tasks: Gemini-3 Pro leads on extractive tasks, yet Gemini-3 Flash performs substantially better on abstractive tasks, indicating that improvements in short-horizon recognition are unlikely to translate to abstractive spatiotemporal reasoning. 
+
+Performance of Open-Source MLLMs. Like proprietary MLLMs, open-source models perform poorly on abstractive tasks relative to extractive ones. Even when comparing the most powerful open-source MLLMs ( i.e. , Qwen3-VL-32 /235B ) to proprietary MLLMs, the performance gap is relatively large in the ab-stractive setting, while it is relatively small on extractive tasks. That is, for extractive tasks, several open-source MLLMs are competitive with proprietary counterparts, indicating that performance limitations mainly arise in abstractive spatiotemporal reasoning rather than extractive perception. Moreover, within open-source MLLMs, scaling does not yield monotonic gains on abstractive tasks. A particularly consistent weakness across both proprietary and open-source MLLMs is Global Counting (Glob.), where models remain far from human-level performance, pointing to persistent failures in entity persistence and duplicate-aware aggregation under partial observability, as detailed in Section 5.3. 
+
+5.2 From MCQ to Free-form Generation 
+
+We additionally evaluate MLLMs in a free-form generation setting, where pre-dictions are produced as text rather than selected from multiple-choice options. Except for the Counting task, other four abstractive tasks are convered from MCQ to free-form. For comparison, we select the best-performing MLLMs un-der the MCQ setting in Table 3, including the 3 best proprietary and the 3 best open-source MLLMs. We evaluate the correctness of MLLM-generated responses using an LLM-as-a-judge framework, with the ground-truth answer provided as reference, since the Memory–Action task requires open-ended responses that may vary in wording while conveying the same underlying action sequence. In 12 S. Bang et al. 
+
+contrast, for the other tasks, we parse the generated output into a structured answer and apply exact matching against the ground-truth. As summarized in Table 4, replacing MCQ with free-form generation yields a clear performance drop, since MLLMs can no longer benefit from option elimi-nation or chance selection and must explicitly produce the correct content in the expected form. This suggests that MCQ-based evaluation may partially overesti-mate model capabilities and that free-form generation provides a more stringent test of abstractive spatiotemporal reasoning. 
+
+5.3 Detailed Analysis & Discussion 
+
+In this section, we move beyond aggregate accuracy to diagnose why current models fail at abstractive spatiotemporal reasoning. To pinpoint the underlying causes, we decompose each abstractive task into finer-grained sub-tasks and analyze performance across these components. Complementing this quantitative breakdown, we conduct qualitative analyses and visualizations ( e.g. , floor-plan prediction) to make model behavior interpretable. Across these analyses, we identify three recurring bottlenecks: “Perceptual” (Figure 3), “Temporal” (Figure 4), and “Spatial” (Figure 5). For this analysis, we select four high-performing MLLMs: two from the proprietary models ( Gemini-3 Flash and GPT-5.2 ) and another two from the open-source models ( Qwen3-VL-32B and Gemma-3-27B ). 
+
+Perceptual Bottleneck. We analyze failures on Global Counting, an abstra-tive reasoning task that strongly depends on reliable perception across space and time, requiring models to detect and track object instances before aggre-gating them into global counts. To obtain a granular view of model failures, we decompose errors into three mutually exclusive categories: Omission , where a present object is counted as absent; Hallucination , where a non-existent object is counted as present; and Miscounting , where the object exists but its count is incorrect. Such errors can arise either at the room level during local perception or during the aggregation process when combining counts across rooms to form the final scenario-level estimate. Figure 3 illustrates the distribution of these error categories across the failure cases. Across models, Miscounting accounts for the largest share of errors, indicat-ing that even when objects are perceived, models often produce incorrect counts within rooms or during cross-room aggregation. Omission also contributes sub-stantially, suggesting that objects are frequently missed due to occlusion or lim-ited viewpoints. In contrast, Hallucination errors are relatively rare, implying that the main difficulty lies in accurately maintaining and aggregating object counts across the video rather than detecting objects that do not exist. 
+
+Temporal Bottleneck. To analyze temporal failures in long-horizon reason-ing, we examine the Memory–Action task, which requires models to recall the sequence of visited rooms along the trajectory and use that temporal memory to identify the correct action associated with a queried location. To disentangle different sources of failure, we perform a fine-grained error analysis along two hi-erarchical components: Global Temporal Memory (Hop 1: tracking the sequence MLLM Spatiotemporal Reasoning 13 [Hop 1: Route Memory]               
+
+> Does it remember the visited rooms in order ?
+> :Hop 1pas s:Hop 1fai l[Hop 2: Object Recognition] (For Hop 1 passed)
+> Does it recognize the object in this room?
+> :Hop 2pas s:Hop 2 fail 60.0%
+> 40.0%
+> 53.3%
+> 6.7%
+> 40.0%
+> Gemini-3 Flash 33.3%
+> 66.7%
+> 26.7%
+> 6.6%
+> 66.7%
+> GPT-5.2 36.7%
+> 63.3%
+> 33.3% 3.4%
+> 63.3%
+> Qwen3-VL-32B 26.7%
+> 73.3%
+> 23.3%
+> 3.4%
+> 73.3%
+> Gemma-3-27B
+
+Fig. 4: Temporal bottleneck in multi-hop sub-tasks. The outer circle represents the pass/fail ratio for Hop 1 (Blue: Pass, Pink: Fail). The inner ring shows the conditional pass rate for Hop 2 among the cases that passed Hop 1 (Green: Pass, Yellow: Fail). 
+
+of visited rooms) and Local Temporal Memory (Hop 2: recalling the objects ob-served in the corresponding room for action reasoning). Notably, failing Hop 1 necessarily implies failing Hop 2, since incorrect room identification prevents verifying the correct in-room objects. Accordingly, as illustrated in Figure 4, each prediction falls into one of three interpretable outcomes: Success (Hop 1 
+
+✓, Hop 2 ✓) indicates that the model correctly reconstructs the visited-room sequence and recalls the relevant objects within the queried room, Local Memory Error (Hop 1 ✓, Hop 2 ×) occurs when the model identifies the correct room in the trajectory but fails to recall the objects observed there, and Global Mem-ory Error (Hop 1 ×, Hop 2 ×) arises when the model fails to recover the room visitation order, which consequently prevents correct object recall. As shown in Figure 4, the dominant failure mode across models is Global Memory Error, indicating that many predictions already fail at Hop 1 by incor-rectly reconstructing the visited-room sequence. Even when Hop 1 is success-ful, the conditional pass rate of Hop 2 remains relatively moderate, suggesting additional difficulty in recalling the objects associated with the queried room. Overall, these results indicate that maintaining the correct temporal order of visited locations is the primary bottleneck, while local object recall becomes a secondary source of error once the global trajectory memory is established. 
+
+Spatial Bottleneck. Remaining tasks (Map Direction, Map Scale, and Sim-ulation) fundamentally require a coherent global spatial representation of the environment. Models must reason about relative room orientation, maintain consistent metric proportions, and simulate viewpoint transformations within a unified layout. To diagnose these spatial bottlenecks, we evaluate the MLLM’s capacity to explicitly reconstruct a global cognitive map via grid-based floor-plan prediction, as shown in Figure 5. Concretely, we provide the MLLM with a 10 × 10 empty grid, a fixed label set consisting of the candidate room types (including “None”) appearing in the scenario, and the camera start location on the grid as an anchor point. The model is instructed to output the floor plan 14 S. Bang et al. Ground  Truth Prediction                   
+
+> Scenario 1Scenario 2Scenario 3Scenario 4
+> 𝑚𝐼𝑜𝑈 !=0.1120 𝑚𝐼𝑜𝑈 "=0.1804 𝑚𝐼𝑜𝑈 #=0.0647 𝑚𝐼𝑜𝑈 $=0.0558
+> Bedroom
+> Living
+> room
+> Study
+> Kitchen
+> Hallway
+> Piano
+> roo m
+> Bathroo m
+> Storage
+> Locker
+> Lounge
+> Dining
+> Entrance
+> Office
+
+Fig. 5: Visualization of floor-plan prediction. The upper and lower halves, separated by a bold dark line, represent the Ground Truth and Prediction, respectively. Colored icons denote functional areas, while grey regions indicate “None”. 
+
+as 10 lines, each containing 10 cell labels (one per grid position) per row. We then manually render the predicted grid by coloring each cell according to the generated labels for visualization and analysis. To quantitatively evaluate spatial reconstruction quality, we compute mean Intersection-over-Union (mIoU) between the predicted and ground-truth room segments on the grid. We use Gemini-3 Flash for this analysis due to its strong overall performance; results for other models, along with detailed metric defini-tions, prompts, and formatting constraints, are in the supplementary material. Accurately populating this 2D grid requires not only tracking topological ad-jacency but also maintaining consistent metric proportions and absolute spatial alignment across the trajectory. As illustrated in Figure 5, we observe substan-tial mismatches between the predicted layouts and the ground-truth floor plans. In particular, models frequently produce distorted room boundaries and incon-sistent grid allocations, indicating difficulty in maintaining metric scale. We also observe rotational misalignments and incorrect room adjacencies, suggesting that models struggle to anchor a consistent global coordinate frame. Finally, the re-constructed layouts are often fragmented and spatially incoherent, preventing models from reliably simulating viewpoint transformations. Together, these ob-servations indicate that current MLLMs struggle to construct a coherent global spatial representation of the environment. 
+
+6 Conclusion 
+
+We present VAEX-Bench , a scenario-driven benchmark for evaluating abstrac-tive and extractive spatiotemporal reasoning in egocentric videos, moving be-yond evidence-present extraction toward long-horizon memory, allocentric map reasoning, and global evidence aggregation. Unlike prior benchmarks built on MLLM Spatiotemporal Reasoning 15 
+
+fixed captured footage, VAEX-Bench is manually constructed with controlled scenario design and spatially consistent QA pairs, enabling precise diagnosis of failure modes. Our experiments reveal persistent bottlenecks in global spatial memory and structured evidence integration across state-of-the-art MLLMs. Fu-ture work will focus on automating the pipeline to scale benchmark generation while preserving its controllability. 
+
+Limitations. A primary limitation of VAEX-Bench is its modest scale. Each scenario is manually crafted end to end, including scenario specification, floor-plan design, object modeling and placement, rendering and capture, and human QA construction, so the number of videos is necessarily limited. We view this as a deliberate trade-off in favor of rigor and diagnostic control. The pipeline enforces strict spatial consistency, an unambiguous answer, and targeted scenario factors that are difficult to guarantee in large-scale captured footage. As a result, 
+
+VAEX-Bench is intended less as a large corpus and more as a high-precision testbed for isolating failure modes, long-horizon spatiotemporal reasoning, with scaling through partial automation as a clear direction for future work. 16 S. Bang et al. 
+
+References 
+
+1. Aishwarya Kamath, Johan Ferret, S.P., et al.: Gemma 3 technical report. arXiv preprint arXiv:2601.03267 (2025) 2. Akbari, H., Yuan, L., Qian, R., Chuang, W.H., Chang, S.F., Cui, Y., Gong, B.: Vatt: Transformers for multimodal self-supervised learning from raw video, audio and text. In: NeurIPS (2021) 3. Anthropic: System card: Claude opus 4 & claude sonnet 4. System card (May 2025), anthropic. Version dated May 2025. 4. Bai, S., Cai, Y., Chen, R., Chen, K., Chen, X., Cheng, Z., Deng, L., Ding, W., Gao, C., Ge, C., et al.: Qwen3-vl technical report. arXiv preprint arXiv:2511.21631 (2025) 5. Bai, Y., Lv, X., Zhang, J., Lyu, H., Tang, J., Huang, Z., Du, Z., Liu, X., Zeng, A., Hou, L., et al.: Longbench: A bilingual, multitask benchmark for long context understanding. In: ACL (2024) 6. Baruch, G., Chen, Z., Dehghan, A., Dimry, T., Feigin, Y., Fu, P., Gebauer, T., Joffe, B., Kurz, D., Schwartz, A., et al.: Arkitscenes: A diverse real-world dataset for 3d indoor scene understanding using mobile rgb-d data. arXiv preprint arXiv:2111.08897 (2021) 7. Castro, S., Azab, M., Stroud, J., Noujaim, C., Wang, R., Deng, J., Mihalcea, R.: Lifeqa: A real-life dataset for video question answering. In: LREC (2020) 8. Chang, Y., Narang, M., Suzuki, H., Cao, G., Gao, J., Bisk, Y.: Webqa: Multihop and multimodal qa. In: CVPR (2022) 9. Chen, G., Wang, P., Zhang, T., Chen, F.: Exploring the hidden reasoning process of large language models by misleading them. arXiv preprint arXiv:2503.16401 (2025) 10. Chen, Y., Wang, J., Zhang, Z., Yi, J., Zhang, X., Zou, Y., Cai, Z., Yuan, J., Li, X., Yang, H., et al.: Learning compact video representations for efficient long-form video understanding in large multimodal models. In: WACV (2026) 11. Cheng, Z., Hu, J., Liu, Z., Si, C., Li, W., Gong, S.: V-star: Benchmarking video-llms on video spatio-temporal reasoning. arXiv preprint arXiv:2503.11495 (2025) 12. Comanici, G., Bieber, E., Schaekermann, M., Pasupat, I., Sachdeva, N., Dhillon, I., Blistein, M., Ram, O., Zhang, D., Rosen, E., et al.: Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities. arXiv preprint arXiv:2507.06261 (2025) 13. Dai, A., Chang, A.X., Savva, M., Halber, M., Funkhouser, T., Nießner, M.: Scannet: Richly-annotated 3d reconstructions of indoor scenes. In: CVPR (2017) 14. Fan, S., Cui, J., Guo, M.H., Yang, S.: Tool-augmented spatiotemporal reasoning for streamlining video question answering task. arXiv preprint arXiv:2512.10359 (2025) 15. Fan, Z., Zhang, J., Li, R., Zhang, J., Chen, R., Hu, H., Wang, K., Qu, H., Wang, D., Yan, Z., et al.: Vlm-3r: Vision-language models augmented with instruction-aligned 3d reconstruction. arXiv preprint arXiv:2505.20279 (2025) 16. Fu, C., Dai, Y., Luo, Y., Li, L., Ren, S., Zhang, R., Wang, Z., Zhou, C., Shen, Y., Zhang, M., et al.: Video-mme: The first-ever comprehensive evaluation benchmark of multi-modal llms in video analysis. In: CVPR (2025) 17. Gao, S., Bosselut, A., Bengio, S., Abbe, E.: Abstral: Augmenting llms’ reasoning by reinforcing abstract thinking. arXiv preprint arXiv:2506.07751 (2025) 18. Hao, S., Sukhbaatar, S., Su, D., Li, X., Hu, Z., Weston, J., Tian, Y.: Train-ing large language models to reason in a continuous latent space. arXiv preprint arXiv:2412.06769 (2024) MLLM Spatiotemporal Reasoning 17 19. Hong, W., Yu, W., Gu, X., Wang, G., Gan, G., Tang, H., Cheng, J., Qi, J., Ji, J., Pan, L., et al.: Glm-4.5 v and glm-4.1 v-thinking: Towards versatile multimodal reasoning with scalable reinforcement learning. arXiv preprint arXiv:2507.01006 (2025) 20. Jang, Y., Song, Y., Yu, Y., Kim, Y., Kim, G.: Tgif-qa: Toward spatio-temporal reasoning in visual question answering. In: CVPR (2017) 21. Jiang, C., Zhang, X., Zhang, Z., Zhu, F., Chen, X., Zhu, J.: Rethinking llm rea-soning: From explicit trajectories to latent representations. In: ICLR (2026) 22. Kesen, I., Pedrotti, A., Dogan, M., Cafagna, M., Acikgoz, E.C., Parcalabescu, L., Calixto, I., Frank, A., Gatt, A., Erdem, A., et al.: Vilma: A zero-shot benchmark for linguistic and temporal grounding in video-language models. In: ICLR (2024) 23. Li, C., et al.: Behavior-1k: A benchmark for embodied ai with 1,000 everyday activities and realistic simulation. In: Proceedings of The 7th Conference on Robot Learning (CoRL) (2023) 24. Li, Y., Xiao, J., Feng, C., Wang, X., Chua, T.S.: Discovering spatio-temporal ra-tionales for video question answering. In: ICCV (2023) 25. Lim, S., Kim, S., Yu, J., Lee, S., Chung, J., Yu, Y.: Visescape: A benchmark for evaluating exploration-driven decision-making in virtual escape rooms. In: EMNLP (2025) 26. Liu, A.H., Khandelwal, K., Subramanian, S., Jouault, V., Rastogi, A., Sadé, A., Jeffares, A., Jiang, A., Cahill, A., Gavaudan, A., et al.: Ministral 3. arXiv preprint arXiv:2601.08584 (2026) 27. Liu, X., Yu, H., Zhang, H., Xu, Y., Lei, X., Lai, H., Gu, Y., Ding, H., Men, K., Yang, K., et al.: Agentbench: Evaluating llms as agents. arXiv preprint arXiv:2308.03688 (2023) 28. Ma, Y., Zang, Y., Chen, L., Chen, M., Jiao, Y., Li, X., Lu, X., Liu, Z., Ma, Y., Dong, X., et al.: Mmlongbench-doc: Benchmarking long-context document understanding with visualizations. In: NeurIPS (2024) 29. Modarressi, A., Deilamsalehy, H., Dernoncourt, F., Bui, T., Rossi, R.A., Yoon, S., Schütze, H.: Nolima: Long-context evaluation beyond literal matching. arXiv preprint arXiv:2502.05167 (2025) 30. Ning, M., Zhu, B., Xie, Y., Lin, B., Cui, J., Yuan, L., Chen, D., Yuan, L.: Video-bench: A comprehensive benchmark and toolkit for evaluating video-based large language models. Computational Visual Media (2025) 31. Padmakumar, A., Thomason, J., Shrivastava, A., Lange, P., Narayan-Chen, A., Gella, S., Piramuthu, R., Tur, G., Hakkani-Tur, D.: Teach: Task-driven embodied agents that chat. In: AAAI (2022) 32. Rodin, I., Wu, T.Y., Min, K., Sridhar, S.N., Furnari, A., Tripathi, S., Farinella, G.M.: Easg-bench: Video q&a benchmark with egocentric action scene graphs. In: ICCV (2025) 33. Sadat, M., Caragea, C.: Co-training for low resource scientific natural language inference. In: Proceedings of the 62nd Annual Meeting of the Association for Com-putational Linguistics (Volume 1: Long Papers). pp. 2538–2550 (2024) 34. Savva, M., Kadian, A., Maksymets, O., Zhao, Y., Wijmans, E., Jain, B., Straub, J., Liu, J., Koltun, V., Malik, J., et al.: Habitat: A platform for embodied ai research. In: Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). pp. 9339–9347 (2019) 35. Sermanet, P., Ding, T., Zhao, J., Xia, F., Dwibedi, D., Gopalakrishnan, K., Chan, C., Dulac-Arnold, G., Maddineni, S., Joshi, N.J., et al.: Robovqa: Multimodal long-horizon reasoning for robotics. In: ICRA (2024) 18 S. Bang et al. 36. Singh, A., Fry, A., Perelman, A., Tart, A., Ganesh, A., El-Kishky, A., McLaughlin, A., Low, A., Ostrow, A., Ananthram, A., et al.: Openai gpt-5 system card. arXiv preprint arXiv:2601.03267 (2025) 37. Sugandhika, C., Li, C., Rajan, D., Fernando, B.: Know-show: Benchmarking video-language models on spatio-temporal grounded reasoning. arXiv preprint arXiv:2512.05513 (2025) 38. Talmor, A., Berant, J.: The web as a knowledge-base for answering complex ques-tions. In: ACL (2018) 39. Tapaswi, M., Zhu, Y., Stiefelhagen, R., Torralba, A., Urtasun, R., Fidler, S.: Movieqa: Understanding stories in movies through question-answering. In: CVPR (2016) 40. Valmeekam, K., Marquez, M., Olmo, A., Sreedharan, S., Kambhampati, S.: Plan-bench: An extensible benchmark for evaluating large language models on planning and reasoning about change. In: NeurIPS (2023) 41. Wang, A., Wu, B., Chen, S., Chen, Z., Guan, H., Lee, W.N., Li, L.E., Gan, C.: Sok-bench: A situated video reasoning benchmark with aligned open-world knowledge. In: CVPR (2024) 42. Wang, W., He, Z., Hong, W., Cheng, Y., Zhang, X., Qi, J., Ding, M., Gu, X., Huang, S., Xu, B., et al.: Lvbench: An extreme long video understanding benchmark. In: ICCV (2025) 43. Wang, W., Gao, Z., Gu, L., Pu, H., Cui, L., Wei, X., Liu, Z., Jing, L., Ye, S., Shao, J., et al.: Internvl3. 5: Advancing open-source multimodal models in versatility, reasoning, and efficiency. arXiv preprint arXiv:2508.18265 (2025) 44. Wasim, S.T., Naseer, M., Khan, S., Khan, F.S., Shah, M.: Vita-clip: Video and text adaptive clip via multimodal prompting. In: CVPR (2023) 45. Wu, H., Meshi, O., Zoghi, M., Diaz, F., Liu, X., Boutilier, C., Karimzadehgan, M.: Density-based user representation using gaussian process regression for multi-interest personalized retrieval. Advances in Neural Information Processing Systems 
+
+37 , 52568–52594 (2024) 46. Wu, H., Li, D., Chen, B., Li, J.: Longvideobench: A benchmark for long-context interleaved video-language understanding. In: NeurIPS (2024) 47. Wu, J., Yang, L., Wang, Z., Okumura, M., Zhang, Y.: Cofca: A step-wise counter-factual multi-hop qa benchmark. arXiv preprint arXiv:2402.11924 (2024) 48. Xu, M., Yin, W., Cai, D., Yi, R., Xu, D., Wang, Q., Wu, B., Zhao, Y., Yang, C., Wang, S., et al.: A survey of resource-efficient llm and multimodal foundation models. arXiv preprint arXiv:2401.08092 (2024) 49. Yang, J., Yang, S., Gupta, A.W., Han, R., Fei-Fei, L., Xie, S.: Thinking in space: How multimodal large language models see, remember, and recall spaces. In: CVPR (2025) 50. Yang, Z., Qi, P., Zhang, S., Bengio, Y., Cohen, W., Salakhutdinov, R., Manning, C.D.: Hotpotqa: A dataset for diverse, explainable multi-hop question answering. In: EMNLP (2018) 51. Yeshwanth, C., Liu, Y.C., Nießner, M., Dai, A.: Scannet++: A high-fidelity dataset of 3d indoor scenes. In: ICCV (2023) 52. Yu, W., Jiang, M., Clark, P., Sabharwal, A.: Ifqa: A dataset for open-domain question answering under counterfactual presuppositions. In: EMNLP (2023) 53. Zhao, X., Liu, L., Fu, T., Shi, S., Zhao, D., Yan, R.: Towards efficient dialogue pre-training with transferable and interpretable latent structure. In: Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing. pp. 10051–10063 (2022) MLLM Spatiotemporal Reasoning 19 54. Zhou, S., Vilesov, A., He, X., Wan, Z., Zhang, S., Nagachandra, A., Chang, D., Chen, D., Wang, X.E., Kadambi, A.: Vlm4d: Towards spatiotemporal awareness in vision language models. In: ICCV (2025) 55. Zhou, Y., Wu, X., Huang, B., Wu, J., Feng, L., Tan, K.C.: Causalbench: A comprehensive benchmark for causal learning capability of llms. arXiv preprint arXiv:2404.06349 (2024) Reasoning over Video: Evaluating How MLLMs Extract, Integrate, and Reconstruct Spatiotemporal Evidence 
+
+Supplementary Material 
+
+A Details of Dataset Construction 
+
+A.1 Procedural Synthesis of Environments 
+
+Tables 12–21 summarize the scenarios used in our benchmark. Each scenario specifies a structured environment configuration, including the environment ty-pology, the set of rooms, and the objects in each room. In addition, the scenario defines a predefined trajectory that the agent follows across rooms as well as spatial relations such as adjacency and opposite room pairs, and vertical room pairs in multi-story environments. Because the dataset should cover a broad range of situations rather than a small set of repetitive layouts, we made significant efforts to increase scenario diversity during construction. In particular, we varied room compositions, object distributions, traversal orders, and inter-room relations so that different scenar-ios would induce different spatial structures and reasoning requirements. The ten scenarios in our benchmark were designed based on this principle, with each one capturing a distinct combination of layout, object arrangement, and move-ment pattern. By explicitly specifying these components, each scenario provides a well-defined spatial layout and interaction structure. Across the benchmark, the scenarios vary in room compositions, object distributions, trajectories, and room relationships, allowing the dataset to cover diverse spatial configurations and reasoning situations. All scenarios were manually designed to ensure careful control over environment layouts and task conditions. This manual construction process allowed us to deliberately design environments that contain meaningful spatial relationships and object configurations, enabling targeted evaluation of spatial and temporal reasoning abilities. 
+
+A.2 Human-in-the-Loop Annotation Human-based Query Construction. The queries in our benchmark were constructed through a human-in-the-loop annotation process. In total, ten an-notators participated in the query design stage. Each pair of annotators was assigned two scenarios, resulting in five annotation teams that collectively cov-ered all ten scenarios. For each scenario, annotators created 30 queries, yielding a total of 300 queries across the dataset. All annotators were qualified graduate Supplementary Material 21 
+
+students with demonstrated research experience in computer vision. Specifically, each annotator had published at least one paper in a top-tier computer vision conference, ensuring familiarity with visual reasoning tasks and dataset con-struction practices. The annotation process was organized to encourage scenario understanding and consistency. Each pair of annotators first designed the scenario for their assigned environments, specifying the room composition, agent trajectory, and the spatial relations. After establishing the scenario, they reviewed the corre-sponding environment layout and video trajectory to ensure consistency between the designed configuration and the rendered video. Based on this process, the annotators collaboratively designed 30 queries per scenario that target differ-ent aspects of spatial and temporal reasoning, including object relationships, navigation paths, and room-level spatial structures. Constructing such queries requires annotators to understand both the spatial configuration of the envi-ronment and the temporal sequence of the agent’s movement, which makes the task substantially more demanding than writing simple object-centric questions. Throughout this process, the annotators were instructed to avoid trivial ques-tions and instead focus on queries that require meaningful reasoning over the observed environment and temporal context. 
+
+Human-based Query Validation. After the initial query construction stage, we conducted an additional human-based validation process to ensure that all queries were consistent with the video trajectories and could be correctly an-swered from the provided observations. The validation was performed by qual-ified annotators under the same criteria as those used for query construction. To avoid self-validation, annotators who constructed queries for a given scenario were assigned to validate different scenarios. During validation, the annotators attempted to answer each query by care-fully reviewing the rendered egocentric video and the underlying scenario con-figuration. As part of this process, they also cross-checked the floor plans they had independently inferred from the video to verify whether their spatial un-derstanding was consistent. If a query was found to be ambiguous, inconsistent with the environment layout, or not fully resolvable from the video evidence, the annotators revisited the query and refined it through discussion. This iterative process often required multiple rounds of verification and revision, as designing questions that are both non-trivial and strictly answerable from a single video trajectory is inherently challenging. 
+
+Compensation. Due to the iterative inspection and discussion required during query construction and validation, the process was time-intensive. Each scenario was handled by a team of two annotators who collaboratively designed and vali-dated the queries. Completing a single scenario typically requires approximately two to three weeks. To compensate for this substantial effort, each annotator received approximately USD 350 per scenario. 22 Supplementary Material 
+
+B Details of Evaluation 
+
+B.1 Model List 
+
+Table 5 reports the SOTA MLLM versions used in our experiments. GPT, Gem-ini, and Claude were accessed through their official APIs, whereas the remaining models were accessed either through the OpenRouter api call or from publicly available Hugging Face repositories.         
+
+> Model Family Model Name
+> GPT [36] gpt-5.2
+> Gemini [12] gemini-3-flash-preview gemini-3-pro-preview
+> Claude [3] claude-haiku-4-5-20251001-v1:0 claude-sonnet-4-5-20250929-v1:0
+> Qwen [4] qwen3-vl-2b-instruct qwen3-vl-8b-instruct qwen3-vl-32b-instruct qwen3-vl-235b-a22b-instruct
+> Intern [43] InternVL3_5-2B-Instruct InternVL3_5-8B-Instruct
+> Mistral [26] mistral-small-3.2-24b-instruct
+> Google [1] gemma-3-27b-it
+> z-ai [19] glm-4.6v
+
+Table 5: Set of proprietary and open-source multimodal large language models (MLLMs) evaluated on our benchmark. 
+
+B.2 Computational Resources 
+
+For proprietary models, we accessed GPT-5.2 via OpenAI, Gemini-3-Flash and 
+
+Gemini-3-Pro via Gemini, and Claude 4.5 Haiku and Claude 4.5 Sonnet via Anthropic. Among the open-source models, Qwen3-VL-2B , InternVL3.5-2B , and 
+
+InternVL3.5-8B were obtained from Hugging Face and served on GPU servers using 4 to 8 NVIDIA L40S GPUs, depending on the model configuration. The remaining models were accessed through the OpenRouter api. 
+
+B.3 Additional Prompts 
+
+We provide the full prompts used in our experiments for transparency and re-producibility. Table 6 presents the detailed questions and answer choices for each abstractive spatiotemporal reasoning task, while the extractive tasks templates follow those introduced in VSI-Bench [49]. In all cases, the question text is com-bined with the corresponding system instruction and provided to the MLLM together with the input video. Table 7 reports the system instruction used for the MCQ and NA settings. This instruction requires the model to return only the selected choice for MCQ Supplementary Material 23 
+
+tasks or the final numeric answer for NA tasks, so that performance can be evaluated using exact-match accuracy. Table 8 presents the prompt used to evaluate outputs in the free-form gener-ation setting. We conduct free-form evaluation on three tasks: Memory–Action, Map Direction, and Map Scale. Among these, Map Direction and Map Scale produce closed-ended answers that can be evaluated using exact-match accu-racy. In contrast, Memory-Action requires open-ended responses. For this task, we evaluate the correctness of model outputs using an LLM-as-judge with the prompt shown in Table 8, where gemini-3-flash-preview is used as the judge. Table 9 presents the prompt used for the analysis of floor-plan prediction. Based on the prompt and the input video, the MLLM is asked to infer the spatial layout of the environment and generate a floor-plan description. The outputs are then transformed into a visual representation by manually mapping the predicted layout onto a 10 × 10 grid. In this process, the authors directly color-code each grid cell to reflect the inferred room structure, allowing visual comparison between the predicted floor plans and the ground-truth layouts. 
+
+B.4 Evaluation Statistics 
+
+To assess the stability of the reported results, we additionally conduct statistical analyses over five independent runs. We report the mean performance in the 
+
+Table 3 in the main paper, while the corresponding standard deviations, 95% confidence intervals, and p-values are provided in Table 10 and 11. 
+
+Standard Deviation. While most tasks exhibit relatively small standard de-viations, some tasks show larger variance across runs. This is mainly due to the limited number of evaluation instances and the stochastic nature of LLM de-coding, which can introduce variability in multi-step reasoning outcomes. Nev-ertheless, the variation in overall average performance remains modest, and the relative ranking of models is largely consistent across runs. 
+
+Confidence Interval. The 95% confidence intervals are generally narrow across models, indicating that the reported results are stable over repeated runs. Wider intervals observed in a few task-specific cases are consistent with the larger standard deviations in those settings. 
+
+Significance Test. Statistical significance is evaluated using paired two-sided t-tests across runs. Following prior work [33, 45, 53], we adopt the strongest-performing model as the reference baseline, which provides a strict and inter-pretable point of comparison. Under this criterion, Gemini-3-Flash serves as the baseline for the abstractive evaluation, while Gemini-Pro serves as the baseline for the extractive evaluation. We compute p-values only for the average score, as our primary goal is overall benchmark-level model comparison. 24 Supplementary Material 
+
+C Discussion 
+
+C.1 Synthetic-to-Real Domain Gap 
+
+A notable characteristic of our benchmark is that it is built in a synthetic environ-ment. We emphasize this choice as a deliberate design decision for constructing realistic yet controllable evaluation scenarios. In our pipeline, the environments are not produced by generative synthesis, which could introduce additional arti-facts or hallucinated structures. Instead, the full layouts are manually designed by humans in SketchUp and then rendered into egocentric videos with Enscape .This design choice is also consistent with a broader line of work that adopts simulated environments when precise control over scene structure, actions, and evaluation conditions is required. Prior benchmarks, such as VisEscape [25] con-struct virtual environments tailored to target scenarios for dataset creation and evaluation. More broadly, simulation platforms and procedurally generated en-vironments have been widely used in embodied AI to support diverse yet con-trollable evaluation settings [23, 34]. In this sense, although our benchmark is not collected from the physical world, it is grounded in realistic human-designed layouts and rendered with tools already used in professional practice, while still retaining the controllability that is difficult to achieve with real-world recordings. We further validate the realism and suitability of this setup through human evaluation. Human participants were included as a baseline and achieved high accuracy on the benchmark, showing that the tasks are understandable and solvable for people. This suggests that our benchmark does not merely reflect artifacts arising from the synthetic environment, but instead captures reasoning problems that remain meaningful under human judgment. Together, these ob-servations support the use of our benchmark as a valid testbed for the controlled evaluation of the targeted reasoning abilities. 
+
+C.2 Scalability and Automation of the Pipeline 
+
+Although our dataset is not large in scale compared to typical datasets, this is primarily due to the substantial cost and effort required to construct each sce-nario in our pipeline. Our environments are manually designed using professional 3D modeling and rendering tools. In particular, the environments are created in 
+
+SketchUp and rendered into egocentric videos using Enscape . These tools incur licensing costs of approximately USD 600 each, and the environment construc-tion process itself requires human labor for layout design, object placement, trajectory planning, and video rendering. In our current setup, human annota-tors were compensated for this work at approximately USD 350 per scenario (totally USD 3,500), and the full design and production process takes roughly two weeks for a single scenario. Despite this relatively high construction cost, we argue that the dataset re-mains meaningful for evaluating spatial reasoning in multimodal models. First, each scenario contains a rich spatial configuration involving multiple rooms, objects, and trajectories, resulting in a complex reasoning environment rather Supplementary Material 25 
+
+than isolated static scenes. Second, when compared with related benchmarks that construct controlled environments, the scale of our dataset is comparable or larger. For example, VisEscape [25] constructs its dataset from 20 distinct rooms treated as separate environments, whereas our benchmark consists of 10 houses with an average of 6.7 rooms per scenario (totally 67 rooms). As a result, the total number of rooms and spatial configurations in our benchmark exceeds those of comparable scenario-based datasets. These observations suggest that, while the dataset size is limited by the cost of high-quality environment construction, the resulting benchmark still provides a sufficiently rich and diverse set of scenarios for evaluating spatial reasoning capabilities in multimodal models. 26 Supplementary Material 
+
+Task Question & Choices Memory–Action Based on the objects visible in the {sequence} room you entered, what activity is possible in that room? 
+
+Choices: (A) Cooking (B) Sleeping (C) Working (D) Bathing (E) Dining 
+
+Map Direction Given that {kitchen} is east of the {bedroom}, what is the direction of the {study} relative to the {bathroom}? 
+
+Choices: (A) East (B) West (C) South (D) North 
+
+Map Scale Given that the Squared Distance between the {bedroom} and {living room} is 1. Based on this scale, what is the relative Squared Distance between the {bathroom} and the {kitchen}? 
+
+Choices: (A) 1 (B) 2 (C) 4 (D) 5 (E) 8 
+
+Simulation Based on the egocentric video, which of the given top-down layouts correctly represents the scene? 
+
+Choices: 
+
+(A) The {bathroom} is adjacent to the {living room}. (B) To get from the {bedroom} to the {study}, you have to pass through {2 plants}. (C) The {dining room} is located in the corner. (D) The {kitchen} is located between the {bedroom} and {study}. (E) There is only one way from the {bathroom} to the {living room}. 
+
+Global Counting How many {cups} are observed across all rooms in the video? 
+
+Table 6: Question Templates for Abstractive Spatiotemporal Reasoning. Note that the five answer choices shown here are illustrative examples. Blue text indicates placehold-ers for rooms, objects, and counts/order, which may vary depending on the scenario. 
+
+MCQ & NA 
+
+Question: 
+
+Question_Template[Task_Name] 
+
+System Instruction: 
+
+Provide only your answer without any explanation. If it’s a multiple-choice question, respond with only the letter (A, B, C, D, or E). If it’s a counting question, respond with only the number. 
+
+Final Prompt: 
+
+Question + System Instruction 
+
+Table 7: Prompt design for MCQ/NA section. Supplementary Material 27 
+
+LLM-Judge for Memory–Action 
+
+Input: 
+
+Target room: {target room} Model_answer: {model_answer} 
+
+System Instruction: 
+
+The question asks what activity is possible using objects visible in the target room. The model’s answer may list multiple activities. Respond only “correct” if all activities in the model’s answer can be done in the target room. Otherwise, respond only “incorrect”. 
+
+Table 8: Prompt design for LLM-Judge section. 
+
+Floor-Plan Prediction 
+
+System Instruction: 
+
+Watch the video and reconstruct the floor plan on a 10 × 10 grid. Output strictly in JSON format. 
+
+Labels: 
+
+All rooms (including hallway and “none”) 
+
+Coordinate System: 
+
+Assume the camera’s start position in frame 1 is exactly at the start point. Start: (0, 0) | Bounds: (-5, 0), (5, 0), (-5, 10), (5, 10) 
+
+Output Format (Example): 
+
+{"reasoning": "Briefly trace the trajectory.", "grid": [ ["none", "kitchen", "kitchen", ...], // y=9 ["none", "kitchen", "kitchen", ...], // y=8 ... ["none", "living room", "none", ...]] // y=0 }
+
+Table 9: Prompt design for floor-plan prediction section. 28 Supplementary Material 
+
+Model Stat Mem. MDir. MSca. Sim. Glob. Avg. 
+
+GPT-5.2 mean ± std 38.0 ± 3.0 26.0 ± 6.0 34.0 ± 7.2 29.3 ± 6.4 23.3 ± 6.7 30.1 ± 2.5 
+
+95% CI [34.3,41.7] [18.6,33.4] [25.0,43.0] [21.4,37.3] [15.1,31.6] [27.0,33.3] p-value - - - - - 0.0085 Gemini-3 Flash mean ± std 60.7 ± 2.8 34.0 ± 4.9 24.0 ± 3.7 51.3 ± 6.9 31.3 ± 7.3 40.3 ± 2.8 
+
+95% CI [57.2,64.1] [27.9,40.1] [19.5,28.5] [42.8,59.9] [22.3,40.4] [36.8,43.7] p-value - - - - - -Gemini-3 Pro mean ± std 52.0 ± 3.0 22.7 ± 7.6 22.0 ± 5.6 31.3 ± 6.5 20.7 ± 3.7 29.7 ± 2.5 
+
+95% CI [48.3,55.7] [13.2,32.1] [15.1,28.9] [23.3,39.4] [16.1,25.2] [26.7,32.8] p-value - - - - - 0.0050 Claude 4.5 Haiku mean ± std 19.3 ± 1.5 21.3 ± 4.5 11.3 ± 3.0 22.0 ± 1.8 2.7 ± 2.8 15.3 ± 1.5 
+
+95% CI [17.5,21.2] [15.8,26.9] [7.6,15.0] [19.7,24.3] [-0.8,6.1] [13.5,17.2] p-value - - - - - 0.0001 Claude 4.5 Sonnet mean ± std 30.0 ± 2.4 19.3 ± 4.3 19.3 ± 2.8 40.7 ± 4.3 11.3 ± 1.8 24.1 ± 1.4 
+
+95% CI [27.1,32.9] [13.9,24.7] [15.9,22.8] [35.3,46.1] [9.1,13.6] [22.3,25.9] p-value - - - - - 0.0001 Qwen3-VL-2B mean ± std 26.0 ± 2.8 18.7 ± 5.1 19.3 ± 3.7 26.0 ± 8.0 6.7 ± 6.7 19.3 ± 1.6 
+
+95% CI [22.5,29.5] [12.4,24.9] [14.8,23.9] [16.1,35.9] [-1.6,14.9] [17.3,21.4] p-value - - - - - 0.0002 Qwen3-VL-8B mean ± std 34.0 ± 1.5 22.0 ± 1.8 15.3 ± 1.8 34.0 ± 2.8 17.3 ± 4.3 24.5 ± 1.4 
+
+95% CI [32.1,35.9] [19.7,24.3] [13.1,17.6] [30.5,37.5] [11.9,22.7] [22.8,26.2] p-value - - - - - 0.0001 Qwen3-VL-32B mean ± std 40.0 ± 0.0 26.0 ± 2.8 23.3 ± 3.3 42.7 ± 2.8 17.3 ± 2.8 29.9 ± 1.7 
+
+95% CI [40.0,40.0] [22.5,29.5] [19.2,27.5] [39.2,46.1] [13.9,20.8] [27.7,32.0] p-value - - - - - 0.0033 Qwen3-VL-235B mean ± std 43.3 ± 2.4 16.7 ± 4.1 13.3 ± 2.4 46.7 ± 4.1 13.3 ± 2.4 26.7 ± 2.0 
+
+95% CI [40.4,46.3] [11.6,21.7] [10.4,16.3] [41.6,51.7] [10.4,16.3] [24.2,29.1] p-value - - - - - 0.0004 InternVL3.5-2B mean ± std 28.0 ± 3.8 22.7 ± 4.9 20.0 ± 4.7 21.3 ± 3.8 14.0 ± 3.7 21.2 ± 1.3 
+
+95% CI [23.3,32.7] [16.5,28.8] [14.1,25.9] [16.6,26.1] [9.5,18.5] [19.6,22.8] p-value - - - - - 0.0002 InternVL3.5-8B mean ± std 36.7 ± 11.1 24.0 ± 3.7 21.3 ± 7.3 26.0 ± 4.3 16.0 ± 8.6 24.8 ± 2.7 
+
+95% CI [22.9,50.4] [19.5,28.5] [12.3,30.4] [20.6,31.4] [5.3,26.7] [21.4,28.2] p-value - - - - - 0.0003 Mistral-3.2-24B mean ± std 28.7 ± 3.8 16.7 ± 6.2 10.0 ± 2.4 18.7 ± 5.1 14.0 ± 2.8 17.6 ± 2.9 
+
+95% CI [23.9,33.4] [8.9,24.4] [7.1,12.9] [12.4,24.9] [10.5,17.5] [14.1,21.1] p-value - - - - - 0.0000 Gemma-3-27B mean ± std 32.0 ± 1.8 24.0 ± 2.8 23.3 ± 2.4 28.7 ± 1.8 10.7 ± 1.5 23.7 ± 0.8 
+
+95% CI [29.7,34.3] [20.5,27.5] [20.4,26.3] [26.4,30.9] [8.8,12.5] [22.8,24.7] p-value - - - - - 0.0003 GLM-4.6V-106B mean ± std 35.3 ± 1.8 18.0 ± 6.1 20.7 ± 2.8 37.3 ± 4.9 6.0 ± 4.9 23.5 ± 2.8 
+
+95% CI [33.1,37.6] [10.5,25.5] [17.2,24.1] [31.2,43.5] [-0.1,12.1] [20.0,26.9] p-value - - - - - 0.0008 
+
+Table 10: Abstractive evaluation statistics. Mean performance and standard de-viation (mean ± std), 95% confidence intervals (CI), and p-values across five runs for the abstractive evaluation tasks. Statistical significance is evaluated using paired two-sided t-tests. Supplementary Material 29 
+
+Model Stat Mem. MDir. MSca. Sim. Glob. Avg. 
+
+GPT-5.2 mean ± std 73.3 ± 6.7 26.0 ± 4.3 56.0 ± 4.9 18.7 ± 7.3 48.7 ± 6.9 44.5 ± 3.1 
+
+95% CI [65.1,81.6] [20.6,31.4] [49.9,62.1] [9.6,27.7] [40.1,57.2] [40.6,48.4] p-value - - - - - 0.0176 Gemini-3 Flash mean ± std 93.3 ± 0.0 40.0 ± 7.5 62.7 ± 1.5 16.0 ± 2.8 38.0 ± 3.8 50.0 ± 2.4 
+
+95% CI [93.3,93.3] [30.7,49.3] [60.8,64.5] [12.5,19.5] [33.3,42.7] [47.1,52.9] p-value - - - - - 0.0341 Gemini-3 Pro mean ± std 96.0 ± 4.3 44.7 ± 11.7 66.7 ± 4.7 26.0 ± 7.2 44.7 ± 3.8 55.6 ± 3.4 
+
+95% CI [90.6,101.4] [30.2,59.2] [60.8,72.5] [17.0,35.0] [39.9,49.4] [51.4,59.8] p-value - - - - - -Claude 4.5 Haiku mean ± std 34.0 ± 2.8 30.0 ± 3.3 26.7 ± 3.3 30.0 ± 4.1 40.0 ± 2.4 32.1 ± 1.7 
+
+95% CI [30.5,37.5] [25.9,34.1] [22.5,30.8] [24.9,35.1] [37.1,42.9] [30.0,34.3] p-value - - - - - 0.0000 Claude 4.5 Sonnet mean ± std 72.7 ± 2.8 24.7 ± 3.0 28.0 ± 5.1 13.3 ± 0.0 30.7 ± 2.8 33.9 ± 1.3 
+
+95% CI [69.2,76.1] [21.0,28.4] [21.7,34.3] [13.3,13.3] [27.2,34.1] [32.3,35.5] p-value - - - - - 0.0002 Qwen3-VL-2B mean ± std 82.0 ± 3.8 29.3 ± 10.9 42.7 ± 5.5 22.7 ± 7.2 40.0 ± 2.4 43.3 ± 4.2 
+
+95% CI [77.3,86.7] [15.8,42.9] [35.9,49.5] [13.7,31.6] [37.1,42.9] [38.1,48.6] p-value - - - - - 0.0004 Qwen3-VL-8B mean ± std 80.0 ± 0.0 33.3 ± 4.1 54.0 ± 1.5 25.3 ± 1.8 34.0 ± 4.3 45.3 ± 0.7 
+
+95% CI [80.0,80.0] [28.3,38.4] [52.1,55.9] [23.1,27.6] [28.6,39.4] [44.5,46.2] p-value - - - - - 0.0026 Qwen3-VL-32B mean ± std 90.0 ± 0.0 26.0 ± 2.8 53.3 ± 0.0 6.7 ± 0.0 51.3 ± 4.5 45.5 ± 1.4 
+
+95% CI [90.0,90.0] [22.5,29.5] [53.3,53.3] [6.7,6.7] [45.8,56.9] [43.7,47.3] p-value - - - - - 0.0021 Qwen3-VL-235B mean ± std 93.3 ± 0.0 38.0 ± 3.8 54.0 ± 2.8 20.0 ± 6.2 43.3 ± 2.4 49.7 ± 1.8 
+
+95% CI [93.3,93.3] [33.3,42.7] [50.5,57.5] [12.3,27.7] [40.4,46.3] [47.5,52.0] p-value - - - - - 0.0500 InternVL3.5-2B mean ± std 64.0 ± 4.3 30.7 ± 8.0 36.7 ± 7.5 20.0 ± 7.1 30.7 ± 7.6 36.4 ± 1.9 
+
+95% CI [58.6,69.4] [20.8,40.5] [27.4,45.9] [11.2,28.8] [21.2,40.1] [34.0,38.8] p-value - - - - - 0.0008 InternVL3.5-8B mean ± std 73.3 ± 4.7 28.7 ± 6.9 36.0 ± 9.5 20.7 ± 5.5 32.0 ± 5.1 38.1 ± 3.5 
+
+95% CI [67.5,79.2] [20.1,37.2] [24.1,47.9] [13.9,27.5] [25.7,38.3] [33.8,42.5] p-value - - - - - 0.0011 Mistral-3.2-24B mean ± std 28.7 ± 7.3 28.0 ± 6.9 40.0 ± 5.3 17.3 ± 6.0 40.7 ± 6.4 30.9 ± 2.4 
+
+95% CI [19.6,37.7] [19.4,36.6] [33.5,46.5] [9.9,24.7] [32.7,48.6] [27.9,34.0] p-value - - - - - 0.0000 Gemma-3-27B mean ± std 55.3 ± 3.0 33.3 ± 0.0 28.0 ± 1.8 28.7 ± 1.8 49.3 ± 2.8 38.9 ± 0.8 
+
+95% CI [51.6,59.0] [33.3,33.3] [25.7,30.3] [26.4,30.9] [45.9,52.8] [38.0,39.9] p-value - - - - - 0.0006 GLM-4.6V-106B mean ± std 35.3 ± 1.8 18.0 ± 6.1 20.7 ± 2.8 37.3 ± 4.9 6.0 ± 4.9 23.5 ± 2.8 
+
+95% CI [33.1,37.6] [10.5,25.5] [17.2,24.1] [31.2,43.5] [-0.1,12.1] [20.0,26.9] p-value - - - - - 0.0020 
+
+Table 11: Extractive evaluation statistics. Mean performance and standard devi-ation (mean ± std), 95% confidence intervals (CI), and p-values across five runs for the extractive evaluation tasks. Statistical significance is evaluated using paired two-sided t-tests. 30 Supplementary Material Ground  Truth Prediction 
+
+Scenario 1 Scenario 2 Scenario 3 Scenario 4
+
+𝑚𝐼𝑜𝑈 ! = 0.1664 𝑚𝐼𝑜𝑈 " = 0.0750 𝑚𝐼𝑜𝑈 # = 0.0119 𝑚𝐼𝑜𝑈 $ = 0.1719 
+
+> Bedroom
+> Living
+> room
+> Study
+> Kitchen
+> Hallway
+> Piano
+> room
+> Bathroom
+> Storage
+> Locker
+> Lounge
+> Dining
+> Entrance
+> Office
+
+Fig. 6: Gemini-3-pro floor-plan prediction Ground  Truth Prediction 
+
+Scenario 1 Scenario 2 Scenario 3 Scenario 4
+
+𝑚𝐼𝑜𝑈 ! = 0.0732 𝑚𝐼𝑜𝑈 " = 0.1893 𝑚𝐼𝑜𝑈 # = 0.0527 𝑚𝐼𝑜𝑈 $ = 0.0211 
+
+> Bedroom
+> Living
+> room
+> Study
+> Kitchen
+> Hallway
+> Piano
+> room
+> Bathroom
+> Storage
+> Locker
+> Lounge
+> Dining
+> Entrance
+> Office
+
+Fig. 7: GPT-5.2 floor-plan prediction Ground  Truth Prediction 
+
+Scenario 1 Scenario 2 Scenario 3 Scenario 4
+
+𝑚𝐼𝑜𝑈 ! = 0.1976 𝑚𝐼𝑜𝑈 " = 0.0720 𝑚𝐼𝑜𝑈 # = 0.0200 𝑚𝐼𝑜𝑈 $ = 0.0262 
+
+> Bedroom
+> Living
+> room
+> Study
+> Kitchen
+> Hallway
+> Piano
+> room
+> Bathroom
+> Storage
+> Locker
+> Lounge
+> Dining
+> Entrance
+> Office
+
+Fig. 8: Qwen3-VL-235B-A22B floor-plan prediction Supplementary Material 31 
+
+Category Contents 
+
+Environment typology Single-story residence # of rooms 6Types of rooms bathroom, bedroom, kitchen, living room, piano room, study Objects 
+
+bathroom : washstand, toilet 
+
+bedroom : wardrobe, lamp, cabinet, bed, books, pillows, windows 
+
+kitchen : fridge, cupboard, stove, sink, window, cups 
+
+living room : cabinet, books, window, TV, sofas, table, cups 
+
+piano room : piano, book, cup, window 
+
+study : bookshelf, computer, desk, chair, cup, windows Trajectory kitchen → living room → bedroom → bathroom → study → piano room Room Relations Adjacency : bedroom–living room, living room–study, study–bathroom, bathroom–piano room 
+
+Opposite : bedroom–kitchen, kitchen–piano room, piano room–study 
+
+Table 12: Scenario 1 
+
+Category Contents 
+
+Environment typology Single-story residence # of rooms 6Types of rooms bathroom, bedroom 1, bedroom 2, dressroom, kitchen, living room Objects 
+
+bathroom : washstand, toilet, window 
+
+bedroom 1 : bed, pillows, telephone, handbag, wardrobe, window 
+
+bedroom 2 : handbag, bed, pillow, plant, window 
+
+dressroom : handbags, clothes, wardrobe, window 
+
+kitchen : microwave, pot, stove, oven, sink, vase, fruits, window, cupboard 
+
+living room : table, chairs, plants, sofa, TV, books, window Trajectory kitchen → bathroom → bedroom 1 → living room → dressroom → bed-room 2 Room Relations Adjacency : bathroom–bedroom 1, kitchen–bathroom, dressroom– bedroom 2 
+
+Opposite : {kitchen, bathroom, bedroom 1}–{dressroom, bedroom 2} 
+
+Table 13: Scenario 2 32 Supplementary Material 
+
+Category Contents 
+
+Environment typology Single-story residence # of rooms 6Types of rooms bathroom, bedroom, dining room, kitchen, living room, study Objects 
+
+bathroom : washstand, bath, toilet, window 
+
+bedroom : bed, pillow, wardrobe, window 
+
+dining room : table, chairs, book, fireplace, window, door 
+
+kitchen : cupboards, windows, pot, stove, books, door 
+
+living room : TV, sofa, plants, wardrobe, book, windows, door 
+
+study : desk, chair, computer, lamp Trajectory dining room → kitchen → bedroom → study → living room → bathroom Room Relations Adjacency : dining room–kitchen, living room–bathroom 
+
+Opposite : bedroom–study, kitchen–living room 
+
+Table 14: Scenario 3 
+
+Category Contents 
+
+Environment typology Single-story residence # of rooms 8Types of rooms bathroom, bedroom 1, bedroom 2, dining room, homegym, kitchen, living room, study Objects 
+
+bathroom : window, washstand, toilet 
+
+bedroom 1 : bed, pillows, table, TV, carpet, plant, wardrobe, pictures, floor lamp 
+
+bedroom 2 : bed, pillow, floor lamps, chairs, TV, picture, window 
+
+dining room : table, chairs, carpet, pictures, floor lamp, plants, windows 
+
+homegym : yoga mat, window, exercise machine, bench 
+
+kitchen : oven, plant, pot, stove 
+
+living room : sofas, TV, plants, table, carpet 
+
+study : desk, chair, computer, lamp, bookshelf, window Trajectory bedroom 1 → bathroom → kitchen → study → dining room → homegym 
+
+→ bedroom 2 → living room Room Relations Adjacency : homegym–bedroom 2–bathroom–bedroom 1, bedroom 1– kitchen–study, living room–dining room–study, homegym–living room 
+
+Opposite : kitchen–living room, study–living room 
+
+Table 15: Scenario 4 Supplementary Material 33 
+
+Category Contents 
+
+Environment typology Office # of rooms 5Types of rooms bathroom, file room, locker room, lounge, main office Objects 
+
+bathroom : washstand, toilet 
+
+file room : desk, chair, carpet, bookshelf, window, printer, prints, safe 
+
+locker room : lockers, carpet 
+
+lounge : sofas, table, tumbler, TV, microwave, fridge 
+
+main office : tumblers, computers, desks, chairs, carpets Trajectory main office → bathroom → locker room → lounge → file room Room Relations Adjacency : main office–{locker room, bathroom, lounge}, locker room– {bathroom, file room}, lounge–file room 
+
+Opposite : none 
+
+Table 16: Scenario 5 
+
+Category Contents 
+
+Environment typology Office # of rooms 6Types of rooms bathroom, CEO room, conference room, locker room, lounge, main office Objects 
+
+bathroom : washstand, toilet 
+
+CEO room : laptop, mouse, desk, chair, picture, printer, window 
+
+conference room : table, chairs, windows 
+
+locker room : lockers 
+
+lounge : sofas, coffee machine, vending machine, table 
+
+main office : desks, chairs, laptops, printer Trajectory bathroom → lounge → conference room → CEO room → locker room →
+
+main office Room Relations Adjacency : CEO room–conference room–lounge, lounge–bathroom, locker room–main office 
+
+Opposite : conference room–{main office, locker room} 
+
+Table 17: Scenario 6 34 Supplementary Material 
+
+Category Contents 
+
+Environment typology Single-story residence # of rooms 6Types of rooms bathroom, bedroom, dining room, kitchen, living room, study Objects 
+
+bathroom : window, towers, curtain, toilet 
+
+bedroom : bed, pillow, air conditioner, wardrobe, window 
+
+dining room : table, chairs, window 
+
+kitchen : microwave, stove, cupboards, fridge, window 
+
+living room : sofa, table, air conditioner, window, TV 
+
+study : window, air conditioner, desk, chair, computer, bookshelf Trajectory dining room → kitchen → living room → bedroom → bathroom → study Room Relations Adjacency : living room–bedroom, bedroom–bathroom–study, study-dining room–kitchen 
+
+Opposite : dining room–living room, bedroom–study 
+
+Table 18: Scenario 7 
+
+Category Contents 
+
+Environment typology Multi-story residence # of rooms 6Types of rooms bedroom 1, bedroom 2, kitchen & dining room, homegym, living room, study Objects 
+
+bedroom 1 : desk, chair, window, bed, pillows 
+
+bedroom 2 : bed, pillows, cabinet, window 
+
+kitchen & dining room : fridge, sink, apples, eyeglasses, wines, stove, table, chairs, plates, windows 
+
+homegym : exercise machine, bench, cycle 
+
+living room : sofa, apples, plant, table, windows 
+
+study : desk, chair, computer, headphone, window, bookshelf Trajectory kitchen & dining room → bedroom 1 → study → bedroom 2 → living room → homegym Room Relations 
+
+Adjacency : living room–study–bedroom 1–kitchen & dining room 
+
+Opposite : study–bedroom 2 
+
+Vertical : bedroom 2–homegym 
+
+Table 19: Scenario 8 Supplementary Material 35 
+
+Category Contents 
+
+Environment typology Multi-story residence # of rooms 8Types of rooms bathroom 1, bathroom 2, bedroom 1, bedroom 2, dining room, dressroom, kitchen, living room Objects 
+
+bathroom 1 : washstand, cup, toilet, mirror, plant 
+
+bathroom 2 : washstand, toilet, mirror 
+
+bedroom 1 : bed, pillows, lamps, picture, vase, chair, window, curtain 
+
+bedroom 2 : bed, pillow, window, cups, chair, bookshelf, curtain 
+
+dining room : table, chairs, cups, books 
+
+dressroom : wardrobe, window, vase 
+
+kitchen : fridge, washing machine, sink, stove, cupboard 
+
+living room : table, sofas, TV, vase, picture, lamp Trajectory living room → dining room → kitchen → bedroom 1 → bathroom 1 →
+
+dressroom → bathroom 2 → bedroom 2 Room Relations 
+
+Adjacency : bedroom–living room, living room–study, study–bathroom, bathroom–piano room 
+
+Opposite : bedroom–kitchen, kitchen–piano room, piano room–study 
+
+Vertical : living room–bedroom1–bedroom2, dining room–bathroom 1– bathroom 2 
+
+Table 20: Scenario 9 
+
+Category Contents 
+
+Environment typology Multi-story residence # of rooms 9Types of rooms bathroom, bedroom 1, bedroom 2, dining room, dressroom, home gym, kitchen, living room, study Objects 
+
+bathroom : toilet 
+
+bedroom 1 : bed, pillows, plant, bulbs, floor lamp, window 
+
+bedroom 2 : bed, pillow, floor lamp, window 
+
+dining room : table, chairs, plates, bowls, plant 
+
+dressroom : wardrobes, window, clothes 
+
+home gym : exercise machine, cycle 
+
+kitchen : wines, fridge, pot, microwave, sink, cupboard, dish wahser 
+
+living room : sofa, stand, vase, table, TV, window 
+
+study : desk, books, chair, lamp, computer, bookshelf, window Trajectory living room → bathroom → bedroom 1 → kitchen → dining room →
+
+bedroom 2 → dressroom → study → home gym Room Relations 
+
+Adjacency : bedroom 1–bathroom–living room, dining room–kitchen 
+
+Opposite : study–dressroom, dressroom–bedroom 2, bedroom 1–dining room, living room–kitchen 
+
+Vertical : dressroom–bedroom 1, living room–bedroom 2, dining room– study 
+
+Table 21: Scenario 10

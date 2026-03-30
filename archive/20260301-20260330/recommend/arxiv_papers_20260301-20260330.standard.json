@@ -1,0 +1,1374 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-03-30T09:14:43.868222+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 49,
+    "deep_cap": 6,
+    "deep_selected": 23,
+    "quick_candidates": 75,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2603.12478v1",
+      "source": "arxiv",
+      "title": "Less Data, Faster Convergence: Goal-Driven Data Optimization for Multimodal Instruction Tuning",
+      "abstract": "Multimodal instruction tuning is often compute-inefficient because training budgets are spread across large mixed image-video pools whose utility is highly uneven. We present Goal-Driven Data Optimization (GDO), a framework that computes six sample descriptors for each candidate and constructs optimized 1$\\times$ training subsets for different goals. Under a fixed one-epoch Qwen3-VL-8B-Instruct training and evaluation recipe on 8 H20 GPUs, GDO uses far fewer training samples than the Uni-10x baseline while converging faster and achieving higher accuracy. Relative to the fixed 512k-sample Uni-10x baseline, GDO reaches the Uni-10x reference after 35.4k samples on MVBench, 26.6k on VideoMME, 27.3k on MLVU, and 34.7k on LVBench, while improving Accuracy by +1.38, +1.67, +3.08, and +0.84 percentage points, respectively. The gains are largest on MVBench and MLVU, while LVBench improves more modestly, consistent with its ultra-long-video setting and the mismatch between that benchmark and the short-video/image-dominant training pool. Across MinLoss, Diverse, Temp, and Temp+, stronger temporal emphasis yields steadily better long-video understanding behavior. Overall, GDO provides a goal-driven data optimization framework that enables faster convergence with fewer training samples under a fixed training protocol. Code is available at https://github.com/rujiewu/GDO.",
+      "authors": [
+        "Rujie Wu",
+        "Haozhe Zhao",
+        "Hai Ci",
+        "Yizhou Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-03-12T21:54:50+00:00",
+      "link": "https://arxiv.org/pdf/2603.12478v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Goal-Driven Data Optimization for multimodal instruction tuning and data selection",
+      "llm_evidence_cn": "多模态指令微调的目标驱动数据优化与选择",
+      "llm_evidence": "多模态指令微调的目标驱动数据优化与选择",
+      "canonical_evidence": "多模态指令微调的目标驱动数据优化与选择",
+      "llm_tldr_en": "Presents GDO, a framework to optimize multimodal instruction data for faster convergence and higher accuracy.",
+      "llm_tldr_cn": "提出GDO框架，通过优化多模态指令数据子集，实现更快的训练收敛和更高的模型精度。",
+      "llm_tldr": "提出GDO框架，通过优化多模态指令数据子集，实现更快的训练收敛和更高的模型精度。",
+      "llm_tags": [
+        "query:vlm-data:composite"
+      ],
+      "matched_query_tag": "query:vlm-data:composite",
+      "matched_query_text": "Papers central to 请帮我搜索当前的large video language model论文，我想要了解当前文献如何生成高质量的视频指示数据, especially work that connects or combines: d; l; creation of multimodal video-text datasets for training; techniques for video understanding and instruction alignment; instruction tuning strategies for video language models; methods for generating high quality video instruction data; current approaches to video instruction dataset creation; techniques for synthetic video instruction generation.",
+      "matched_requirement_id": "req-composite-vlm-data",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.17374v1",
+      "source": "arxiv",
+      "title": "Shot-Aware Frame Sampling for Video Understanding",
+      "abstract": "Video frame sampling is essential for efficient long-video understanding with Vision-Language Models (VLMs), since dense inputs are costly and often exceed context limits. Yet when only a small number of frames can be retained, existing samplers often fail to balance broad video coverage with brief but critical events, which can lead to unreliable downstream predictions. To address this issue, we present InfoShot, a task-agnostic, shot-aware frame sampler for long-video understanding. InfoShot first partitions a video into semantically consistent shots, and then selects two complementary keyframes from each shot: one to represent the main content and one to capture unusual within-shot changes. This design is guided by an information-theoretic objective that encourages the sampled set to retain high information about both shot structure and sparse within-shot deviations. In this way, it improves the chance of preserving both overall video context and short decision-critical moments without requiring any retraining. To better evaluate such short-lived events, we further introduce SynFlash, a synthetic benchmark with controllable sub-second anomaly patterns and frame-level ground truth, and we also evaluate InfoShot on existing anomaly datasets and general video understanding tasks. Experiments show that InfoShot improves anomaly hit rate and downstream Video-QA accuracy under frame number constraints, while matching or outperforming strong baselines on standard video understanding benchmarks.",
+      "authors": [
+        "Mengyu Zhao",
+        "Di Fu",
+        "Yongyu Xie",
+        "Jiaxing Zhang",
+        "Zhigang Yuan",
+        "Shirin Jalali",
+        "Yong Cao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-18T05:36:57+00:00",
+      "link": "https://arxiv.org/pdf/2603.17374v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "shot-aware frame sampling for long-video understanding",
+      "llm_evidence_cn": "针对长视频理解的分镜感知帧采样",
+      "llm_evidence": "针对长视频理解的分镜感知帧采样",
+      "canonical_evidence": "针对长视频理解的分镜感知帧采样",
+      "llm_tldr_en": "InfoShot selects keyframes based on shot boundaries and information theory to improve VLM efficiency.",
+      "llm_tldr_cn": "InfoShot根据分镜边界和信息论选择关键帧，以提高VLM的效率。",
+      "llm_tldr": "InfoShot根据分镜边界和信息论选择关键帧，以提高VLM的效率。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.00983v1",
+      "source": "arxiv",
+      "title": "Event-Anchored Frame Selection for Effective Long-Video Understanding",
+      "abstract": "Massive frame redundancy and limited context window make efficient frame selection crucial for long-video understanding with large vision-language models (LVLMs). Prevailing approaches, however, adopt a flat sampling paradigm which treats the video as an unstructured collection of frames. In this paper, we introduce Event-Anchored Frame Selection (EFS), a hierarchical, event-aware pipeline. Leveraging self-supervised DINO embeddings, EFS first partitions the video stream into visually homogeneous temporal segments, which serve as proxies for semantic events. Within each event, it then selects the most query-relevant frame as an anchor. These anchors act as structural priors that guide a global refinement stage using an adaptive Maximal Marginal Relevance (MMR) scheme. This pipeline ensures the final keyframe set jointly optimizes for event coverage, query relevance, and visual diversity. As a training-free, plug-and-play module, EFS can be seamlessly integrated into off-the-shelf LVLMs, yielding substantial gains on challenging video understanding benchmarks. Specifically, when applied to LLaVA-Video-7B, EFS improves accuracy by 4.7%, 4.9%, and 8.8% on VideoMME, LongVideoBench, and MLVU, respectively.",
+      "authors": [
+        "Wang Chen",
+        "Yongdong Luo",
+        "Yuhui Zeng",
+        "Luojun Lin",
+        "Tianyu Xie",
+        "Fei Chao",
+        "Rongrong Ji",
+        "Xiawu Zheng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-01T08:25:37+00:00",
+      "link": "https://arxiv.org/pdf/2603.00983v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "hierarchical event-aware frame selection for long-video understanding",
+      "llm_evidence_cn": "用于长视频理解的分层事件感知帧选择策略",
+      "llm_evidence": "用于长视频理解的分层事件感知帧选择策略",
+      "canonical_evidence": "用于长视频理解的分层事件感知帧选择策略",
+      "llm_tldr_en": "Introduces an event-anchored sampling strategy to select query-relevant frames for long-video understanding.",
+      "llm_tldr_cn": "引入了一种事件锚定采样策略，为长视频理解选择与查询最相关的帧。",
+      "llm_tldr": "引入了一种事件锚定采样策略，为长视频理解选择与查询最相关的帧。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.01195v1",
+      "source": "arxiv",
+      "title": "VisNec: Measuring and Leveraging Visual Necessity for Multimodal Instruction Tuning",
+      "abstract": "The effectiveness of multimodal instruction tuning depends not only on dataset scale, but critically on whether training samples genuinely require visual reasoning. However, existing instruction datasets often contain a substantial portion of visually redundant samples (solvable from text alone), as well as multimodally misaligned supervision that can degrade learning. To address this, we propose VisNec (Visual Necessity Score), a principled data selection framework that measures the marginal contribution of visual input during instruction tuning. By comparing predictive loss with and without visual context, VisNec identifies whether a training instance is vision-critical, redundant, or misaligned. To preserve task diversity, we combine VisNec with semantic clustering and select high-necessity samples within each cluster. Across 10 downstream benchmarks, training on only 15% of the LLaVA-665K dataset selected by VisNec achieves 100.2% of full-data performance. On the smaller Vision-Flan-186K dataset, our selection not only further reduces data size but also surpasses full-data training by 15.8%. These results demonstrate that measuring and leveraging visual necessity provides an effective solution for both efficient and robust multimodal instruction tuning. Codes and selected subsets will be released upon acceptance.",
+      "authors": [
+        "Mingkang Dong",
+        "Hongyi Cai",
+        "Jie Li",
+        "Sifan Zhou",
+        "Bin Ren",
+        "Kunyu Peng",
+        "Yuqian Fu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-01T17:26:02+00:00",
+      "link": "https://arxiv.org/pdf/2603.01195v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "evaluating quality and visual necessity of multimodal instruction data",
+      "llm_evidence_cn": "评估多模态指令数据的质量与视觉必要性",
+      "llm_evidence": "评估多模态指令数据的质量与视觉必要性",
+      "canonical_evidence": "评估多模态指令数据的质量与视觉必要性",
+      "llm_tldr_en": "Proposes VisNec to select vision-critical samples and filter redundant data for instruction tuning.",
+      "llm_tldr_cn": "提出VisNec框架，用于筛选视觉关键样本并过滤冗余指令微调数据。",
+      "llm_tldr": "提出VisNec框架，用于筛选视觉关键样本并过滤冗余指令微调数据。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "evaluating quality of video instruction data",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.02175v1",
+      "source": "arxiv",
+      "title": "Kiwi-Edit: Versatile Video Editing via Instruction and Reference Guidance",
+      "abstract": "Instruction-based video editing has witnessed rapid progress, yet current methods often struggle with precise visual control, as natural language is inherently limited in describing complex visual nuances. Although reference-guided editing offers a robust solution, its potential is currently bottlenecked by the scarcity of high-quality paired training data. To bridge this gap, we introduce a scalable data generation pipeline that transforms existing video editing pairs into high-fidelity training quadruplets, leveraging image generative models to create synthesized reference scaffolds. Using this pipeline, we construct RefVIE, a large-scale dataset tailored for instruction-reference-following tasks, and establish RefVIE-Bench for comprehensive evaluation. Furthermore, we propose a unified editing architecture, Kiwi-Edit, that synergizes learnable queries and latent visual features for reference semantic guidance. Our model achieves significant gains in instruction following and reference fidelity via a progressive multi-stage training curriculum. Extensive experiments demonstrate that our data and architecture establish a new state-of-the-art in controllable video editing. All datasets, models, and code is released at https://github.com/showlab/Kiwi-Edit.",
+      "authors": [
+        "Yiqi Lin",
+        "Guoqiang Liang",
+        "Ziyun Zeng",
+        "Zechen Bai",
+        "Yanzhe Chen",
+        "Mike Zheng Shou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-02T18:46:28+00:00",
+      "link": "https://arxiv.org/pdf/2603.02175v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "scalable data generation pipeline for video instruction editing",
+      "llm_evidence_cn": "用于视频指令编辑的可扩展数据生成流水线",
+      "llm_evidence": "用于视频指令编辑的可扩展数据生成流水线",
+      "canonical_evidence": "用于视频指令编辑的可扩展数据生成流水线",
+      "llm_tldr_en": "Creates a scalable pipeline to generate high-quality video instruction-reference pairs and a new dataset.",
+      "llm_tldr_cn": "创建了一个可扩展的流水线，用于生成高质量视频指令-参考对及相应数据集。",
+      "llm_tldr": "创建了一个可扩展的流水线，用于生成高质量视频指令-参考对及相应数据集。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.02175v2",
+      "source": "arxiv",
+      "title": "Kiwi-Edit: Versatile Video Editing via Instruction and Reference Guidance",
+      "abstract": "Instruction-based video editing has witnessed rapid progress, yet current methods often struggle with precise visual control, as natural language is inherently limited in describing complex visual nuances. Although reference-guided editing offers a robust solution, its potential is currently bottlenecked by the scarcity of high-quality paired training data. To bridge this gap, we introduce a scalable data generation pipeline that transforms existing video editing pairs into high-fidelity training quadruplets, leveraging image generative models to create synthesized reference scaffolds. Using this pipeline, we construct RefVIE, a large-scale dataset tailored for instruction-reference-following tasks, and establish RefVIE-Bench for comprehensive evaluation. Furthermore, we propose a unified editing architecture, Kiwi-Edit, that synergizes learnable queries and latent visual features for reference semantic guidance. Our model achieves significant gains in instruction following and reference fidelity via a progressive multi-stage training curriculum. Extensive experiments demonstrate that our data and architecture establish a new state-of-the-art in controllable video editing. All datasets, models, and code is released at https://github.com/showlab/Kiwi-Edit.",
+      "authors": [
+        "Yiqi Lin",
+        "Guoqiang Liang",
+        "Ziyun Zeng",
+        "Zechen Bai",
+        "Yanzhe Chen",
+        "Mike Zheng Shou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-02T18:46:28+00:00",
+      "link": "https://arxiv.org/pdf/2603.02175v2",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "scalable data generation pipeline for video editing instruction data",
+      "llm_evidence_cn": "用于视频编辑指令数据的可扩展数据生成流水线",
+      "llm_evidence": "用于视频编辑指令数据的可扩展数据生成流水线",
+      "canonical_evidence": "用于视频编辑指令数据的可扩展数据生成流水线",
+      "llm_tldr_en": "Introduces a pipeline to generate high-fidelity training data for instruction-based video editing.",
+      "llm_tldr_cn": "引入一种流水线，为基于指令的视频编辑生成高保真训练数据。",
+      "llm_tldr": "引入一种流水线，为基于指令的视频编辑生成高保真训练数据。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.07660v1",
+      "source": "arxiv",
+      "title": "Holi-Spatial: Evolving Video Streams into Holistic 3D Spatial Intelligence",
+      "abstract": "The pursuit of spatial intelligence fundamentally relies on access to large-scale, fine-grained 3D data. However, existing approaches predominantly construct spatial understanding benchmarks by generating question-answer (QA) pairs from a limited number of manually annotated datasets, rather than systematically annotating new large-scale 3D scenes from raw web data. As a result, their scalability is severely constrained, and model performance is further hindered by domain gaps inherent in these narrowly curated datasets.   In this work, we propose Holi-Spatial, the first fully automated, large-scale, spatially-aware multimodal dataset, constructed from raw video inputs without human intervention, using the proposed data curation pipeline. Holi-Spatial supports multi-level spatial supervision, ranging from geometrically accurate 3D Gaussian Splatting (3DGS) reconstructions with rendered depth maps to object-level and relational semantic annotations, together with corresponding spatial Question-Answer (QA) pairs.   Following a principled and systematic pipeline, we further construct Holi-Spatial-4M, the first large-scale, high-quality 3D semantic dataset, containing 12K optimized 3DGS scenes, 1.3M 2D masks, 320K 3D bounding boxes, 320K instance captions, 1.2M 3D grounding instances, and 1.2M spatial QA pairs spanning diverse geometric, relational, and semantic reasoning tasks.   Holi-Spatial demonstrates exceptional performance in data curation quality, significantly outperforming existing feed-forward and per-scene optimized methods on datasets such as ScanNet, ScanNet++, and DL3DV. Furthermore, fine-tuning Vision-Language Models (VLMs) on spatial reasoning tasks using this dataset has also led to substantial improvements in model performance.",
+      "authors": [
+        "Yuanyuan Gao",
+        "Hao Li",
+        "Yifei Liu",
+        "Xinhao Ji",
+        "Yuning Gong",
+        "Yuanjun Liao",
+        "Fangfu Liu",
+        "Manyuan Zhang",
+        "Yuchen Yang",
+        "Dan Xu",
+        "Xue Yang",
+        "Huaxi Huang",
+        "Hongjie Zhang",
+        "Ziwei Liu",
+        "Xiao Sun",
+        "Dingwen Zhang",
+        "Zhihang Zhong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-08T14:49:20+00:00",
+      "link": "https://arxiv.org/pdf/2603.07660v1",
+      "tags": [
+        "keyword:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "fully automated large-scale video data curation pipeline",
+      "llm_evidence_cn": "全自动大规模视频数据治理流水线",
+      "llm_evidence": "全自动大规模视频数据治理流水线",
+      "canonical_evidence": "全自动大规模视频数据治理流水线",
+      "llm_tldr_en": "Presents a pipeline to construct large-scale spatially-aware datasets from raw video without human intervention.",
+      "llm_tldr_cn": "提出一种流水线，无需人工干预即可从原始视频构建大规模空间感知数据集。",
+      "llm_tldr": "提出一种流水线，无需人工干预即可从原始视频构建大规模空间感知数据集。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "methods for building video instruction datasets",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.10178v1",
+      "source": "arxiv",
+      "title": "Video-Based Reward Modeling for Computer-Use Agents",
+      "abstract": "Computer-using agents (CUAs) are becoming increasingly capable; however, it remains difficult to scale evaluation of whether a trajectory truly fulfills a user instruction. In this work, we study reward modeling from execution video: a sequence of keyframes from an agent trajectory that is independent of the agent's internal reasoning or actions. Although video-execution modeling is method-agnostic, it presents key challenges, including highly redundant layouts and subtle, localized cues that determine success. We introduce Execution Video Reward 53k (ExeVR-53k), a dataset of 53k high-quality video--task--reward triplets. We further propose adversarial instruction translation to synthesize negative samples with step-level annotations. To enable learning from long, high-resolution execution videos, we design spatiotemporal token pruning, which removes homogeneous regions and persistent tokens while preserving decisive UI changes. Building on these components, we fine-tune an Execution Video Reward Model (ExeVRM) that takes only a user instruction and a video-execution sequence to predict task success. Our ExeVRM 8B achieves 84.7% accuracy and 87.7% recall on video-execution assessment, outperforming strong proprietary models such as GPT-5.2 and Gemini-3 Pro across Ubuntu, macOS, Windows, and Android, while providing more precise temporal attribution. These results show that video-execution reward modeling can serve as a scalable, model-agnostic evaluator for CUAs.",
+      "authors": [
+        "Linxin Song",
+        "Jieyu Zhang",
+        "Huanxin Sheng",
+        "Taiwei Shi",
+        "Gupta Rahul",
+        "Yang Liu",
+        "Ranjay Krishna",
+        "Jian Kang",
+        "Jieyu Zhao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL"
+      ],
+      "published": "2026-03-10T19:17:22+00:00",
+      "link": "https://arxiv.org/pdf/2603.10178v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "synthetic negative samples and high-quality video-task-reward dataset creation",
+      "llm_evidence_cn": "合成负样本与高质量视频-任务-奖励数据集构建",
+      "llm_evidence": "合成负样本与高质量视频-任务-奖励数据集构建",
+      "canonical_evidence": "合成负样本与高质量视频-任务-奖励数据集构建",
+      "llm_tldr_en": "Introduces ExeVR-53k dataset and synthetic negative sample generation for video-based reward modeling.",
+      "llm_tldr_cn": "引入ExeVR-53k数据集和合成负样本生成方法，用于视频奖励建模。",
+      "llm_tldr": "引入ExeVR-53k数据集和合成负样本生成方法，用于视频奖励建模。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.13091v1",
+      "source": "arxiv",
+      "title": "Reasoning over Video: Evaluating How MLLMs Extract, Integrate, and Reconstruct Spatiotemporal Evidence",
+      "abstract": "The growing interest in embodied agents increases the demand for spatiotemporal video understanding, yet existing benchmarks largely emphasize extractive reasoning, where answers can be explicitly presented within spatiotemporal events. It remains unclear whether multimodal large language models can instead perform abstractive spatiotemporal reasoning, which requires integrating observations over time, combining dispersed cues, and inferring implicit spatial and contextual structure. To address this gap, we formalize abstractive spatiotemporal reasoning from videos by introducing a structured evaluation taxonomy that systematically targets its core dimensions and construct a controllable, scenario-driven synthetic egocentric video dataset tailored to evaluate abstractive spatiotemporal reasoning capabilities, spanning object-, room-, and floor-plan-level scenarios. Based on this framework, we present VAEX-BENCH, a benchmark comprising five abstractive reasoning tasks together with their extractive counterparts. Our extensive experiments compare the performance of state-of-the-art MLLMs under extractive and abstractive settings, exposing their limitations on abstractive tasks and providing a fine-grained analysis of the underlying bottlenecks. The dataset will be released soon.",
+      "authors": [
+        "Seunghwan Bang",
+        "Hwanjun Song"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-13T15:40:42+00:00",
+      "link": "https://arxiv.org/pdf/2603.13091v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "constructing controllable scenario-driven synthetic egocentric video data",
+      "llm_evidence_cn": "构建可控场景驱动的合成第一视角视频数据",
+      "llm_evidence": "构建可控场景驱动的合成第一视角视频数据",
+      "canonical_evidence": "构建可控场景驱动的合成第一视角视频数据",
+      "llm_tldr_en": "Formalizes abstractive spatiotemporal reasoning and constructs a synthetic egocentric video benchmark.",
+      "llm_tldr_cn": "形式化了抽象时空推理，并构建了一个合成的第一视角视频基准数据集。",
+      "llm_tldr": "形式化了抽象时空推理，并构建了一个合成的第一视角视频基准数据集。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.13770v1",
+      "source": "arxiv",
+      "title": "PhysAlign: Physics-Coherent Image-to-Video Generation through Feature and 3D Representation Alignment",
+      "abstract": "Video Diffusion Models (VDMs) offer a promising approach for simulating dynamic scenes and environments, with broad applications in robotics and media generation. However, existing models often generate temporally incoherent content that violates basic physical intuition, significantly limiting their practical applicability. We propose PhysAlign, an efficient framework for physics-coherent image-to-video (I2V) generation that explicitly addresses this limitation. To overcome the critical scarcity of physics-annotated videos, we first construct a fully controllable synthetic data generation pipeline based on rigid-body simulation, yielding a highly-curated dataset with accurate, fine-grained physics and 3D annotations. Leveraging this data, PhysAlign constructs a unified physical latent space by coupling explicit 3D geometry constraints with a Gram-based spatio-temporal relational alignment that extracts kinematic priors from video foundation models. Extensive experiments demonstrate that PhysAlign significantly outperforms existing VDMs on tasks requiring complex physical reasoning and temporal stability, without compromising zero-shot visual quality. PhysAlign shows the potential to bridge the gap between raw visual synthesis and rigid-body kinematics, establishing a practical paradigm for genuinely physics-grounded video generation. The project page is available at https://physalign.github.io/PhysAlign.",
+      "authors": [
+        "Zhexiao Xiong",
+        "Yizhi Song",
+        "Liu He",
+        "Wei Xiong",
+        "Yu Yuan",
+        "Feng Qiao",
+        "Nathan Jacobs"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-14T05:44:18+00:00",
+      "link": "https://arxiv.org/pdf/2603.13770v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "synthetic data generation pipeline for physics-annotated videos",
+      "llm_evidence_cn": "物理标注视频的合成数据生成流水线",
+      "llm_evidence": "物理标注视频的合成数据生成流水线",
+      "canonical_evidence": "物理标注视频的合成数据生成流水线",
+      "llm_tldr_en": "Constructs a synthetic data pipeline for physics-coherent video generation to address data scarcity.",
+      "llm_tldr_cn": "构建了一个物理一致性视频生成的合成数据流水线，以解决数据稀缺问题。",
+      "llm_tldr": "构建了一个物理一致性视频生成的合成数据流水线，以解决数据稀缺问题。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.14426v1",
+      "source": "arxiv",
+      "title": "GenState-AI: State-Aware Dataset for Text-to-Video Retrieval on AI-Generated Videos",
+      "abstract": "Existing text-to-video retrieval benchmarks are dominated by real-world footage where much of the semantics can be inferred from a single frame, leaving temporal reasoning and explicit end-state grounding under-evaluated. We introduce GenState-AI, an AI-generated benchmark centered on controlled state transitions, where each query is paired with a main video, a temporal hard negative that differs only in the decisive end-state, and a semantic hard negative with content substitution, enabling fine-grained diagnosis of temporal vs. semantic confusions beyond appearance matching. Using Wan2.2-TI2V-5B, we generate short clips whose meaning depends on precise changes in position, quantity, and object relations, providing controllable evaluation conditions for state-aware retrieval. We evaluate two representative MLLM-based baselines, and observe consistent and interpretable failure patterns: both frequently confuse the main video with the temporal hard negative and over-prefer temporally plausible but end-state-incorrect clips, indicating insufficient grounding to decisive end-state evidence, while being comparatively less sensitive to semantic substitutions. We further introduce triplet-based diagnostic analyses, including relative-order statistics and breakdowns across transition categories, to make temporal vs. semantic failure sources explicit. GenState-AI provides a focused testbed for state-aware, temporally and semantically sensitive text-to-video retrieval, and will be released on huggingface.co.",
+      "authors": [
+        "Minghan Li",
+        "Tongna Chen",
+        "Tianrui Lv",
+        "Yishuai Zhang",
+        "Suchao An",
+        "Guodong Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.IR",
+        "cs.MM"
+      ],
+      "published": "2026-03-15T15:09:57+00:00",
+      "link": "https://arxiv.org/pdf/2603.14426v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "AI-generated benchmark for temporal reasoning",
+      "llm_evidence_cn": "用于时间推理的AI生成基准数据集",
+      "llm_evidence": "用于时间推理的AI生成基准数据集",
+      "canonical_evidence": "用于时间推理的AI生成基准数据集",
+      "llm_tldr_en": "Creates GenState-AI, an AI-generated benchmark for fine-grained temporal reasoning in video retrieval.",
+      "llm_tldr_cn": "构建了GenState-AI，一个利用AI生成的视频基准，用于评估视频检索中的细粒度时间推理。",
+      "llm_tldr": "构建了GenState-AI，一个利用AI生成的视频基准，用于评估视频检索中的细粒度时间推理。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.14659v1",
+      "source": "arxiv",
+      "title": "VisionCoach: Reinforcing Grounded Video Reasoning via Visual-Perception Prompting",
+      "abstract": "Video reasoning requires models to locate and track question-relevant evidence across frames. While reinforcement learning (RL) with verifiable rewards improves accuracy, it still struggles to achieve reliable spatio-temporal grounding during the reasoning process. Moreover, improving grounding typically relies on scaled training data or inference-time perception tools, which increases annotation cost or computational cost. To address this challenge, we propose VisonCoach, an input-adaptive RL framework that improves spatio-temporal grounding through visual prompting as training-time guidance. During RL training, visual prompts are selectively applied to challenging inputs to amplify question-relevant evidence and suppress distractors. The model then internalizes these improvements through self-distillation, enabling grounded reasoning directly on raw videos without visual prompting at inference. VisonCoach consists of two components: (1) Visual Prompt Selector, which predicts appropriate prompt types conditioned on the video and question, and (2) Spatio-Temporal Reasoner, optimized with RL under visual prompt guidance and object-aware grounding rewards that enforce object identity consistency and multi-region bounding-box overlap. Extensive experiments demonstrate that VisonCoach achieves state-of-the-art performance under comparable settings, across diverse video reasoning, video understanding, and temporal grounding benchmarks (V-STAR, VideoMME, World-Sense, VideoMMMU, PerceptionTest, and Charades-STA), while maintaining a single efficient inference pathway without external tools. Our results show that visual prompting during training improves grounded video reasoning, while self-distillation enables the model to internalize this ability without requiring prompts at inference time.",
+      "authors": [
+        "Daeun Lee",
+        "Shoubin Yu",
+        "Yue Zhang",
+        "Mohit Bansal"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-15T23:32:02+00:00",
+      "link": "https://arxiv.org/pdf/2603.14659v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "reinforcing grounded video reasoning via visual-perception prompting",
+      "llm_evidence_cn": "通过视觉感知提示强化定位视频推理",
+      "llm_evidence": "通过视觉感知提示强化定位视频推理",
+      "canonical_evidence": "通过视觉感知提示强化定位视频推理",
+      "llm_tldr_en": "VisionCoach uses RL and visual prompting to improve spatio-temporal grounding in video reasoning tasks.",
+      "llm_tldr_cn": "VisionCoach 利用强化学习和视觉提示来提高视频推理任务中的时空定位能力。",
+      "llm_tldr": "VisionCoach 利用强化学习和视觉提示来提高视频推理任务中的时空定位能力。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.14953v1",
+      "source": "arxiv",
+      "title": "Learning Question-Aware Keyframe Selection with Synthetic Supervision for Video Question Answering",
+      "abstract": "Large multimodal models (LMMs) have recently demonstrated remarkable performance in video question answering (VideoQA), yet reasoning over video remains challenging due to high inference cost and diluted information. Keyframe selection offers efficiency and sharper reasoning but suffers from sparse supervision and redundant frame choices when relying only on image-text similarity. We present a question-aware keyframe selection framework with two components: pseudo keyframe labels derived from LMMs that provide informative supervision and a coverage regularization that promotes diverse, complementary evidence across time. Experiments on NExT-QA show that our method significantly improves accuracy, especially for temporal and causal question types, establishing keyframe selection as an effective and learnable module for VideoQA.",
+      "authors": [
+        "Minchan Kwon",
+        "Hyounguk Shon",
+        "Junmo Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-16T08:07:14+00:00",
+      "link": "https://arxiv.org/pdf/2603.14953v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "question-aware keyframe selection with pseudo labels from LMMs",
+      "llm_evidence_cn": "基于LMM伪标签的问题感知关键帧选择",
+      "llm_evidence": "基于LMM伪标签的问题感知关键帧选择",
+      "canonical_evidence": "基于LMM伪标签的问题感知关键帧选择",
+      "llm_tldr_en": "Proposes a question-aware keyframe selection framework using LMM-derived supervision to improve VideoQA efficiency.",
+      "llm_tldr_cn": "提出一种利用LMM监督的问题感知关键帧选择框架，显著提升视频问答的效率和准确性。",
+      "llm_tldr": "提出一种利用LMM监督的问题感知关键帧选择框架，显著提升视频问答的效率和准确性。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.17267v1",
+      "source": "arxiv",
+      "title": "ConfusionBench: An Expert-Validated Benchmark for Confusion Recognition and Localization in Educational Videos",
+      "abstract": "Recognizing and localizing student confusion from video is an important yet challenging problem in educational AI. Existing confusion datasets suffer from noisy labels, coarse temporal annotations, and limited expert validation, which hinder reliable fine-grained recognition and temporally grounded analysis. To address these limitations, we propose a practical multi-stage filtering pipeline that integrates two stages of model-assisted screening, researcher curation, and expert validation to build a higher-quality benchmark for confusion understanding. Based on this pipeline, we introduce ConfusionBench, a new benchmark for educational videos consisting of a balanced confusion recognition dataset and a video localization dataset. We further provide zero-shot baseline evaluations of a representative open-source model and a proprietary model on clip-level confusion recognition, long-video confusion localization tasks. Experimental results show that the proprietary model performs better overall but tends to over-predict transitional segments, while the open-source model is more conservative and more prone to missed detections. In addition, the proposed student confusion report visualization can support educational experts in making intervention decisions and adapting learning plans accordingly. All datasets and related materials will be made publicly available on our project page.",
+      "authors": [
+        "Lu Dong",
+        "Xiao Wang",
+        "Mark Frank",
+        "Srirangaraj Setlur",
+        "Venu Govindaraju",
+        "Ifeoma Nwogu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-18T01:49:17+00:00",
+      "link": "https://arxiv.org/pdf/2603.17267v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Multi-stage filtering pipeline for building high-quality video benchmarks with expert validation.",
+      "llm_evidence_cn": "用于构建经过专家验证的高质量视频基准的多阶段过滤流水线。",
+      "llm_evidence": "用于构建经过专家验证的高质量视频基准的多阶段过滤流水线。",
+      "canonical_evidence": "用于构建经过专家验证的高质量视频基准的多阶段过滤流水线。",
+      "llm_tldr_en": "ConfusionBench provides a high-quality video dataset using a rigorous multi-stage annotation and filtering pipeline.",
+      "llm_tldr_cn": "ConfusionBench 通过严格的多阶段标注和过滤流水线提供了一个高质量的视频数据集。",
+      "llm_tldr": "ConfusionBench 通过严格的多阶段标注和过滤流水线提供了一个高质量的视频数据集。",
+      "llm_tags": [
+        "query:lvlm:composite"
+      ],
+      "matched_query_tag": "query:lvlm:composite",
+      "matched_query_text": "Papers central to 搜索当前大视频语言模型论文，了解高质量视频指示数据生成方法，如采样与标注设计, especially work that connects or combines: sampling strategies for video data collection; annotation frameworks for video instruction datasets; methods for building video instruction datasets; video comprehension and reasoning tasks; evaluating quality of video instruction data; synthetic video instruction data creation; current research on generating high quality video instruction data; sampling and annotation design for video instruction datasets; methodologies to create effective video language instruction data.",
+      "matched_requirement_id": "req-composite-lvlm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.17693v1",
+      "source": "arxiv",
+      "title": "Learning Transferable Temporal Primitives for Video Reasoning via Synthetic Videos",
+      "abstract": "The transition from image to video understanding requires vision-language models (VLMs) to shift from recognizing static patterns to reasoning over temporal dynamics such as motion trajectories, speed changes, and state transitions. Yet current post-training methods fall short due to two critical limitations: (1) existing datasets often lack temporal-centricity, where answers can be inferred from isolated keyframes rather than requiring holistic temporal integration; and (2) training data generated by proprietary models contains systematic errors in fundamental temporal perception, such as confusing motion directions or misjudging speeds. We introduce SynRL, a post-training framework that teaches models temporal primitives, the fundamental building blocks of temporal understanding including direction, speed, and state tracking. Our key insight is that these abstract primitives, learned from programmatically generated synthetic videos, transfer effectively to real-world scenarios. We decompose temporal understanding into short-term perceptual primitives (speed, direction) and long-term cognitive primitives, constructing 7.7K CoT and 7K RL samples with ground-truth frame-level annotations through code-based video generation. Despite training on simple geometric shapes, SynRL achieves substantial improvements across 15 benchmarks spanning temporal grounding, complex reasoning, and general video understanding. Remarkably, our 7.7K synthetic CoT samples outperform Video-R1 with 165K real-world samples. We attribute this to fundamental temporal skills, such as tracking frame by frame changes and comparing velocity, that transfer effectively from abstract synthetic patterns to complex real-world scenarios. This establishes a new paradigm for video post-training: video temporal learning through carefully designed synthetic data provides a more cost efficient scaling path.",
+      "authors": [
+        "Songtao Jiang",
+        "Sibo Song",
+        "Chenyi Zhou",
+        "Yuan Wang",
+        "Ruizhe Chen",
+        "Tongkun Guan",
+        "Ruilin Luo",
+        "Yan Zhang",
+        "Zhihang Tang",
+        "Yuchong Sun",
+        "Hang Zhang",
+        "Zhibo Yang",
+        "Shuai Bai",
+        "Junyang Lin",
+        "Zuozhu Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-18T13:10:47+00:00",
+      "link": "https://arxiv.org/pdf/2603.17693v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "synthetic video generation for temporal reasoning training",
+      "llm_evidence_cn": "用于时间推理训练的合成视频生成",
+      "llm_evidence": "用于时间推理训练的合成视频生成",
+      "canonical_evidence": "用于时间推理训练的合成视频生成",
+      "llm_tldr_en": "Introduces SynRL to teach VLMs temporal primitives using synthetic videos to overcome data limitations.",
+      "llm_tldr_cn": "引入SynRL框架，利用合成视频教导视觉语言模型掌握时间原语，克服现有数据局限性。",
+      "llm_tldr": "引入SynRL框架，利用合成视频教导视觉语言模型掌握时间原语，克服现有数据局限性。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "synthetic video instruction data creation",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.18558v1",
+      "source": "arxiv",
+      "title": "HiMu: Hierarchical Multimodal Frame Selection for Long Video Question Answering",
+      "abstract": "Long-form video question answering requires reasoning over extended temporal contexts, making frame selection critical for large vision-language models (LVLMs) bound by finite context windows. Existing methods face a sharp trade-off: similarity-based selectors are fast but collapse compositional queries into a single dense vector, losing sub-event ordering and cross-modal bindings; agent-based methods recover this structure through iterative LVLM inference, but at prohibitive cost. We introduce HiMu, a training-free framework that bridges this gap. A single text-only LLM call decomposes the query into a hierarchical logic tree whose leaves are atomic predicates, each routed to a lightweight expert spanning vision (CLIP, open-vocabulary detection, OCR) and audio (ASR, CLAP). The resulting signals are normalized, temporally smoothed to align different modalities, and composed bottom-up through fuzzy-logic operators that enforce temporal sequencing and adjacency, producing a continuous satisfaction curve. Evaluations on Video-MME, LongVideoBench and HERBench-Lite show that HiMu advances the efficiency-accuracy Pareto front: at 16 frames with Qwen3-VL 8B it outperforms all competing selectors, and with GPT-4o it surpasses agentic systems operating at 32-512 frames while requiring roughly 10x fewer FLOPs.",
+      "authors": [
+        "Dan Ben-Ami",
+        "Gabriele Serussi",
+        "Kobi Cohen",
+        "Chaim Baskin"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-19T07:11:53+00:00",
+      "link": "https://arxiv.org/pdf/2603.18558v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "hierarchical multimodal frame selection for long video QA",
+      "llm_evidence_cn": "长视频问答的分层多模态帧选择策略",
+      "llm_evidence": "长视频问答的分层多模态帧选择策略",
+      "canonical_evidence": "长视频问答的分层多模态帧选择策略",
+      "llm_tldr_en": "Introduces HiMu, a training-free framework for efficient frame selection in long-form video question answering.",
+      "llm_tldr_cn": "提出HiMu框架，一种无需训练的长视频问答帧选择方法，平衡了效率与结构化推理。",
+      "llm_tldr": "提出HiMu框架，一种无需训练的长视频问答帧选择方法，平衡了效率与结构化推理。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.18850v1",
+      "source": "arxiv",
+      "title": "HORNet: Task-Guided Frame Selection for Video Question Answering with Vision-Language Models",
+      "abstract": "Video question answering (VQA) with vision-language models (VLMs) depends critically on which frames are selected from the input video, yet most systems rely on uniform or heuristic sampling that cannot be optimized for downstream answering quality. We introduce \\textbf{HORNet}, a lightweight frame selection policy trained with Group Relative Policy Optimization (GRPO) to learn which frames a frozen VLM needs to answer questions correctly. With fewer than 1M trainable parameters, HORNet reduces input frames by up to 99\\% and VLM processing time by up to 93\\%, while improving answer quality on short-form benchmarks (+1.7\\% F1 on MSVD-QA) and achieving strong performance on temporal reasoning tasks (+7.3 points over uniform sampling on NExT-QA). We formalize this as Select Any Frames (SAF), a task that decouples visual input curation from VLM reasoning, and show that GRPO-trained selection generalizes better out-of-distribution than supervised and PPO alternatives. HORNet's policy further transfers across VLM answerers without retraining, yielding an additional 8.5\\% relative gain when paired with a stronger model. Evaluated across six benchmarks spanning 341,877 QA pairs and 114.2 hours of video, our results demonstrate that optimizing \\emph{what} a VLM sees is a practical and complementary alternative to optimizing what it generates while improving efficiency. Code is available at https://github.com/ostadabbas/HORNet.",
+      "authors": [
+        "Xiangyu Bai",
+        "Bishoy Galoaa",
+        "Sarah Ostadabbas"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-19T12:53:32+00:00",
+      "link": "https://arxiv.org/pdf/2603.18850v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "task-guided frame selection policy for video question answering",
+      "llm_evidence_cn": "针对视频问答的任务导向型帧选择策略",
+      "llm_evidence": "针对视频问答的任务导向型帧选择策略",
+      "canonical_evidence": "针对视频问答的任务导向型帧选择策略",
+      "llm_tldr_en": "Introduces HORNet, a policy to select critical frames for VLMs to improve VQA accuracy and efficiency.",
+      "llm_tldr_cn": "引入HORNet，一种为VLM选择关键帧的策略，以提高视频问答的准确性和效率。",
+      "llm_tldr": "引入HORNet，一种为VLM选择关键帧的策略，以提高视频问答的准确性和效率。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.18856v1",
+      "source": "arxiv",
+      "title": "Motion-o: Trajectory-Grounded Video Reasoning",
+      "abstract": "Recent research has made substantial progress on video reasoning, with many models leveraging spatio-temporal evidence chains to strengthen their inference capabilities. At the same time, a growing set of datasets and benchmarks now provides structured annotations designed to support and evaluate such reasoning. However, little attention has been paid to reasoning about \\emph{how} objects move between observations: no prior work has articulated the motion patterns by connecting successive observations, leaving trajectory understanding implicit and difficult to verify. We formalize this missing capability as Spatial-Temporal-Trajectory (STT) reasoning and introduce \\textbf{Motion-o}, a motion-centric video understanding extension to visual language models that makes trajectories explicit and verifiable. To enable motion reasoning, we also introduce a trajectory-grounding dataset artifact that expands sparse keyframe supervision via augmentation to yield denser bounding box tracks and a stronger trajectory-level training signal. Finally, we introduce Motion Chain of Thought (MCoT), a structured reasoning pathway that makes object trajectories through discrete \\texttt{<motion/>} tag summarizing per-object direction, speed, and scale (of velocity) change to explicitly connect grounded observations into trajectories. To train Motion-o, we design a reward function that compels the model to reason directly over visual evidence, all while requiring no architectural modifications. Empirical results demonstrate that Motion-o improves spatial-temporal grounding and trajectory prediction while remaining fully compatible with existing frameworks, establishing motion reasoning as a critical extension for evidence-based video understanding. Code is available at https://github.com/ostadabbas/Motion-o.",
+      "authors": [
+        "Bishoy Galoaa",
+        "Shayda Moezzi",
+        "Xiangyu Bai",
+        "Sarah Ostadabbas"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-19T13:00:29+00:00",
+      "link": "https://arxiv.org/pdf/2603.18856v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "motion-centric video understanding and trajectory-grounded reasoning",
+      "llm_evidence_cn": "以运动为中心的视频理解和基于轨迹的推理",
+      "llm_evidence": "以运动为中心的视频理解和基于轨迹的推理",
+      "canonical_evidence": "以运动为中心的视频理解和基于轨迹的推理",
+      "llm_tldr_en": "Motion-o introduces trajectory-grounded reasoning to improve how VLMs understand object motion in videos.",
+      "llm_tldr_cn": "Motion-o 引入了基于轨迹的推理，以改进视觉语言模型对视频中物体运动的理解。",
+      "llm_tldr": "Motion-o 引入了基于轨迹的推理，以改进视觉语言模型对视频中物体运动的理解。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.19481v1",
+      "source": "arxiv",
+      "title": "Narrative Aligned Long Form Video Question Answering",
+      "abstract": "Recent progress in multimodal large language models (MLLMs) has led to a surge of benchmarks for long-video reasoning. However, most existing benchmarks rely on localized cues and fail to capture narrative reasoning, the ability to track intentions, connect distant events, and reconstruct causal chains across an entire movie. We introduce NA-VQA, a benchmark designed to evaluate deep temporal and narrative reasoning in long-form videos. NA-VQA contains 88 full-length movies and 4.4K open-ended question-answer pairs, each grounded in multiple evidence spans labeled as Short, Medium, or Far to assess long-range dependencies. By requiring generative, multi-scene answers, NA-VQA tests whether models can integrate dispersed narrative information rather than rely on shallow pattern matching. To address the limitations of existing approaches, we propose Video-NaRA, a narrative-centric framework that builds event-level chains and stores them in a structured memory for retrieval during reasoning. Extensive experiments show that state-of-the-art MLLMs perform poorly on questions requiring far-range evidence, highlighting the need for explicit narrative modeling. Video-NaRA improves long-range reasoning performance by up to 3 percent, demonstrating its effectiveness in handling complex narrative structures. We will release NA-VQA upon publication.",
+      "authors": [
+        "Rahul Jain",
+        "Keval Doshi",
+        "Burak Uzkent",
+        "Garin Kessler"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-19T21:23:15+00:00",
+      "link": "https://arxiv.org/pdf/2603.19481v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "benchmark for long-video narrative reasoning and causal chains",
+      "llm_evidence_cn": "长视频叙事推理和因果链基准",
+      "llm_evidence": "长视频叙事推理和因果链基准",
+      "canonical_evidence": "长视频叙事推理和因果链基准",
+      "llm_tldr_en": "Introduces NA-VQA, a benchmark for evaluating deep temporal and narrative reasoning in full-length movies.",
+      "llm_tldr_cn": "引入NA-VQA基准，用于评估完整电影中的深度时序和叙事推理能力。",
+      "llm_tldr": "引入NA-VQA基准，用于评估完整电影中的深度时序和叙事推理能力。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.20354v1",
+      "source": "arxiv",
+      "title": "Leum-VL Technical Report",
+      "abstract": "A short video succeeds not simply because of what it shows, but because of how it schedules attention -- yet current multimodal models lack the structural grammar to parse or produce this organization. Existing models can describe scenes, answer event-centric questions, and read on-screen text, but they are far less reliable at identifying timeline-grounded units such as hooks, cut rationales, shot-induced tension, and platform-facing packaging cues.   We propose SV6D (Structured Video in Six Dimensions), inspired by professional storyboard practice in film and television production, a representation framework that decomposes internet-native video into six complementary structural dimensions -- subject, aesthetics, camera language, editing, narrative, and dissemination -- with each label tied to physically observable evidence on the timeline. We formalize a unified optimization objective over SV6D that combines Hungarian-matched temporal alignment, dimension-wise semantic label distance, and quality regularization. Building on this framework, we present Leum-VL-8B, an 8B video-language model that realizes the SV6D objective through an expert-driven post-training pipeline, further refined through verifiable reinforcement learning on perception-oriented tasks.   Leum-VL-8B achieves 70.8 on VideoMME (w/o subtitles), 70.0 on MVBench, and 61.6 on MotionBench, while remaining competitive on general multimodal evaluations such as MMBench-EN. We also construct FeedBench, a benchmark for structure-sensitive short-video understanding. Our results indicate that the missing layer in video AI is not pixel generation but structural representation: grounded on the timeline, linked to visible evidence, and directly consumable by downstream workflows such as editing, retrieval, recommendation, and generation control, including text-heavy internet video formats with overlays and image-text layouts.",
+      "authors": [
+        "Yuxuan He",
+        "Chaiming Huang",
+        "Yifan Wu",
+        "Hongjun Wang",
+        "Chenkui Shen",
+        "Jifan Zhang",
+        "Long Li"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.AI"
+      ],
+      "published": "2026-03-20T12:48:26+00:00",
+      "link": "https://arxiv.org/pdf/2603.20354v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "representation framework for structured video dimensions",
+      "llm_evidence_cn": "结构化视频维度的表示框架",
+      "llm_evidence": "结构化视频维度的表示框架",
+      "canonical_evidence": "结构化视频维度的表示框架",
+      "llm_tldr_en": "Introduces SV6D, a framework to decompose video into six structural dimensions for better multimodal parsing.",
+      "llm_tldr_cn": "引入SV6D框架，将视频分解为六个结构维度，以实现更好的多模态解析。",
+      "llm_tldr": "引入SV6D框架，将视频分解为六个结构维度，以实现更好的多模态解析。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "annotation frameworks for video instruction datasets",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.22756v1",
+      "source": "arxiv",
+      "title": "MVPBench: A Multi-Video Perception Evaluation Benchmark for Multi-Modal Video Understanding",
+      "abstract": "The rapid progress of Large Language Models (LLMs) has spurred growing interest in Multi-modal LLMs (MLLMs) and motivated the development of benchmarks to evaluate their perceptual and comprehension abilities. Existing benchmarks, however, are limited to static images or single videos, overlooking the complex interactions across multiple videos. To address this gap, we introduce the Multi-Video Perception Evaluation Benchmark (MVPBench), a new benchmark featuring 14 subtasks across diverse visual domains designed to evaluate models on extracting relevant information from video sequences to make informed decisions. MVPBench includes 5K question-answering tests involving 2.7K video clips sourced from existing datasets and manually annotated clips. Extensive evaluations reveal that current models struggle to process multi-video inputs effectively, underscoring substantial limitations in their multi-video comprehension. We anticipate MVPBench will drive advancements in multi-video perception.",
+      "authors": [
+        "Purui Bai",
+        "Tao Wu",
+        "Jiayang Sun",
+        "Xinyue Liu",
+        "Huaibo Huang",
+        "Ran He"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-24T03:33:07+00:00",
+      "link": "https://arxiv.org/pdf/2603.22756v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multi-video perception benchmark and manual annotation",
+      "llm_evidence_cn": "多视频感知基准与人工标注",
+      "llm_evidence": "多视频感知基准与人工标注",
+      "canonical_evidence": "多视频感知基准与人工标注",
+      "llm_tldr_en": "Introduces MVPBench to evaluate MLLMs on complex interactions across multiple videos with 5K QA tests.",
+      "llm_tldr_cn": "推出 MVPBench 基准，包含 5000 个问答测试，用于评估多模态大模型在多视频间的感知与理解能力。",
+      "llm_tldr": "推出 MVPBench 基准，包含 5000 个问答测试，用于评估多模态大模型在多视频间的感知与理解能力。",
+      "llm_tags": [
+        "query:lvlm:composite"
+      ],
+      "matched_query_tag": "query:lvlm:composite",
+      "matched_query_text": "Papers central to 搜索当前大视频语言模型论文，了解高质量视频指示数据生成方法，如采样与标注设计, especially work that connects or combines: sampling strategies for video data collection; annotation frameworks for video instruction datasets; methods for building video instruction datasets; video comprehension and reasoning tasks; evaluating quality of video instruction data; synthetic video instruction data creation; current research on generating high quality video instruction data; sampling and annotation design for video instruction datasets; methodologies to create effective video language instruction data.",
+      "matched_requirement_id": "req-composite-lvlm",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.24558v1",
+      "source": "arxiv",
+      "title": "LensWalk: Agentic Video Understanding by Planning How You See in Videos",
+      "abstract": "The dense, temporal nature of video presents a profound challenge for automated analysis. Despite the use of powerful Vision-Language Models, prevailing methods for video understanding are limited by the inherent disconnect between reasoning and perception: they rely on static, pre-processed information and cannot actively seek raw evidence from video as their understanding evolves. To address this, we introduce LensWalk, a flexible agentic framework that empowers a Large Language Model reasoner to control its own visual observation actively. LensWalk establishes a tight reason-plan-observe loop where the agent dynamically specifies, at each step, the temporal scope and sampling density of the video it observes. Using a suite of versatile, Vision-Language Model based tools parameterized by these specifications, the agent can perform broad scans for cues, focus on specific segments for fact extraction, and stitch evidence from multiple moments for holistic verification. This design allows for progressive, on-demand evidence gathering that directly serves the agent's evolving chain of thought. Without requiring any model fine-tuning, LensWalk delivers substantial, plug-and-play performance gains on multiple model recipes, boosting their accuracy by over 5\\% on challenging long-video benchmarks like LVBench and Video-MME. Our analysis reveals that enabling an agent to control how it sees is key to unlocking more accurate, robust, and interpretable video reasoning.",
+      "authors": [
+        "Keliang Li",
+        "Yansong Li",
+        "Hongze Shen",
+        "Mengdi Liu",
+        "Hong Chang",
+        "Shiguang Shan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-25T17:38:54+00:00",
+      "link": "https://arxiv.org/pdf/2603.24558v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "agent dynamically specifies temporal scope and sampling density",
+      "llm_evidence_cn": "智能体动态指定时间范围和采样密度",
+      "llm_evidence": "智能体动态指定时间范围和采样密度",
+      "canonical_evidence": "智能体动态指定时间范围和采样密度",
+      "llm_tldr_en": "Introduces LensWalk, an agentic framework allowing LLMs to actively control video sampling and observation.",
+      "llm_tldr_cn": "提出LensWalk框架，使大模型能够主动控制视频的采样密度和观察范围以进行推理。",
+      "llm_tldr": "提出LensWalk框架，使大模型能够主动控制视频的采样密度和观察范围以进行推理。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling and annotation design for video instruction datasets",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.25163v1",
+      "source": "arxiv",
+      "title": "SportSkills: Physical Skill Learning from Sports Instructional Videos",
+      "abstract": "Current large-scale video datasets focus on general human activity, but lack depth of coverage on fine-grained activities needed to address physical skill learning. We introduce SportSkills, the first large-scale sports dataset geared towards physical skill learning with in-the-wild video. SportSkills has more than 360k instructional videos containing more than 630k visual demonstrations paired with instructional narrations explaining the know-how behind the actions from 55 varied sports. Through a suite of experiments, we show that SportSkills unlocks the ability to understand fine-grained differences between physical actions. Our representation achieves gains of up to 4x with the same model trained on traditional activity-centric datasets. Crucially, building on SportSkills, we introduce the first large-scale task formulation of mistake-conditioned instructional video retrieval, bridging representation learning and actionable feedback generation (e.g., \"here's my execution of a skill; which video clip should I watch to improve it?\"). Formal evaluations by professional coaches show our retrieval approach significantly advances the ability of video models to personalize visual instructions for a user query.",
+      "authors": [
+        "Kumar Ashutosh",
+        "Chi Hsuan Wu",
+        "Kristen Grauman"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-26T08:29:35+00:00",
+      "link": "https://arxiv.org/pdf/2603.25163v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Large-scale sports dataset with instructional narrations",
+      "llm_evidence_cn": "带有教学叙述的大规模体育视频数据集",
+      "llm_evidence": "带有教学叙述的大规模体育视频数据集",
+      "canonical_evidence": "带有教学叙述的大规模体育视频数据集",
+      "llm_tldr_en": "Introduces SportSkills, a large-scale dataset for physical skill learning from instructional videos.",
+      "llm_tldr_cn": "引入SportSkills，这是一个从教学视频中学习物理技能的大规模体育数据集。",
+      "llm_tldr": "引入SportSkills，这是一个从教学视频中学习物理技能的大规模体育数据集。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "methods for building video instruction datasets",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2603.00938v1",
+      "source": "arxiv",
+      "title": "Seeing Beyond 8bits: Subjective and Objective Quality Assessment of HDR-UGC Videos",
+      "abstract": "High Dynamic Range (HDR) user-generated (UGC) videos are rapidly proliferating across social platforms, yet most perceptual video quality assessment (VQA) systems remain tailored to Standard Dynamic Range (SDR). HDR has a higher bit depth, wide color gamut, and elevated luminance range, exposing distortions such as near-black crushing, highlight clipping, banding, and exposure flicker that amplify UGC artifacts and challenge SDR models. To catalyze progress, we curate Beyond8Bits, a large-scale subjective dataset of 44K videos from 6.5K sources with over 1.5M crowd ratings, spanning diverse scenes, capture conditions, and compression settings. We further introduce HDR-Q, the first Multimodal Large Language Model (MLLM) for HDR-UGC VQA. We propose (i) a novel HDR-aware vision encoder to produce HDR-sensitive embeddings, and (ii) HDR-Aware Policy Optimization (HAPO), an RL finetuning framework that anchors reasoning to HDR cues. HAPO augments GRPO via an HDR-SDR contrastive KL that encourages token reliance on HDR inputs and a Gaussian weighted regression reward for fine-grained MOS calibration. Across Beyond8Bits and public HDR-VQA benchmarks, HDR-Q delivers state-of-the-art performance.",
+      "authors": [
+        "Shreshth Saini",
+        "Bowen Chen",
+        "Neil Birkbeck",
+        "Yilin Wang",
+        "Balu Adsumilli",
+        "Alan C. Bovik"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-01T06:02:40+00:00",
+      "link": "https://arxiv.org/pdf/2603.00938v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "subjective and objective quality assessment of HDR-UGC videos",
+      "llm_evidence_cn": "HDR-UGC视频的主客观质量评估",
+      "llm_evidence": "HDR-UGC视频的主客观质量评估",
+      "canonical_evidence": "HDR-UGC视频的主客观质量评估",
+      "llm_tldr_en": "Curates a large-scale HDR video quality dataset and introduces the first MLLM for HDR video quality assessment.",
+      "llm_tldr_cn": "构建了大规模HDR视频质量数据集，并推出了首个用于HDR视频质量评估的多模态大模型。",
+      "llm_tldr": "构建了大规模HDR视频质量数据集，并推出了首个用于HDR视频质量评估的多模态大模型。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "evaluating quality of video instruction data",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2603.01400v1",
+      "source": "arxiv",
+      "title": "Token Reduction via Local and Global Contexts Optimization for Efficient Video Large Language Models",
+      "abstract": "Video Large Language Models (VLLMs) demonstrate strong video understanding but suffer from inefficiency due to redundant visual tokens. Existing pruning primary targets intra-frame spatial redundancy or prunes inside the LLM with shallow-layer overhead, yielding suboptimal spatiotemporal reduction and underutilizing long-context compressibility. All of them often discard subtle yet informative context from merged or pruned tokens. In this paper, we propose a new perspective that elaborates token \\textbf{A}nchors within intra-frame and inter-frame to comprehensively aggregate the informative contexts via local-global \\textbf{O}ptimal \\textbf{T}ransport (\\textbf{AOT}). Specifically, we first establish local- and global-aware token anchors within each frame under the attention guidance, which then optimal transport aggregates the informative contexts from pruned tokens, constructing intra-frame token anchors. Then, building on the temporal frame clips, the first frame within each clip will be considered as the keyframe anchors to ensemble similar information from consecutive frames through optimal transport, while keeping distinct tokens to represent temporal dynamics, leading to efficient token reduction in a training-free manner. Extensive evaluations show that our proposed AOT obtains competitive performances across various short- and long-video benchmarks on leading video LLMs, obtaining substantial computational efficiency while preserving temporal and visual fidelity. Project webpage: \\href{https://tyroneli.github.io/AOT}{AOT}.",
+      "authors": [
+        "Jinlong Li",
+        "Liyuan Jiang",
+        "Haonan Zhang",
+        "Nicu Sebe"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-02T03:06:40+00:00",
+      "link": "https://arxiv.org/pdf/2603.01400v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "token reduction and sampling for video models",
+      "llm_evidence_cn": "视频模型的Token减少与采样",
+      "llm_evidence": "视频模型的Token减少与采样",
+      "canonical_evidence": "视频模型的Token减少与采样",
+      "llm_tldr_en": "Optimizes token reduction in Video LLMs using local-global optimal transport to maintain informative context.",
+      "llm_tldr_cn": "利用局部-全局最优传输优化视频大模型的Token减少，保留关键上下文。",
+      "llm_tldr": "利用局部-全局最优传输优化视频大模型的Token减少，保留关键上下文。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.05437v1",
+      "source": "arxiv",
+      "title": "SAIL: Similarity-Aware Guidance and Inter-Caption Augmentation-based Learning for Weakly-Supervised Dense Video Captioning",
+      "abstract": "Weakly-Supervised Dense Video Captioning aims to localize and describe events in videos trained only on caption annotations, without temporal boundaries. Prior work introduced an implicit supervision paradigm based on Gaussian masking and complementary captioning. However, existing method focuses merely on generating non-overlapping masks without considering their semantic relationship to corresponding events, resulting in simplistic, uniformly distributed masks that fail to capture semantically meaningful regions. Moreover, relying solely on ground-truth captions leads to sub-optimal performance due to the inherent sparsity of existing datasets. In this work, we propose SAIL, which constructs semantically-aware masks through cross-modal alignment. Our similarity aware training objective guides masks to emphasize video regions with high similarity to their corresponding event captions. Furthermore, to guide more accurate mask generation under sparse annotation settings, we introduce an LLM-based augmentation strategy that generates synthetic captions to provide additional alignment signals. These synthetic captions are incorporated through an inter-mask mechanism, providing auxiliary guidance for precise temporal localization without degrading the main objective. Experiments on ActivityNet Captions and YouCook2 demonstrate state-of-the-art performance on both captioning and localization metrics.",
+      "authors": [
+        "Ye-Chan Kim",
+        "SeungJu Cha",
+        "Si-Woo Kim",
+        "Minju Jeon",
+        "Hyungee Kim",
+        "Dong-Jin Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-05T17:59:58+00:00",
+      "link": "https://arxiv.org/pdf/2603.05437v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "weakly-supervised dense video captioning and data augmentation",
+      "llm_evidence_cn": "弱监督密集视频字幕生成与数据增强",
+      "llm_evidence": "弱监督密集视频字幕生成与数据增强",
+      "canonical_evidence": "弱监督密集视频字幕生成与数据增强",
+      "llm_tldr_en": "Proposes SAIL to improve dense video captioning using similarity-aware guidance and inter-caption augmentation.",
+      "llm_tldr_cn": "提出 SAIL 框架，利用相似性感知引导和字幕间增强来改进弱监督密集视频字幕生成。",
+      "llm_tldr": "提出 SAIL 框架，利用相似性感知引导和字幕间增强来改进弱监督密集视频字幕生成。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "methods for building video instruction datasets",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.03066v1",
+      "source": "arxiv",
+      "title": "EduVQA: Benchmarking AI-Generated Video Quality Assessment for Education",
+      "abstract": "While AI-generated content (AIGC) models have achieved remarkable success in generating photorealistic videos, their potential to support visual, story-driven learning in education remains largely untapped. To close this gap, we present EduAIGV-1k, the first benchmark dataset and evaluation framework dedicated to assessing the quality of AI-generated videos (AIGVs) designed to teach foundational math concepts, such as numbers and geometry, to young learners. EduAIGV-1k contains 1,130 short videos produced by ten state-of-the-art text-to-video (T2V) models using 113 pedagogy-oriented prompts. Each video is accompanied by rich, fine-grained annotations along two complementary axes: (1) Perceptual quality, disentangled into spatial and temporal fidelity, and (2) Prompt alignment, labeled at the word-level and sentence-level to quantify the degree to which each mathematical concept in the prompt is accurately grounded in the generated video. These fine-grained annotations transform each video into a multi-dimensional, interpretable supervision signal, far beyond a single quality score. Leveraging this dense feedback, we introduce EduVQA for both perceptual and alignment quality assessment of AIGVs. In particular, we propose a Structured 2D Mixture-of-Experts (S2D-MoE) module, which enhances the dependency between overall quality and each sub-dimension by shared experts and dynamic 2D gating matrix. Extensive experiments show our EduVQA consistently outperforms existing VQA baselines. Both our dataset and code will be publicly available.",
+      "authors": [
+        "Baoliang Chen",
+        "Xinlong Bu",
+        "Lingyu Zhu",
+        "Hanwei Zhu",
+        "Xiangjie Sui"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-03T15:05:27+00:00",
+      "link": "https://arxiv.org/pdf/2603.03066v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "evaluation framework for assessing quality of AI-generated videos",
+      "llm_evidence_cn": "评估AI生成视频质量的评估框架",
+      "llm_evidence": "评估AI生成视频质量的评估框架",
+      "canonical_evidence": "评估AI生成视频质量的评估框架",
+      "llm_tldr_en": "Introduces EduAIGV-1k, a benchmark for evaluating the quality of AI-generated educational videos.",
+      "llm_tldr_cn": "推出EduAIGV-1k，这是一个用于评估AI生成的教育视频质量的基准数据集和框架。",
+      "llm_tldr": "推出EduAIGV-1k，这是一个用于评估AI生成的教育视频质量的基准数据集和框架。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "evaluating quality of video instruction data",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2603.02096v1",
+      "source": "arxiv",
+      "title": "FluxMem: Adaptive Hierarchical Memory for Streaming Video Understanding",
+      "abstract": "This paper presents FluxMem, a training-free framework for efficient streaming video understanding. FluxMem adaptively compresses redundant visual memory through a hierarchical, two-stage design: (1) a Temporal Adjacency Selection (TAS) module removes redundant visual tokens across adjacent frames, and (2) a Spatial Domain Consolidation (SDC) module further merges spatially repetitive regions within each frame into compact representations. To adapt effectively to dynamic scenes, we introduce a self-adaptive token compression mechanism in both TAS and SDC, which automatically determines the compression rate based on intrinsic scene statistics rather than manual tuning. Extensive experiments demonstrate that FluxMem achieves new state-of-the-art results on existing online video benchmarks, reaching 76.4 on StreamingBench and 67.2 on OVO-Bench under real-time settings, while reducing latency by 69.9% and peak GPU memory by 34.5% on OVO-Bench. Furthermore, it maintains strong offline performance, achieving 73.1 on MLVU while using 65% fewer visual tokens.",
+      "authors": [
+        "Yiweng Xie",
+        "Bo He",
+        "Junke Wang",
+        "Xiangyu Zheng",
+        "Ziyi Ye",
+        "Zuxuan Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-02T17:16:47+00:00",
+      "link": "https://arxiv.org/pdf/2603.02096v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "adaptive hierarchical memory and token compression for video understanding",
+      "llm_evidence_cn": "用于视频理解的自适应分层记忆和令牌压缩",
+      "llm_evidence": "用于视频理解的自适应分层记忆和令牌压缩",
+      "canonical_evidence": "用于视频理解的自适应分层记忆和令牌压缩",
+      "llm_tldr_en": "A training-free framework that adaptively compresses redundant visual tokens for efficient video understanding.",
+      "llm_tldr_cn": "一种无需训练的框架，通过自适应压缩冗余视觉令牌来实现高效的视频理解。",
+      "llm_tldr": "一种无需训练的框架，通过自适应压缩冗余视觉令牌来实现高效的视频理解。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.08289v1",
+      "source": "arxiv",
+      "title": "Novel Semantic Prompting for Zero-Shot Action Recognition",
+      "abstract": "Zero-shot action recognition relies on transferring knowledge from vision-language models to unseen actions using semantic descriptions. While recent methods focus on temporal modeling or architectural adaptations to handle video data, we argue that semantic prompting alone provides a strong and underexplored signal for zero-shot action understanding. We introduce SP-CLIP, a lightweight framework that augments frozen vision-language models with structured semantic prompts describing actions at multiple levels of abstraction, such as intent, motion, and object interaction. Without modifying the visual encoder or learning additional parameters, SP-CLIP aligns video representations with enriched textual semantics through prompt aggregation and consistency scoring. Experiments across standard benchmarks show that semantic prompting substantially improves zero-shot action recognition, particularly for fine-grained and compositional actions, while preserving the efficiency and generalization of pretrained models.",
+      "authors": [
+        "Salman Iqbal",
+        "Waheed Rehman"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-09T12:07:55+00:00",
+      "link": "https://arxiv.org/pdf/2603.08289v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "semantic prompting for zero-shot action understanding",
+      "llm_evidence_cn": "用于零样本动作理解的语义提示",
+      "llm_evidence": "用于零样本动作理解的语义提示",
+      "canonical_evidence": "用于零样本动作理解的语义提示",
+      "llm_tldr_en": "Uses structured semantic prompts to align video representations with textual semantics for action recognition.",
+      "llm_tldr_cn": "利用结构化语义提示将视频表示与文本语义对齐，用于零样本动作识别。",
+      "llm_tldr": "利用结构化语义提示将视频表示与文本语义对齐，用于零样本动作识别。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.04349v1",
+      "source": "arxiv",
+      "title": "FocusGraph: Graph-Structured Frame Selection for Embodied Long Video Question Answering",
+      "abstract": "The ability to understand long videos is vital for embodied intelligent agents, because their effectiveness depends on how well they can accumulate, organize, and leverage long-horizon perceptual memories. Recently, multimodal LLMs have been gaining popularity for solving the long video understanding task due to their general ability to understand natural language and to leverage world knowledge. However, as the number of frames provided to an MLLM increases, the quality of its responses tends to degrade, and inference time grows. Therefore, when using MLLMs for long video understanding, a crucial step is selecting key frames from the video to answer user queries.   In this work, we develop FocusGraph, a framework for keyframe selection for question answering over long egocentric videos. It leverages a lightweight trainable Scene-Caption LLM Selector that selects query-relevant clips based on their graph-based captions, and a training-free method for selecting keyframes from these clips. Unlike existing methods, the proposed Scene-Caption LLM Selector does not rely on the original sequence of low-resolution frames; instead, it operates on a compact textual representation of the scene. We then design a training-free Patch-wise Sparse-Flow Retention (PSFR) method to select keyframes from the resulting sequence of clips, which are fed into an MLLM to produce the final answer. Together, these components enable FocusGraph to achieve state-of-the-art results on challenging egocentric long-video question answering benchmarks, including FindingDory and HourVideo, while significantly reducing inference time relative to baseline approaches.",
+      "authors": [
+        "Tatiana Zemskova",
+        "Solomon Andryushenko",
+        "Ilya Obrubov",
+        "Viktoriia Khoruzhaia",
+        "Ekaterina Eroshenko",
+        "Ekaterina Derevyanka",
+        "Dmitry Yudin"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-04T18:14:00+00:00",
+      "link": "https://arxiv.org/pdf/2603.04349v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Graph-structured frame selection for long video understanding in MLLMs.",
+      "llm_evidence_cn": "用于多模态大模型长视频理解的图结构帧选择方法。",
+      "llm_evidence": "用于多模态大模型长视频理解的图结构帧选择方法。",
+      "canonical_evidence": "用于多模态大模型长视频理解的图结构帧选择方法。",
+      "llm_tldr_en": "FocusGraph selects key frames to improve long video question answering efficiency and quality in MLLMs.",
+      "llm_tldr_cn": "FocusGraph 通过选择关键帧来提高多模态大模型在长视频问答中的效率和质量。",
+      "llm_tldr": "FocusGraph 通过选择关键帧来提高多模态大模型在长视频问答中的效率和质量。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "sampling strategies for video data collection",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2603.02748v1",
+      "source": "arxiv",
+      "title": "iGVLM: Dynamic Instruction-Guided Vision Encoding for Question-Aware Multimodal Understanding",
+      "abstract": "Despite the success of Large Vision--Language Models (LVLMs), most existing architectures suffer from a representation bottleneck: they rely on static, instruction-agnostic vision encoders whose visual representations are utilized in an invariant manner across different textual tasks. This rigidity hinders fine-grained reasoning where task-specific visual cues are critical. To address this issue, we propose iGVLM, a general framework for instruction-guided visual modulation. iGVLM introduces a decoupled dual-branch architecture: a frozen representation branch that preserves task-agnostic visual representations learned during pre-training, and a dynamic conditioning branch that performs affine feature modulation via Adaptive Layer Normalization (AdaLN). This design enables a smooth transition from general-purpose perception to instruction-aware reasoning while maintaining the structural integrity and stability of pre-trained visual priors. Beyond standard benchmarks, we introduce MM4, a controlled diagnostic probe for quantifying logical consistency under multi-query, multi-instruction settings. Extensive results show that iGVLM consistently enhances instruction sensitivity across diverse language backbones, offering a plug-and-play paradigm for bridging passive perception and active reasoning.",
+      "authors": [
+        "HanZpeng Liu",
+        "Yaqian Li",
+        "Zidan Wang",
+        "Shuoxi Zhang",
+        "Zihao Bo",
+        "Rinyoichi Takezoe",
+        "Kaiwen Long",
+        "Kun He"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-03-03T08:49:41+00:00",
+      "link": "https://arxiv.org/pdf/2603.02748v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "instruction-guided vision encoding for multimodal understanding",
+      "llm_evidence_cn": "用于多模态理解的指令引导视觉编码",
+      "llm_evidence": "用于多模态理解的指令引导视觉编码",
+      "canonical_evidence": "用于多模态理解的指令引导视觉编码",
+      "llm_tldr_en": "Introduces dynamic instruction-guided modulation to improve task-specific visual reasoning in LVLMs.",
+      "llm_tldr_cn": "引入动态指令引导调制，以改进LVLM中特定任务的视觉推理。",
+      "llm_tldr": "引入动态指令引导调制，以改进LVLM中特定任务的视觉推理。",
+      "llm_tags": [
+        "query:vlm-data:composite"
+      ],
+      "matched_query_tag": "query:vlm-data:composite",
+      "matched_query_text": "Papers central to 请帮我搜索当前的large video language model论文，我想要了解当前文献如何生成高质量的视频指示数据, especially work that connects or combines: d; l; creation of multimodal video-text datasets for training; techniques for video understanding and instruction alignment; instruction tuning strategies for video language models; methods for generating high quality video instruction data; current approaches to video instruction dataset creation; techniques for synthetic video instruction generation.",
+      "matched_requirement_id": "req-composite-vlm-data",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.09743v1",
+      "source": "arxiv",
+      "title": "LAP: A Language-Aware Planning Model For Procedure Planning In Instructional Videos",
+      "abstract": "Procedure planning requires a model to predict a sequence of actions that transform a start visual observation into a goal in instructional videos. While most existing methods rely primarily on visual observations as input, they often struggle with the inherent ambiguity where different actions can appear visually similar. In this work, we argue that language descriptions offer a more distinctive representation in the latent space for procedure planning. We introduce Language-Aware Planning (LAP), a novel method that leverages the expressiveness of language to bridge visual observation and planning. LAP uses a finetuned Vision Language Model (VLM) to translate visual observations into text descriptions and to predict actions and extract text embeddings. These text embeddings are more distinctive than visual embeddings and are used in a diffusion model for planning action sequences. We evaluate LAP on three procedure planning benchmarks: CrossTask, Coin, and NIV. LAP achieves new state-of-the-art performance across multiple metrics and time horizons by large margin, demonstrating the significant advantage of language-aware planning.",
+      "authors": [
+        "Lei Shi",
+        "Victor Aregbede",
+        "Andreas Persson",
+        "Martin Längkvist",
+        "Amy Loutfi",
+        "Stephanie Lowry"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-10T14:48:24+00:00",
+      "link": "https://arxiv.org/pdf/2603.09743v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "video comprehension and procedure planning tasks using VLM",
+      "llm_evidence_cn": "利用VLM进行视频理解与过程规划任务",
+      "llm_evidence": "利用VLM进行视频理解与过程规划任务",
+      "canonical_evidence": "利用VLM进行视频理解与过程规划任务",
+      "llm_tldr_en": "Leverages VLMs to translate instructional videos into language for better procedure planning.",
+      "llm_tldr_cn": "利用VLM将教学视频转化为语言描述，以实现更好的过程规划。",
+      "llm_tldr": "利用VLM将教学视频转化为语言描述，以实现更好的过程规划。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.04977v1",
+      "source": "arxiv",
+      "title": "Think, Then Verify: A Hypothesis-Verification Multi-Agent Framework for Long Video Understanding",
+      "abstract": "Long video understanding is challenging due to dense visual redundancy, long-range temporal dependencies, and the tendency of chain-of-thought and retrieval-based agents to accumulate semantic drift and correlation-driven errors. We argue that long-video reasoning should begin not with reactive retrieval, but with deliberate task formulation: the model must first articulate what must be true in the video for each candidate answer to hold. This thinking-before-finding principle motivates VideoHV-Agent, a framework that reformulates video question answering as a structured hypothesis-verification process. Based on video summaries, a Thinker rewrites answer candidates into testable hypotheses, a Judge derives a discriminative clue specifying what evidence must be checked, a Verifier grounds and tests the clue using localized, fine-grained video content, and an Answer agent integrates validated evidence to produce the final answer. Experiments on three long-video understanding benchmarks show that VideoHV-Agent achieves state-of-the-art accuracy while providing enhanced interpretability, improved logical soundness, and lower computational cost. We make our code publicly available at: https://github.com/Haorane/VideoHV-Agent.",
+      "authors": [
+        "Zheng Wang",
+        "Haoran Chen",
+        "Haoxuan Qin",
+        "Zhipeng Wei",
+        "Tianwen Qian",
+        "Cong Bai"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-05T09:16:07+00:00",
+      "link": "https://arxiv.org/pdf/2603.04977v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "long video reasoning and hypothesis-verification framework",
+      "llm_evidence_cn": "长视频推理与假设验证框架",
+      "llm_evidence": "长视频推理与假设验证框架",
+      "canonical_evidence": "长视频推理与假设验证框架",
+      "llm_tldr_en": "Presents VideoHV-Agent, a multi-agent framework that reformulates video QA as a hypothesis-verification process.",
+      "llm_tldr_cn": "提出 VideoHV-Agent 框架，将视频问答重新定义为结构化的假设验证过程，以提升长视频理解。",
+      "llm_tldr": "提出 VideoHV-Agent 框架，将视频问答重新定义为结构化的假设验证过程，以提升长视频理解。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2603.02872v1",
+      "source": "arxiv",
+      "title": "Think-as-You-See: Streaming Chain-of-Thought Reasoning for Large Vision-Language Models",
+      "abstract": "Large Vision Language Models (LVLMs) exhibit strong Chain-of-Thought (CoT) capabilities, yet most existing paradigms assume full-video availability before inference, a batch-style process misaligned with real-world video streams where information arrives sequentially. Motivated by the streaming nature of video data, we investigate two streaming reasoning paradigms for LVLMs. The first, an interleaved paradigm, alternates between receiving frames and producing partial reasoning but remains constrained by strictly ordered cache updates. To better match streaming inputs, we propose \\textbf{Think-as-You-See (TaYS)}, a unified framework enabling true concurrent reasoning. TaYS integrates parallelized CoT generation, stream-constrained training, and stream-parallel inference. It further employs temporally aligned reasoning units, streaming attention masks and positional encodings, and a dual KV-cache that decouples visual encoding from textual reasoning. We evaluate all paradigms on the Qwen2.5-VL family across representative video CoT tasks, including event dynamics analysis, causal reasoning, and thematic understanding. Experiments show that TaYS consistently outperforms both batch and interleaved baselines, improving reasoning performance while substantially reducing time-to-first-token (TTFT) and overall reasoning delay. These results demonstrate the effectiveness of data-aligned streaming reasoning in enabling efficient and responsive video understanding for LVLMs. We release our code at \\href{https://github.com/EIT-NLP/StreamingLLM/tree/main/TaYS}{this repository.}",
+      "authors": [
+        "Jialiang Zhang",
+        "Junlong Tong",
+        "Junyan Lin",
+        "Hao Wu",
+        "Yirong Sun",
+        "Yunpu Ma",
+        "Xiaoyu Shen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-03T11:24:55+00:00",
+      "link": "https://arxiv.org/pdf/2603.02872v1",
+      "tags": [
+        "keyword:LVLM",
+        "query:LVLM"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "streaming chain-of-thought reasoning for video language models",
+      "llm_evidence_cn": "视频语言模型的流式思维链推理",
+      "llm_evidence": "视频语言模型的流式思维链推理",
+      "canonical_evidence": "视频语言模型的流式思维链推理",
+      "llm_tldr_en": "Proposes TaYS, a framework for concurrent streaming reasoning in large vision-language models.",
+      "llm_tldr_cn": "提出TaYS框架，实现了大视觉语言模型中的并发流式推理。",
+      "llm_tldr": "提出TaYS框架，实现了大视觉语言模型中的并发流式推理。",
+      "llm_tags": [
+        "query:lvlm"
+      ],
+      "matched_query_tag": "query:lvlm",
+      "matched_query_text": "video comprehension and reasoning tasks",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

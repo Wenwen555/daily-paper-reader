@@ -1,0 +1,142 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-001.webp",
+      "caption": "Table 7: Prompt design for MCQ/NA section.",
+      "page": 26,
+      "index": 1,
+      "width": 688,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-002.webp",
+      "caption": "Fig. 8: Qwen3-VL-235B-A22B floor-plan prediction",
+      "page": 30,
+      "index": 2,
+      "width": 571,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-003.webp",
+      "caption": "Fig. 6: Gemini-3-pro floor-plan prediction",
+      "page": 30,
+      "index": 3,
+      "width": 567,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-004.webp",
+      "caption": "Fig. 7: GPT-5.2 floor-plan prediction",
+      "page": 30,
+      "index": 4,
+      "width": 571,
+      "height": 279
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-005.webp",
+      "caption": "Table 11: Extractive evaluation statistics. Mean performance and standard deviation (mean ± std), 95% confidence intervals (CI), and p-values across five runs for the extractive evaluation tasks. Statistical significance is evaluated using paired two-sided t-tests.",
+      "page": 29,
+      "index": 5,
+      "width": 725,
+      "height": 875
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-006.webp",
+      "caption": "Table 19: Scenario 8",
+      "page": 34,
+      "index": 6,
+      "width": 725,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-007.webp",
+      "caption": "Table 3: Performance on VAEX-Bench over 14 SOTA MLLMs compared with Random and Human baselines. † denotes a MoE model with 22B activated parameters.",
+      "page": 10,
+      "index": 7,
+      "width": 725,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-008.webp",
+      "caption": "Fig. 5: Visualization of floor-plan prediction. The upper and lower halves, separated by a bold dark line, represent the Ground Truth and Prediction, respectively. Colored icons denote functional areas, while grey regions indicate “None”.",
+      "page": 14,
+      "index": 8,
+      "width": 712,
+      "height": 348
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-009.webp",
+      "caption": "Fig. 2: Query-conditioned video construction pipeline: (Step 1) Scenario-based Query Construction, followed by (Step 2) Environment and Trajectory Design and (Step 3) Rendering and Video Recording.",
+      "page": 3,
+      "index": 9,
+      "width": 560,
+      "height": 324
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-010.webp",
+      "caption": "Table 16: Scenario 5",
+      "page": 33,
+      "index": 10,
+      "width": 725,
+      "height": 274
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-011.webp",
+      "caption": "Table 20: Scenario 9",
+      "page": 35,
+      "index": 11,
+      "width": 725,
+      "height": 352
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-012.webp",
+      "caption": "Table 10: Abstractive evaluation statistics. Mean performance and standard deviation (mean ± std), 95% confidence intervals (CI), and p-values across five runs for the abstractive evaluation tasks. Statistical significance is evaluated using paired twosided t-tests.",
+      "page": 28,
+      "index": 12,
+      "width": 725,
+      "height": 875
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-013.webp",
+      "caption": "Fig. 4: Temporal bottleneck in multi-hop sub-tasks. The outer circle represents the pass/fail ratio for Hop 1 (Blue: Pass, Pink: Fail). The inner ring shows the conditional pass rate for Hop 2 among the cases that passed Hop 1 (Green: Pass, Yellow: Fail).",
+      "page": 13,
+      "index": 13,
+      "width": 704,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-014.webp",
+      "caption": "Table 14: Scenario 3",
+      "page": 32,
+      "index": 14,
+      "width": 725,
+      "height": 346
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-015.webp",
+      "caption": "Table 8: Prompt design for LLM-Judge section.",
+      "page": 27,
+      "index": 15,
+      "width": 688,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-016.webp",
+      "caption": "Table 9: Prompt design for floor-plan prediction section.",
+      "page": 27,
+      "index": 16,
+      "width": 688,
+      "height": 422
+    },
+    {
+      "url": "assets/figures/arxiv/2603.13091v1/fig-017.webp",
+      "caption": "Table 12: Scenario 1",
+      "page": 31,
+      "index": 17,
+      "width": 725,
+      "height": 275
+    }
+  ]
+}

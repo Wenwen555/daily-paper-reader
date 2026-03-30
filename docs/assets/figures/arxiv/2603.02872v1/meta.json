@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-001.webp",
+      "caption": "Figure 1. Conventional LVLM reasoning adheres to the batch thinking paradigm, deferring inference until the entire input is received. This approach often leads to high latency and uneven attention allocation across inputs. In contrast, our proposed streaming thinking paradigm enables LVLMs to reason concurrently with input reception, thereby reducing latency and ensuring consistency between attention and input order.",
+      "page": 1,
+      "index": 1,
+      "width": 496,
+      "height": 411
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-002.webp",
+      "caption": "Table 4. Training hyperparameters for TaYS.",
+      "page": 13,
+      "index": 2,
+      "width": 433,
+      "height": 414
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-003.webp",
+      "caption": "Figure 12. Prompt template for subjective evaluation.",
+      "page": 13,
+      "index": 3,
+      "width": 494,
+      "height": 316
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-004.webp",
+      "caption": "Figure 2. Overview of the two-step process for generating Streaming Video CoT. Step 1 Adjust the frame ID while maintaining frame caption alignment. Step 2 Generate a progressive frame aware trajectory using the original annotations.",
+      "page": 4,
+      "index": 4,
+      "width": 494,
+      "height": 406
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-005.webp",
+      "caption": "Table 3. Distribution of task categories in training and test sets.",
+      "page": 12,
+      "index": 5,
+      "width": 492,
+      "height": 344
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-006.webp",
+      "caption": "Figure 11. Prompt template for CoT inference.",
+      "page": 12,
+      "index": 6,
+      "width": 492,
+      "height": 266
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-007.webp",
+      "caption": "Figure 9. Distribution of keyframe counts per sample.",
+      "page": 12,
+      "index": 7,
+      "width": 485,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-008.webp",
+      "caption": "Figure 10. Prompt template for QA construction.",
+      "page": 12,
+      "index": 8,
+      "width": 494,
+      "height": 277
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02872v1/fig-009.webp",
+      "caption": "Figure 3. Overview of the streaming reasoning framework. (a) Parallel video reasoning KV caches enable concurrent visual encoding and reasoning generation via dynamic merge and split operations. (b) The streaming attention mask enforces causal alignment between frames and reasoning steps. (c) During inference, parallel information flow reduces attention path length and alleviates sequential blocking compared with interleaved paradigms.",
+      "page": 5,
+      "index": 9,
+      "width": 1033,
+      "height": 579
+    }
+  ]
+}

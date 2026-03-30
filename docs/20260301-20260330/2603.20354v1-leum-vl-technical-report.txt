@@ -1,0 +1,886 @@
+Title: Leum-VL Technical Report
+
+URL Source: https://arxiv.org/pdf/2603.20354v1
+
+Published Time: Tue, 24 Mar 2026 00:09:45 GMT
+
+Number of Pages: 27
+
+Markdown Content:
+2026-03-24 
+
+# Leum-VL Technical Report 
+
+Yuxuan He ∗, Chaiming Huang ∗†, Yifan Wu ∗, Hongjun Wang ∗,Chenkui Shen, Jifan Zhang, Long Li Hainan Sihe Data Technology Co., Ltd. 
+
+https://huggingface.co/leum-team 
+
+https://modelscope.cn/organization/leum-team 
+
+https://github.com/leum-team/leum-vl 
+
+# Abstract 
+
+A short video succeeds not simply because of what it shows, but because of how it sched-ules attention—yet current multimodal models lack the structural grammar to parse or produce this organization. Existing models can describe scenes, answer event-centric questions, and read on-screen text, but they are far less reliable at identifying timeline-grounded units such as hooks, cut rationales, shot-induced tension, and platform-facing packaging cues. We propose SV6D (Structured Video in Six Dimensions), inspired by professional story-board practice in film and television production, a representation framework that de-composes internet-native video into six complementary structural dimensions—subject, aesthetics, camera language, editing, narrative, and dissemination—with each label tied to physically observable evidence on the timeline. We formalize a unified opti-mization objective over SV6D that combines Hungarian-matched temporal alignment, dimension-wise semantic label distance, and quality regularization. Building on this framework, we present Leum-VL-8B, an 8B video-language model that realizes the SV6D objective through an expert-driven post-training pipeline, further refined through verifiable reinforcement learning on perception-oriented tasks. Leum-VL-8B achieves 70.8 on VideoMME (w/o subtitles), 70.0 on MVBench, and 61.6 on MotionBench, while remaining competitive on general multimodal evaluations such as MMBench-EN. We also construct FeedBench, a benchmark for structure-sensitive short-video understanding. Our results indicate that the missing layer in video AI is not pixel generation but structural representation: grounded on the timeline, linked to visible evidence, and directly consumable by downstream workflows such as editing, retrieval, recommendation, and generation control, including text-heavy internet video formats with overlays and image-text layouts. Video-MME      
+
+> (w/o sub.)
+> MVBench TempCompass MotionBench LongVideo
+> Bench
+> Tomato
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> 80
+> Score
+> 70.7 70.0
+> 74.3
+> 61.6
+> 64.6
+> 36.7
+> 71.4
+> 68.7
+> 74.3
+> 56.9
+> 62.4
+> 35.7
+> 73.0
+> 56.9
+> 75.5
+> 55.1
+> 66.0
+> 33.0
+> 68.2 68.4
+> 72.3
+> 59.0
+> 65.7
+> 30.0
+> 67.9
+> 60.5
+> 72.7
+> 59.7
+> 63.9
+> 29.8
+> Leum-VL-8B
+> Qwen3-VL-8B
+> Keye-VL-8B Thinking
+> GLM-4.1V-9B Thinking
+> MiniCPM-V-4.5-8B
+
+Figure 1: Video understanding benchmark comparison of Leum-VL-8B against 8B-scale models. 
+
+> ∗
+
+Core contribution. †Corresponding author: chaiming@sihe.ai 
+
+1
+
+> arXiv:2603.20354v1 [cs.MM] 20 Mar 2026
+
+# 1 Introduction 
+
+A short video succeeds not simply because of what it shows, but because of how it schedules attention: the opening hook, the rhythm created by shot-size transitions, the release of tension through editing, the guidance provided by subtitles and stickers. These are not decorative choices—they constitute the 
+
+structural grammar of video, the layer that professional directors and editors manipulate every day but that current video AI almost entirely ignores. Existing multimodal models can describe what appears in a frame, answer event-centric questions, and recognize on-screen text, but when faced with structural questions— Why does the cut happen here? What narrative function does this segment serve? What dissemination strategy does this shot choice support? —their answers are often generic platitudes or plausible-sounding “structural hallucinations” that cannot be traced back to any concrete evidence on the timeline. We argue that the core missing piece is not larger models or more data, but an explicitly manipulable grammar layer for visual narrative .This grammar layer is not a new invention. In professional film and television production, the storyboard 
+
+has long played this role: it is the central coordination document for crews of hundreds, where a single storyboard entry simultaneously encodes subject blocking, camera setup, aesthetic intent, editing logic, narrative function, and audience-facing strategy. These are not six independent annotation tasks but six facets of a single creative specification—together they answer “why this shot is composed this way.” Freytag formalized the dramatic tension arc in narrative structure as early as 1863 Freytag (1863); the storyboard extends this principle to the full production stack. Yet no prior work has systematically formalized the storyboard as a computable, trainable, machine-consumable representation . This is precisely what we do. This gap is especially pronounced in internet-native short videos . Unlike feature films, short videos compress setup, progression, and climax into a few seconds; success depends not only on content but on how information is released and packaged over time—opening tension design, editing rhythm, subtitle overlays, persona markers, interaction prompts. This is even more evident in text-heavy internet formats, where stickers, embedded UI text, and image-text carousel layouts carry much of the semantic load. Current training and evaluation paradigms only partially cover these needs. Dense captioning covers semantics but not shot grammar or narrative role; shot boundary detection captures physical cuts but not their function; aesthetic assessment, narrative labeling, and dissemination analysis are often treated as isolated subtasks rather than coordinated layers on a shared timeline. The result is that model outputs appear reasonable but are difficult to audit or directly consume downstream. We argue that a model has not truly understood a video unless it can anchor its claims on the timeline and link them to observable evidence. 
+
+We propose SV6D (Structured Video in Six Dimensions), a representation framework that formalizes internet-video understanding as timeline-grounded structural prediction. SV6D decomposes video into six complementary structural dimensions— subject , aesthetics , camera language , editing , narrative , and 
+
+observable dissemination strategy —with each label anchored on the timeline and linked to physically observable evidence. The first five dimensions characterize on-screen content and visual-temporal organization; the sixth focuses on visible, platform-facing packaging signals (e.g., opening tension design, persona markers, interaction prompts) rather than latent dissemination effects. We define a unified optimization objective over SV6D that combines Hungarian-matched temporal alignment, dimension-wise semantic label distance, and quality regularization. Building on this framework, we train Leum-VL-8B , an 8B video-language model that realizes the SV6D objective through an expert-driven post-training pipeline combining supervised fine-tuning and verifiable reinforcement learning on perception-oriented tasks. We also construct FeedBench , a benchmark for structure-sensitive short-video understanding. Experiments show that Leum-VL-8B achieves strong performance on video understanding evaluations (VideoMME 70.8, MVBench 70.0, MotionBench 61.6) while remaining competitive on general multimodal benchmarks. Our contributions are fourfold: 1. We formulate internet-video understanding as timeline-grounded structural parsing , shifting the objective from free-form commentary to timestamp-aligned, machine-consumable representation. 2. We propose SV6D , a six-dimensional schema inspired by professional storyboard practice that formalizes the storyboard as a trainable representation, with a unified optimization objective combining temporal alignment, dimension-wise label matching, and quality regularization. 3. We develop Leum-VL-8B and construct FeedBench , demonstrating strong gains on video-centric and structure-sensitive tasks while maintaining competitive general multimodal performance. 24. We demonstrate a highly cost-effective post-training paradigm: Leum-VL-8B achieves state-of-the-art structural parsing using only 4,800 GPU hours .
+
+# 2 Structured Video in Six Dimensions (SV6D) 
+
+This section formalizes SV6D , the representation framework that underpins our approach to cinematic video understanding. We define semantic shots as the minimal composable units of visual storytelling, introduce a six-dimensional label schema grounded in film theory and production practice, and derive a unified optimization objective that connects temporal alignment, structural label matching, and output quality regularization. 
+
+2.1 Video as a Multimodal Time Series 
+
+Let V denote a video. Its observation comprises three components: • Visual stream : a frame sequence X = {x(t) | t ∈ [0, T]}, or in discrete form {xt}Tf
+
+> t=1
+
+.• Audio stream (optional): A = {a(t)}.• Metadata : M (frame rate, resolution, aspect ratio, platform type, whether AIGC-generated, etc .). Our focus is not on per-frame recognition (“what is present”), but rather on how these observations are organized into composable narrative units, and what intentions underlie those organizational decisions .
+
+2.2 Temporal Primitives: Semantic Shots and Skeleton Segments 2.2.1 Semantic Shots (Shot Tokens) 
+
+Traditional shot boundary detection defines a shot as the frame span between two physical cuts. We adopt a definition closer to creative practice and understanding: 
+
+Definition 1 (Semantic Shot) A semantic shot Si = [ tsi , tei ] is a maximal contiguous interval on the timeline such that a dominant 
+
+creative continuity unit u ∈ { motion unit, emotional unit, narrative-action unit } (1) remains unbroken within the interval, and the boundary tei (equivalently tsi+1) corresponds to the 
+
+minimal structural change point that disrupts that dominant unit. The semantic shot sequence {Si}Ni=1 forms a partition of [0, T]: non-overlapping and gap-free. Cru-cially, shot boundaries mark creative-structural transitions, which need not coincide with pixel-level discontinuities. 
+
+2.2.2 Shot-Aligned Skeleton Segments (Discourse Structure) 
+
+Short-form videos and advertisements are typically organized first by functional segments (e.g. exposition, rising action, climax), with shot-level cinematography serving as the carrier. We elevate the skeleton to a first-class citizen, but operationalize it as taxonomy-controlled grouping over the shot token sequence rather than free-form span annotation on the continuous timeline. 
+
+Definition 2 (Shot-Aligned Skeleton) Given a semantic shot sequence {Si}Ni=1, select a discourse skeleton taxonomy τ (i.e. a 
+
+skeleton_type ) with segment-function label set Rτ . Assign each shot a segment-function la-bel: 
+
+ri ∈ R τ , i = 1, . . . , N. (2) For the default dramatic_arc taxonomy, following Freytag’s pyramid Freytag (1863): 
+
+Rdramatic_arc = { exposition, rising action, climax, falling action, dénouement, other }. (3) Other taxonomies (e.g. three_act , ki_sh¯ o_ten_ketsu , tutorial ) define their own Rτ .3The skeleton segment sequence {Gj}Kj=1 is obtained by maximal contiguous merging of the shot-level label sequence {ri}Ni=1. Each segment Gj corresponds to a contiguous shot range [isj , iej ] satisfying: 1. Coverage & non-overlap (shot-index partition): is 
+
+> 1
+
+= 1, ieK = N, and iej + 1 = isj+1 for all j.2. Intra-segment homogeneity : ri = seg_type (Gj) for all i ∈ [isj , iej ].3. Maximality : adjacent segments have distinct seg_type (otherwise they would be merged). 4. Time boundaries as derived quantities : τsj = tsisj
+
+, τej = teiej
+
+.
+
+2.3 Six-Dimensional Schema 
+
+Each semantic shot Si is annotated with labels from six complementary structural dimensions, denoted 
+
+li = ( li,1 , . . . , li,6 ) where li,k ∈ L k. Together, these dimensions capture distinct layers of how a video is organized and communicated over time. 
+
+Dimension 1: Camera Language (L1). This dimension characterizes how a scene is physically framed and captured, covering shot size, camera position, shooting angle, lens focal length, camera movement, and depth of field. Each sub-dimension is defined over a closed label space with expert-derived confusion neighborhoods (e.g., medium close-up vs. medium shot , smooth tracking vs. pan/tilt ). Formally, L1 =
+
+Lshot_size × L cam_pos × L angle × L focal × L movement × L dof .
+
+Dimension 2: Aesthetics (L2). This dimension captures the visually expressive properties that shape attention and interpretation: light source nature, light direction, light hardness, contrast, saturation, color temperature, key/tone, composition, and visual rhythm. Labels are grounded in physically observable evidence and span nine sub-dimensions with 41 canonical tags. Formally, L2 = Llight_src × L light_dir ×Lhardness × L contrast × L saturation × L color_temp × L key × L comp × L rhythm .
+
+Dimension 3: Editing (L3). This dimension covers the structural logic of how shots are assembled: editing logic (16 labels including continuity cut, montage, jump cut, match cut, etc .), editing effects (19 labels), and transition type (organized into four groups: base, opacity & light, motion & displacement, and distortion & glitch). Timestamp-anchored items are used for boundary-sensitive judgments such as cut rationale. Formally, L3 = Ledit_logic × L edit_effect × L transition .
+
+Dimension 4: Subject Analysis (L4). This dimension characterizes who or what is foregrounded, combining framing type (over-the-shoulder, insert, subjective/POV, etc .) with subject configuration (single-person, two-person, group, none). Invalid combinations serve as quality-control signals during annotation. Formally, L4 = Lframing × L config .
+
+Dimension 5: Narrative (L5). This dimension labels the functional role of each temporal segment in the information-release arc: exposition, rising action, escalation, peripeteia, climax, falling action, and dénouement. It relies heavily on ordered-transition items, as many meaningful narrative units are transitional rather than static. Formally, L5 = Lseg_func , where Lseg_func is coupled with the skeleton taxonomy Rτ (Definition 2). 
+
+Dimension 6: Dissemination (L6). This dimension is restricted to visible, platform-facing packaging cues: retention engine labels (observable tension devices, interaction prompts, engagement cues) and comment alignment tasks. Crucially, it targets observable strategy rather than latent virality or platform outcome. Formally, L6 = Lretention × L comment_align .Together, these six dimensions form a shared timeline-grounded schema. Subject, aesthetics, and camera language characterize what appears on screen and how it is visually constructed. Editing and narrative capture how information is segmented, sequenced, and made consequential over time. Dissemination captures how content is packaged for platform-native circulation. All six layers are defined on a common timeline, enabling a unified structural parse rather than disconnected subtask outputs. These six dimensions form a joint structured annotation over each semantic shot, analogous to a professional storyboard entry that simultaneously specifies subject blocking, camera setup, aesthetic intent, editing logic, narrative function, and dissemination strategy. The SV6D parse of a video is therefore a single structured prediction task producing a complete shot-aligned document: 
+
+Dobs =    Si, li, ri
+
+ Ni=1 (4) rather than six independent classification problems. All six layers share a common timeline, enabling cross-dimensional causal reasoning—for example, why a particular shot size is chosen given the narrative function and dissemination intent of the enclosing segment. We refer to Dobs as the observed structural document ; this symbol is reused in the data pipeline (Section 3.1) and training objective (Section 5.2). 42.4 SV6D Optimization Objective 
+
+We now formalize the optimization objective for training a model to produce SV6D-compliant structural parses. Given a video V, the model predicts a shot sequence ˆS = { ˆSi} ˆNi=1 with per-shot label vectors ˆli = ( ˆli,1 , . . . , ˆli,6 ). The ground-truth annotation is S∗ = {S∗ 
+
+> j
+
+}N∗ 
+
+> j=1
+
+with labels l∗ 
+
+> j
+
+. The SV6D loss decomposes into three terms: 
+
+LSV6D = Lalign 
+
+| {z } 
+
+> temporal alignment
+
++ Lstruct 
+
+| {z } 
+
+> structural matching
+
++ Lreg 
+
+|{z} 
+
+> quality regularization
+
+(5) 
+
+2.4.1 Temporal Alignment via Hungarian Matching 
+
+Since the predicted and ground-truth shot sequences may differ in cardinality ( ˆN̸ = N∗), we first establish a correspondence via optimal bipartite matching Kuhn (1955). Define the pairwise cost matrix 
+
+C ∈ R ˆN×N∗
+
+:
+
+Cij = α  1 − IoU ( ˆSi, S∗ 
+
+> j
+
+) + ( 1 − α) ∆label (ˆli, l∗ 
+
+> j
+
+) (6) where IoU ( ˆSi, S∗ 
+
+> j
+
+) = | ˆSi ∩S∗     
+
+> j||ˆSi∪S∗
+> j|
+
+is the temporal intersection-over-union, ∆label is the aggregate label distance defined below, and α ∈ (0, 1 ) balances temporal and structural costs. The Hungarian algorithm Kuhn (1955) yields the optimal assignment σ∗:
+
+σ∗ = arg min    
+
+> σ∈Π(ˆN,N∗)
+
+# ∑
+
+> (i,j)∈σ
+
+Cij (7) where Π( ˆN, N∗) denotes the set of feasible partial bijections (allowing unmatched shots when ˆN̸ = N∗). Let M = {(i, σ∗(i)) } denote the matched pairs. The temporal alignment loss is: 
+
+Lalign = 1
+
+|M| ∑
+
+> (i,j)∈M
+
+ 1 − IoU ( ˆSi, S∗ 
+
+> j
+
+) + β | ˆN − N∗|
+
+max ( ˆN, N∗) (8) where the second term penalizes cardinality mismatch with coefficient β.
+
+2.4.2 Dimension-Wise Structural Matching 
+
+For each matched pair (i, j) ∈ M and each dimension k ∈ { 1, . . . , 6 }, we define a label distance function 
+
+dk : Lk × L k → [0, 1 ] that reflects the semantic proximity between labels. Critically, dk is not a binary indicator: labels that are semantically close (e.g., medium shot vs. medium close-up in camera language) incur a smaller penalty than labels that are far apart (e.g., extreme long shot vs. extreme close-up ). Each dimension k is equipped with a domain-specific metric derived from the label taxonomy. For dimensions with ordinal structure (e.g., shot size), dk is defined by the normalized rank distance on the label hierarchy. For dimensions with categorical structure (e.g., transition type), dk is derived from expert-defined confusion neighborhoods, where the distance between two labels corresponds to the shortest path on the confusion graph. The structural matching loss aggregates over all dimensions with learned weights wk > 0: 
+
+Lstruct =
+
+> 6
+
+# ∑
+
+> k=1
+
+wk · 1
+
+|M| ∑
+
+> (i,j)∈M
+
+dk
+
+ ˆli,k, l∗
+
+> j,k
+
+ (9) subject to ∑6 
+
+> k=1
+
+wk = 1. The weights encode the relative importance of each dimension and are tuned on a held-out validation set. 52.4.3 Quality Regularization 
+
+Beyond structural correctness, the model output must satisfy quality constraints on terminology, com-pleteness, and format. We introduce a regularization term analogous to the KL penalty in RLHF: 
+
+Lreg = λp · R prof ( ˆy) + λc · R comp ( ˆy) + λ f · R form ( ˆy) (10) where ˆ y denotes the full model output and: • Rprof penalizes out-of-vocabulary label predictions. Let Vk be the closed canonical label set for dimension k (e.g., the 38 camera-language tags or 41 aesthetics tags defined in Section 2.3). Rprof 
+
+counts the fraction of predicted labels that do not string-match any element in S 
+
+> k
+
+Vk, so that a model producing “medium close” instead of the canonical “medium close-up” is penalized. • Rcomp penalizes missing dimensions. For each of the six dimensions, a binary indicator checks whether the output contains at least one label for that dimension; Rcomp is the number of absent dimensions divided by 6. A prediction that omits editing labels entirely receives Rcomp ≥ 1 / 6regardless of how accurate the remaining dimensions are. • Rform penalizes structural format violations detectable by deterministic parsing: invalid JSON syntax, missing required fields (shot boundaries, dimension keys), malformed timestamps (e.g., negative values or ts > te), and type errors (string where a float is expected). Each violation type contributes a binary penalty, and Rform is the fraction of violated checks. The coefficients λp, λc, λ f > 0 control the strength of each regularizer. 
+
+2.4.4 Summary 
+
+The complete SV6D objective (eq. (5)) provides a principled, differentiable measure of structural video understanding quality. In practice, this objective is realized through two complementary training stages: Supervised fine-tuning (SFT) minimizes a proxy of LSV6D via structured supervision (Section 5.1), while GRPO directly optimizes a reward function derived from LSV6D , where the reward for each rollout is 
+
+r = 1 − L SV6D (Section 5.2). The Hungarian matching and dimension-wise distance functions described above correspond directly to the IoU and label-similarity components of the GRPO reward (Table 4). 
+
+# 3 Training Data and Synthesis 
+
+3.1 SV6D Annotation 
+
+The SV6D schema defined in Section 2.3 is instantiated through a combination of expert annotation and automated synthesis. 
+
+3.1.1 Expert Annotation 
+
+The SV6D schema is instantiated through expert annotation by specialists spanning directing, cinematog-raphy, screenwriting, planning, sound, and internet operations. Each structural label is tied to physically observable evidence on the timeline before being mapped to a canonical tag. Evidence may come from the visual stream, time-aligned speech transcription, or on-screen text, but in all cases the target re-mains auditable against the source video. This prevents labels from degenerating into unconstrained interpretation or post-hoc rationalization. The annotation process produces structured video decomposition reports covering all six dimensions. These reports serve as the ground-truth backbone for both the FeedBench evaluation benchmark (Sec-tion 4) and the SFT data synthesis pipeline described below. 
+
+3.1.2 Automated Annotation and Quality Filtering 
+
+To scale beyond fully manual annotation, we use a semi-automatic structural labeling pipeline aligned with the expert-defined schema. The pipeline first proposes candidate timeline-grounded annotations for unannotated short videos and then applies multi-stage quality control to remove low-confidence or schema-inconsistent cases. Rather than relying on a single-pass automatic labeler, we combine confidence-based filtering, cross-field consistency checks, and report-level validation so that retained annotations remain compatible with the same six-dimensional representation used by expert annotators. 61
+
+# !
+
+> Raw Video
+> 2
+
+# "
+
+> LLM Pre -fill
+> 3
+
+# #
+
+> Expert
+> Review
+> 4
+
+# $
+
+> Grounding
+> 5
+> Canonical
+> Mapping
+
+# %
+
+> Subject
+> 6
+
+# &Six -
+
+> Dimensional
+> Schema
+> Aesthetics
+
+# '
+
+> Editing
+
+# ✂ )
+
+> Narrative
+
+# !
+
+# *
+
+> Camera
+> Language
+> Dissemination
+
+Dual -View Dense Caption QA Generation Training Objectives      
+
+> •Perception
+> •Reasoning
+> •Localization
+> •Comparison
+> •Structure
+
+Sampling 
+
+LLM 
+
+# +❓ Full -video: 
+
+> Model sees entire video
+> before analysis
+> Causal -window:
+> Only past frames visible,
+> no future leakage
+
+Complete SFT dataset     
+
+> V6D OCR VQA Code Grounding
+> Reverse -engineered
+> system prompts
+> (short/CoT/structured)
+
+6D Annotations  
+
+> DATA FLYWHEEL FEEDBACKLOOP
+> (Trained Model refinement of LLM pre -fill)
+> Trained
+> Model
+> Short -form,
+> Ads
+> Path A:
+> Expressive
+> Visually
+> expressive
+> Path B:
+> Info -dense
+> Structure,
+> Knowledge
+> dissemination
+> B
+> Info -dense
+> (tutorial/doc. ,structure ,
+> knowledge, delivery)
+> A
+> Expressive
+> (short -form /ads, camera,
+> rhythm, tension)
+
+LLM -Prompted Caption Synthesis 
+
+> Tutorials,
+> Documentary
+
+Annotation Fusion Module Figure 2: Overview of the data synthesis pipeline. Starting from raw internet video, the pipeline proceeds through shot segmentation, LoRA-based structural annotation, scorer-based quality filtering, LLM-assisted structural extension, and dense report generation, producing the SV6D SFT training corpus. For videos that pass filtering, the retained annotations are consolidated into complete structural decompo-sition reports and converted into complementary supervision signals, including structured outputs, dense descriptions, and automatically checkable QA instances. This design allows expert-defined structure to be expanded at scale while preserving auditability, temporal grounding, and label consistency across heterogeneous short-video formats. The pipeline also supports incremental large-scale processing and selective reprocessing as annotation rules and models improve. 
+
+3.1.3 QA Data Synthesis 
+
+Building on the structured decomposition reports, we synthesize large-scale SFT question–answer pairs using a programmatic QA generation framework grounded in the SV6D schema. For each video, a capable LLM is prompted with the six-dimensional decomposition report and a task-specific instruction template to generate diverse QA pairs. The synthesized data spans four complementary task families: • Attribute-specific QA. Given a temporal segment, the model is asked to identify one or more structural labels (e.g., shot size, lighting direction, editing logic). Templates range from single-dimension queries to multi-dimension “snapshot” requests covering all six dimensions simulta-neously. • Temporal grounding and retrieval. The model must locate all temporal segments matching a given structural label, or identify which label applies at a queried timestamp. This enforces strong timestamp–attribute binding. • Abductive reasoning and evidence explanation. Given an observed structural decision (e.g., a specific cut or shot-size transition), the model must infer the underlying directorial intent and 7cite observable evidence from the timeline. • Error correction. The model is presented with a deliberately perturbed decomposition report containing incorrect labels, and must identify and correct the errors with justification. Each task family is instantiated across all applicable SV6D dimensions, producing approximately 2.5M QA pairs in total. Multiple-choice variants are also generated for discriminative evaluation. 
+
+3.2 SFT Dataset Composition 
+
+To equip our model with expert-level cinematic understanding while preserving broad multimodal competence, we construct a large-scale SFT dataset comprising approximately 1M samples , organized into two complementary pillars: domain-specific data targeting cinematic and video production expertise, and general-purpose data ensuring robust foundational capabilities. 
+
+Domain-Specific Video Understanding. The core of our training data consists of proprietary video annotations produced by professional directors and screenwriters, covering dense captions, structured QA synthesized under the SV6D framework (including multiple-choice, natural-language dialogue, and video caption summarization), ASR-derived tasks, and in-video OCR samples. We apply balanced sampling across video categories and SV6D label dimensions to prevent category imbalance. 
+
+OCR. We curate OCR data spanning five complementary tasks from established public benchmarks: text recognition (Mishra et al., 2012; Karatzas et al., 2013; 2015; Wiedmann et al., 2025), document VQA (Mathew et al., 2021), scene text VQA (Singh et al., 2019a; Biten et al., 2019), key information extraction (Park et al., 2019; Huang et al., 2019; Jaume et al., 2019), and handwritten math recognition (Yuan et al., 2022; Mouchère et al., 2013; Gervais et al., 2024; OneThink Team, 2024). 
+
+Visual Question Answering & Reasoning. This subset incorporates general visual instruction follow-ing (Liu et al., 2023a), chain-of-thought visual reasoning (Xu et al., 2024), chart understanding (Masry et al., 2022a), abstract diagram reasoning (Lu et al., 2021), multi-step reasoning (Chia et al., 2024; Lu et al., 2022), diverse multimodal tasks (Laurençon et al., 2024a), and UI screen understanding (Wiedmann et al., 2025). 
+
+Video Understanding. LLaVA-Video-178K (Zhang et al., 2024) provides both multiple-choice and open-ended video QA covering academic-style visual reasoning. FineVideo (Farré et al., 2024) contributes fine-grained video QA pairs with detailed temporal annotations. 
+
+Grounding & Counting. We incorporate data from PixMo (Deitke et al., 2025) spanning object counting, point-based localization, and spatial grounding tasks. 
+
+Code Generation. We combine Design2Code (Si et al., 2024), WebSight (Laurençon et al., 2024b), and VisCode-200K (Ni et al., 2025) for UI-to-code and visualization code generation. 
+
+Text-Only Reasoning & Instruction Following. To maintain strong linguistic and reasoning capabilities, we incorporate text-only samples spanning mathematical reasoning (Zhou et al., 2025; Du et al., 2025), general instruction following (Teknium, 2023; Bai et al., 2024; Köpf et al., 2023), test-time scaling (Muen-nighoff et al., 2025), complex synthetic reasoning (Zhu et al., 2026), safety alignment (Han et al., 2024), and function calling (Liu et al., 2024c). 
+
+# 4 FeedBench 
+
+4.1 Limitations of Existing Benchmarks 
+
+Recent benchmarks such as Video-MME, MVBench, TempCompass, MotionBench, and LongVideoBench have advanced multimodal video evaluation, but they remain fundamentally event-centric : they test what happens in a clip, not how the video is structurally organized over time. Tasks such as dense captioning, shot boundary detection, aesthetics scoring, and social-media analysis are treated as isolated subtasks rather than coordinated layers on a shared timeline, making it difficult to assess whether a model has formed a unified structural parse. Furthermore, benchmark outputs are rarely timestamp-aligned or schema-consistent, leaving a gap between benchmark performance and the structured, machine-consumable representations required by downstream applications such as editing assistance, retrieval, and generation control. These shortcomings are especially pronounced for internet-native short-form video, where camera language, editing rhythm, narrative release, and visible packaging cues are not peripheral style choices but core carriers of meaning. 84.2 FeedBench Design 
+
+FeedBench evaluates all SV6D structural abilities (Section 2) on a shared timeline, asking whether a model can recover a timestamp-aligned, machine-consumable structural parse of how a video is organized over time. 
+
+Evidence grounding. Each structural label is tied to physically observable evidence on the timeline before being mapped to a canonical tag. Evidence may come from the visual stream, time-aligned speech transcription, or on-screen text, but in all cases the target remains auditable against the source video. 
+
+Internet-native scope. The benchmark is drawn from platform-native internet video complemented by TVC-style commercial short videos, spanning 27 vertical categories. This reflects the diversity of real short-video ecosystems, including information-centric, performance-driven, product-led, and aesthetic-edit formats. 
+
+Expert-driven annotation. Labels are constructed by specialists spanning directing, cinematography, screenwriting, planning, and internet operations. Generic crowdsourced labeling is insufficient for the expert-sensitive boundaries that define real annotation difficulty in structure analysis. 
+
+Text-heavy internet-native formats. Many real short videos distribute their semantics across captions, stickers, embedded UI text, and image-text layouts. FeedBench explicitly includes these overlay-dominant formats rather than treating them as edge cases. 
+
+Machine-verifiable evaluation. Benchmark instances are derived from canonical labels and temporal anchors, enabling reproducible and judge-free assessment. Structure-conditioned external validations (e.g., comment alignment) serve as downstream transfer tests rather than part of the core metric. 
+
+4.3 Task Instantiation from the Structural Schema 
+
+Formally, each FeedBench item is a tuple: 
+
+q =  τ, d, Ld, t, y∗, e, ϕ (11) where τ is the temporal anchor (interval [ts, te] for persistent properties, or timestamp t for boundary-sensitive judgments), d ∈ { 1, . . . , 6 } indexes the SV6D dimension, Ld is its canonical label space (Section 2.3), t is a question template, y∗ is the ground-truth label(s), e is the evidence description, and ϕ ∈{single , multi , ordered } is the answer type. The matching function is: match (o, y∗, ϕ) = 
+
+
+
+o = y∗ ϕ = single 
+
+o = y∗ (set equality) ϕ = multi 
+
+o = y∗ (sequence equality) ϕ = ordered 
+
+(12) FeedBench instantiates the SV6D schema as closed-vocabulary, judge-free tasks over a shared timeline. Each item is anchored to either a temporal interval (for persistent properties such as shot framing, lighting, or narrative role) or a timestamp (for boundary-sensitive judgments such as cut rationale). We use three answer types: Single-label classification for a single canonical tag; multi-label classification 
+
+when multiple tags legitimately co-occur within the same anchor; ordered-transition recognition for progressions rather than states (e.g., a shot-size transition or staged narrative release). All candidate answers are drawn exclusively from the canonical label space of the queried dimension—no paraphrased options or label variants are permitted. Distractor construction is confusion-aware : hard negatives are drawn from expert-defined confusion neighborhoods (adjacent shot scales, visually similar lighting, nearby camera-motion categories, etc.). For ordered-transition items, distractors additionally include temporal traps such as reversal, local substitution, false stasis, or skipped progression. The surface form of each item is template-controlled and answer-agnostic: the question stem does not reveal the underlying evidence description or paraphrase the ground-truth label. 
+
+4.4 Benchmark Details Label taxonomy. Each of the six dimensions uses a closed vocabulary of canonical tags designed by specialists spanning directing, cinematography, screenwriting, and internet operations; sub-dimensions are listed in Table 1. 9Item generation. Each item is generated programmatically from a structured configuration; Algorithm 1 formalizes the procedure. The seven invariants enforced during generation are stated below in terms of the item tuple (eq. (11)): 
+
+I1 (Label atomicity). ∀ o ∈ Options (q) : o ∈ L d.
+
+I2 (Format homogeneity). 
+
+ϕ = single =⇒ Options = {oA, oB, oC, oD } ⊂ L d
+
+ϕ = multi =⇒ Options = {OA, OB, OC, OD }, Oi ⊆ L d
+
+ϕ = ordered =⇒ Options = (lA 
+
+> 1
+
+→ · · · → lAm ), . . . , (lD 
+
+> 1
+
+→ · · · → lDm )
+
+All items include option E = “none of the above / cannot determine.” 
+
+I3 (Unique correct answer). {o ∈ { A, B, C, D} : match (o, y∗, ϕ)} = 1. 
+
+I4 (Confusion-aware distractors). Let N (y∗, d) be the confusion neighborhood of y∗ in dimension d:
+
+Distractors (q) ∩ N (y∗, d) ≥ 1; target: ≥ 2 of 3 distractors from N .
+
+I5 (Temporal traps). When ϕ = ordered , distractors include ≥ 2 trap types from {reversal , local substitution , false stasis (
+
+X), skip }.
+
+I6 (Answer-agnostic surface). Neither y∗ nor e appears in the question stem. 
+
+I7 (Legality fallback). y ∗ /∈ L d =⇒ correct answer = E.
+
+Evaluation protocol. Scoring is deterministic and rule-based (LLM judge as fallback for non-conforming output only). All three item types require exact match—no partial credit. Results are reported per-dimension, per-answer-type, and as macro-averaged summary scores; a confusion-aware subset score is additionally reported over hard-confusion items. Per-dimension accuracy: Acc d = 1
+
+|Qd| ∑
+
+> q∈Qd
+
+1match ( ˆyq, y∗ 
+
+> q
+
+, ϕq) (13) Macro-averaged score: FeedBench macro = 1
+
+|D| ∑
+
+> d∈D
+
+Acc d (14) Confusion-aware subset score: FeedBench hard = 1
+
+|D| ∑
+
+> d∈D
+
+Acc N 
+
+> d
+
+(15) where Acc N 
+
+> d
+
+is computed only on items whose distractors are drawn from N .By-answer-type breakdown: Acc ϕ = 1
+
+|Qϕ| ∑
+
+> q∈Qϕ
+
+1match ( ˆyq, y∗ 
+
+> q
+
+, ϕ), ϕ ∈ { single , multi , ordered } (16) 
+
+Composition. Table 2 summarizes the full benchmark. 
+
+# 5 Training Process 
+
+5.1 Supervised Fine-Tuning 
+
+We conduct SFT on the Qwen3-VL-8B-Instruct (Bai et al., 2025) backbone to inject domain-specific knowl-edge for short-video understanding while preserving the model’s general-purpose capabilities and instruction-following behavior. Our principal objective is to endow the model with specialized competen-cies in temporal video analysis—including camera language understanding, aesthetic assessment, editing evaluation, and temporal grounding—without compromising its proficiency in general multimodal and linguistic tasks. 10 Table 1: Per-dimension label taxonomy of FeedBench. Sub-dimensions are listed for each of the six structural dimensions.     
+
+> Dimension Sub-dimensions
+> Camera language Shot size Camera position Shooting angle Lens focal length Camera movement Depth of field Aesthetics Light source nature Light direction Light hardness Contrast Saturation Color temperature Key/tone Composition Visual rhythm Editing Editing logic Editing effects Subject Framing
+
+× configuration Narrative Content structure Narrative structure Narrative techniques Dissemination Retention engine Comment alignment Dimension Temporal anchor Task Types # Labels # Items Subject Interval Single, Ordered 8 88 †                         
+
+> Aesthetics Interval Single, Multi, Ordered 41 6,645 Camera language Interval Single, Multi, Ordered 38 5,927 Editing Interval / Timestamp Single, Multi, Ordered 65 949 Narrative Interval Single, Multi, Ordered [WIP] [WIP] Dissemination Interval Single, Multi 40 194
+> Auxiliary: Comment alignment 912 Total (core) –All 197 13,803+
+
+Table 2: Overview of FeedBench, containing 60 short-form videos from 27 content categories. All core items are grounded in either a temporal interval or a timestamp, instantiated as closed-vocabulary multiple-choice or IoU-scored temporal localization tasks. †Subject items are currently IoU-only (temporal localization); narrative items are under construction ([WIP]). Single, Multi, and Ordered denote single-label, multi-label, and ordered-transition items, respectively. 
+
+5.1.1 Training Objective and Data Composition SFT as domain-adaptive continued pre-training. Rather than treating SFT purely as instruction tuning, we frame it as a form of domain-adaptive continued pre-training that systematically injects specialized knowledge into the foundation model. By retaining the original Qwen3 response template and system prompt structure throughout training, the model acquires domain-specific capabilities while maintaining its existing instruction-following format and conversational coherence. This approach ensures that the enhanced short-video understanding abilities integrate seamlessly with the model’s pre-existing multimodal reasoning framework. 
+
+Capability preservation through strategic data mixing. To mitigate catastrophic forgetting of general-purpose skills, we adopt a carefully calibrated data mixing strategy. The training corpus is organized with a deliberate emphasis on domain-specific samples relative to general-purpose ones. The domain-specific component encompasses diverse short-video analysis tasks, including structured temporal segmentation, multi-dimensional aesthetic scoring, editing quality assessment, and dense video captioning. The general-purpose component spans visual question answering, OCR, chart understanding, document comprehension, and text-only reasoning tasks. This heterogeneous composition ensures comprehensive 11 Algorithm 1 FeedBench Item Generation 
+
+Require: Configuration C = ( τ, k, Lk, T , [ts, te], y∗, e, qtype )
+
+where τ: task ID, k: dimension, Lk: label space, T : question template, 
+
+[ts, te]: temporal anchor, y∗: ground-truth labels, e: evidence, qtype ∈{SINGLE , MULTI , ORDERED }
+
+Ensure: MCQ item I = ( stem, {oA, oB, oC, oD, oE}, a∗) 
+
+> 1:
+
+stem ← Render (T , [ts, te]) ▷ Inv. 6: answer-agnostic; y∗ /∈ stem, e /∈ stem  
+
+> 2:
+
+if y∗ /∈ L k then ▷ Inv. 7: legality fallback  
+
+> 3:
+
+a∗ ← oE; return I 
+
+> 4:
+
+end if  
+
+> 5:
+
+Format options by qtype : ▷ Inv. 2: format homogeneity 
+
+> SINGLE
+
+: each oi ∈ L k (atomic label) 
+
+> MULTI
+
+: each oi ⊆ L k (label set) 
+
+> ORDERED
+
+: each oi ∈ L + 
+
+> k
+
+(label sequence, joined by →)
+
+oE ← “none of the above / cannot determine”  
+
+> 6:
+
+Assert ∀ oi, atoms (oi) ⊆ L k ▷ Inv. 1: label atomicity  
+
+> 7:
+
+Place y∗ at a uniformly random position among {A, B, C, D} ▷ Inv. 3: unique correct answer  
+
+> 8:
+
+Select distractors for the remaining three positions: ▷ Inv. 4: confusion-aware 
+
+dhard ← ConfusionNeighborhood (y∗, Lk) (≥ 1 hard negative) 
+
+drest ← Fallback (e, adjacency, editorial ) (target: 2/3 hard)  
+
+> 9:
+
+if qtype = ORDERED then ▷ Inv. 5: temporal traps  
+
+> 10:
+
+Assert |Traps ({oi}) ∩ { reversal, substitution, stasis, skip }| ≥ 2 
+
+> 11:
+
+end if  
+
+> 12:
+
+return I = ( stem, {oA, oB, oC, oD, oE}, a∗)
+
+coverage while maintaining the model’s versatility across diverse application scenarios. 
+
+Task-specific system prompt engineering. For each constituent dataset, we employ reverse engineering to construct task-specific system prompts that align with the expected response characteristics. This design serves three complementary purposes: (i) it reinforces instruction-following behavior by providing explicit task context and formatting constraints, (ii) it reduces training loss and perplexity by narrowing the output distribution toward task-appropriate responses, and (iii) it ensures that the model produces sufficiently detailed and well-structured responses even when no explicit system prompt is provided at inference time. This prompt engineering strategy proves particularly effective for structured output tasks requiring JSON-formatted responses with temporal boundaries, multi-dimensional scores, and hierarchical annotations. 
+
+5.1.2 Training Configuration 
+
+Training is conducted on a distributed GPU cluster using communication- and memory-efficient parallel training together with standard activation and memory optimization techniques. 
+
+Differential learning rates for multimodal components. Following established practices in vision-language model fine-tuning (Liu et al., 2024a; Bai et al., 2023), we employ differential learning rates across model components: the vision encoder (ViT) and vision-language aligner use a lower learning rate than the language model backbone, preventing excessive drift in pre-trained visual representations while allowing the LLM to adapt more aggressively to the new task distribution. 
+
+Checkpoint selection via stochastic weight averaging. Rather than selecting a single best checkpoint, we apply stochastic weight averaging (SWA) to fuse the final several checkpoints from the training trajectory. SWA produces a smoother loss landscape and a more robust parameter configuration, which not only improves generalization on held-out benchmarks but also raises the capability ceiling for the subsequent RL stage by providing a stronger and more stable initialization. 12 5.2 RLVR (GRPO) 
+
+We apply Group Relative Policy Optimization (GRPO) (Shao et al., 2024) to refine the SFT checkpoint on perception-oriented tasks. Unlike reasoning-heavy applications where RL primarily enables test-time scaling through extended chain-of-thought, our setting targets a different benefit: GRPO provides a group-relative reward signal that concentrates the output distribution on correct answers, reducing format instability and label variance even for tasks that do not require multi-step reasoning. 
+
+5.2.1 Motivation 
+
+Two observations motivate the RL stage: 1. Insensitivity of SFT loss to temporal precision. The token-level cross-entropy objective treats all incorrect predictions equally: a temporal boundary off by 0.1 s incurs the same loss as one off by 10 s. GRPO’s reward function is sensitive to the magnitude of temporal error, directly improving precision on cut-point detection and segment localization. 2. Output distribution drift after domain-adaptive SFT. Large-scale SFT updates both the ViT encoder and the LLM backbone, which can disturb the well-calibrated output distribution of the base model. GRPO re-concentrates the distribution toward high-reward responses, effectively re-calibrating the model after the perturbation introduced by SFT. 
+
+5.2.2 Hyperparameters 
+
+RL training is performed on distributed GPU infrastructure with asynchronous rollout and conservative policy updates. Because our tasks are predominantly perception-oriented rather than reasoning-centric, we use a lightweight configuration relative to chain-of-thought RL systems: a small group size, single gradient step per batch, and cosine learning rate decay. Key hyperparameters are summarized in Table 3. Table 3: GRPO training hyperparameters. 
+
+Parameter Value 
+
+Group size G 8Prompts per step 390 (13 task types × 30) Sequences per step (GBS) 3,120 (390 × 8) PPO mini-batch size 390 (single gradient step) Learning rate 1 × 10 −6 (cosine → 1 × 10 −7)KL penalty disabled Advantage normalization by std (GRPO) Loss aggregation seq-mean-token-mean The KL penalty is disabled; over 150 training steps the measured KL between policy and reference remains below 0.3, confirming gradual distribution shift without catastrophic drift. 
+
+5.2.3 Reward Functions 
+
+The reward functions below directly instantiate the SV6D optimization objective (eq. (5)). The IoU 
+
+component in temporal grounding rewards corresponds to Lalign (eq. (8)), measuring temporal overlap between predicted and ground-truth shot boundaries. The Label component corresponds to Lstruct 
+
+(eq. (9)), evaluated via the dimension-specific distance functions dk. The Format component corresponds to Lreg (eq. (10)), penalizing out-of-vocabulary labels, missing dimensions, and malformed structure. For each GRPO rollout, the reward is computed as r = 1 − L SV6D . Table 4 summarizes the reward formulation per task type. 
+
+5.2.4 RL Dataset and Balancing 
+
+The RL dataset is balanced across domain-video tasks (camera language, cut-point detection, editing, subject, aesthetics), OCR tasks (regular and handwritten), temporal action localization, and a small set of general visual reasoning prompts. To ensure every gradient step covers all task families, we arrange prompts using a deterministic weighted interleaving scheme rather than random shuffling, guaranteeing that the task-type ratio within any contiguous window closely matches the target distribution. 13 Table 4: Reward function by task type. 
+
+Task Type Reward 
+
+Temporal grounding 0.2 Format + 0.4 IoU + 0.4 Label Temporal action localization 0.2 Format + 0.8 IoU OCR (regular & handwritten) EditDist ( ˆy, y∗)
+
+Chain-of-thought 0.3 Format + 0.7 Judge 0 25 50 75 100 125 150             
+
+> Training Step
+> 0.10
+> 0.15
+> 0.20
+> 0.25
+> 0.30
+> Entropy (nats)
+> Actor Entropy
+> 025 50 75 100 125 150
+> Training Step
+> 0.66
+> 0.68
+> 0.70
+> 0.72
+> 0.74
+> 0.76
+> 0.78
+> 0.80
+> 0.82
+> Score
+> Mean Reward Score
+> 025 50 75 100 125 150
+> Training Step
+> 80
+> 90
+> 100
+> 110
+> 120
+> Tokens
+> 120
+> Mean Response Length
+
+Figure 3: GRPO training dynamics over 150 steps. Left : actor entropy decreases steadily, indicating the policy becomes more confident. Center : mean reward score rises from ∼0.66 to ∼0.80. Right : mean response length remains stable, showing no reward hacking through verbosity. 
+
+5.2.5 Training Dynamics 
+
+Figure 3 shows three key metrics over 150 training steps. Actor entropy decreases steadily over training, indicating the policy becomes more confident. Mean reward rises consistently, with the steepest gains in the early phase and a plateau in the later steps. Mean response length remains stable throughout, confirming that the model improves by producing more accurate outputs rather than longer ones. 
+
+# 6 Experiments 
+
+6.1 FeedBench Results 
+
+Table 5: Performance of Leum-VL-8B on FeedBench. Model Subject Aesthetics Camera Language Editing Narrative Dissemination 
+
+Qwen3-VL-8B-Instruct † 62.3 44.0 42.0 49.2 – 44.9 Qwen3.5-9B (Team, 2025b) † 69.6 52.3 42.0 56.4 – 56.4 Leum-VL-8B 78.3 64.8 53.0 74.8 – 71.1 
+
+† = local reproduction (no official report value). Editing = average of editing logic and cut-point sub-benchmarks. Dissemination = average of dissemination and comments sub-benchmarks. Narrative test set is under construction (WIP); results shown as –. Eval: FPS=4, max 768 frames, max 50K tokens/video. Judge: DeepSeek-V3 (DeepSeek-AI, 2025). 
+
+Table 5 reports per-dimension results on FeedBench. Leum-VL-8B substantially outperforms both baselines across all evaluated dimensions, with the largest margins on editing (+25.6 pp over Qwen3-VL-8B) and dissemination (+26.2 pp), where correct prediction depends on timeline alignment and expert-sensitive label boundaries rather than coarse scene semantics alone. On subject framing, Leum-VL-8B scores 78.3, compared to 62.3 for Qwen3-VL-8B-Instruct and 69.6 for Qwen3.5-9B, a gain of +16.0 pp and +8.7 pp respectively. Notably, these structural gains do not come at the expense of general multimodal capability: Leum-VL-8B remains competitive on Video-MME (70.8), MVBench (70.0), MotionBench (61.6), and MMBench-EN (84.8), supporting our claim that timeline-grounded structural parsing can be added to a compact 8B model without sacrificing broad VLM utility. 14 6.2 Open Benchmarks 
+
+Table 6: Performance of Leum-VL-8B and other 8B-scale models on open benchmarks. Category Benchmark Leum-VL-8B Qwen3-VL-8B 1 Keye-VL-8B Thinking 2 GLM-4.1V-9B Thinking 3 MiniCPM-V-4.5-8B 4                                                                                         
+
+> General VQA MMBench-EN test 84.8 84.5 92.0 85.8 84.2 MMBench-CN test 83.9 84.7 84.7 HallusionBench 56.5 61.1 62.7 63.2 61.2 RealWorldQA 73.2 71.5 73.5 —72.1 MMStar 67.5 70.9 80.5 72.9 72.1 BLINK 65.2 69.1 54.9 ‡65.1 42.0 ‡
+> Document & OCR OCRBench 85.4 89.6 86.6 84.2 89.0 DocVQA test 95.7 96.1 93.4 ‡93.3 ‡94.7 TextVQA val 85.0 82.8 ‡81.5 ‡79.6 ‡82.2 ChartQA test 85.3 89.6 94.1 ‡70.0 ‡87.4 Video Understanding Video-MME w/o sub. 70.8 71.4 73.0 68.2 67.9 MVBench 70.0 68.7 56.9 ‡68.4 60.5 ‡
+> TempCompass 74.3 74.3 ‡75.5 72.3 ‡72.7 ‡
+> MotionBench 61.6 56.9 ‡55.1 ‡59.0 59.7 FAVOR-Bench 58.9 54.1 ——56.0 LongVideoBench 64.6 62.4 ‡66.0 65.7 ‡63.9 Tomato 36.7 35.7 ‡33.0 ‡30.0 ‡29.8 ‡
+> Charades-STA mIoU 59.4 56.0 ———
+> ‡
+
+= reported in Clark et al. (2026).  
+
+> 1
+
+Bai et al. (2025). 2 Team (2025a). 3 Team et al. (2025). 4 Yao et al. (2024). Eval: FPS=4, max 768 frames, max 50K tokens/video. 
+
+We evaluate Leum-VL-8B on a comprehensive suite of open benchmarks spanning general visual question answering, document understanding, video comprehension, shot-level analysis, and spatial grounding. Table 6 summarizes the results. 
+
+Video understanding. Leum-VL-8B achieves strong performance across video benchmarks. On Video-MME (w/o subtitles), we score 70.8, close to the baseline’s official report value of 71.4. On MotionBench we gain +6.5 pp (61.6 vs. 55.1), with the largest improvements on tasks requiring precise temporal localization such as repetition counting and action ordering. We also improve on MVBench (+1.3 pp), FAVOR-Bench (+4.8 pp), and Charades-STA mIoU (+3.4 pp). 
+
+Shot-level understanding. On RefineShot, we improve overall accuracy by +4.2 pp (56.9 vs. 52.7), with the largest gains on Shot Framing (+13.4 pp), Camera Angle (+10.8 pp), and Lighting Type (+6.4 pp)—dimensions that correspond directly to the SV6D schema. 
+
+Document understanding and OCR. Leum-VL-8B remains competitive on text-rich benchmarks: DocVQA test 
+
+(95.7 vs. 96.1), TextVQA val (+2.8 pp), and OCRBench (85.4, trailing the baseline by 4.2 points). The gap on OCRBench reflects the training mixture’s emphasis on video structure over document-centric tasks. 
+
+General VQA. On MMBench-EN (test) we achieve 84.8 (+0.3 pp over baseline), and improve on Re-alWorldQA (+1.7 pp), demonstrating that domain-specific training does not degrade general visual reasoning. Performance drops moderately on MMStar ( −3.4 pp) and SimpleVQA ( −4.4 pp), reflecting the expected trade-off toward structured, timeline-grounded outputs. 
+
+Grounding and multi-image reasoning. On spatial grounding (RefCOCO) and multi-image reasoning (BLINK), performance drops moderately, reflecting the training mixture’s emphasis on temporal video structure over spatial localization. We expect this gap to narrow with expanded grounding supervision in future iterations. 
+
+Summary. Overall, the open-benchmark results support the main claim of this report: timeline-grounded structural specialization can be added to a compact 8B model without sacrificing competitive general-purpose multimodal performance. 
+
+# 7 Conclusion and Future Work 
+
+We presented Leum-VL-8B, a video-language model specialized in timeline-grounded structural under-standing of short-form internet video and commercial creatives. By formulating video understanding as structured prediction over the SV6D schema—rather than free-form commentary—and combining expert-driven annotation, scalable automated synthesis, and verifiable reinforcement learning, Leum-VL-8B achieves strong performance on both domain-specific and general multimodal benchmarks. Several directions remain open for future work. 15 1. Continued pre-training on domain corpora. Injecting larger-scale video production and op-erations knowledge through continued pre-training would further ground the model in the professional vocabulary and reasoning patterns of cinematography, directing, and platform-native content creation. 2. End-to-end agentic capabilities. Strengthening training on RL and agent-loop objectives would enable the model to support end-to-end workflows spanning creative planning, shoot preparation, reference-based creation, post-production editing, and distribution operations. 3. Audio-visual language understanding. Extending the architecture to incorporate an audio encoder would allow the model to reason jointly over BGM, rhythmic beat alignment, vocal tone, and the interplay between audio and visual expression—an important layer of meaning in short-form video that the current model does not address. 16 References 
+
+Jinze Bai et al. Qwen-vl: A versatile vision-language model for understanding, localization, text reading, and beyond. arXiv preprint arXiv:2308.12966 , 2023. Shuai Bai, Yuxuan Cai, Ruizhe Chen, Keqin Chen, Xionghui Chen, Zesen Cheng, Lianghao Deng, Wei Ding, Chang Gao, Chunjiang Ge, Wenbin Ge, Zhifang Guo, Qidong Huang, Jie Huang, Fei Huang, Binyuan Hui, Shutong Jiang, Zhaohai Li, Mingsheng Li, Mei Li, Kaixin Li, Zicheng Lin, Junyang Lin, Xuejing Liu, Jiawei Liu, Chenglong Liu, Yang Liu, Dayiheng Liu, Shixuan Liu, Dunjie Lu, Ruilin Luo, Chenxu Lv, Rui Men, Lingchen Meng, Xuancheng Ren, Xingzhang Ren, Sibo Song, Yuchong Sun, Jun Tang, Jianhong Tu, Jianqiang Wan, Peng Wang, Pengfei Wang, Qiuyue Wang, Yuxuan Wang, Tianbao Xie, Yiheng Xu, Haiyang Xu, Jin Xu, Zhibo Yang, Mingkun Yang, Jianxin Yang, An Yang, Bowen Yu, Fei Zhang, Hang Zhang, Xi Zhang, Bo Zheng, Humen Zhong, Jingren Zhou, Fan Zhou, Jing Zhou, Yuanzhi Zhu, and Ke Zhu. Qwen3-vl technical report. arXiv preprint arXiv:2511.21631 , 2025. Yuelin Bai, Xinrun Du, Yiming Liang, Yonggang Jin, Ziqiang Liu, Junting Zhou, Tianyu Zheng, Xincheng Zhang, Nuo Ma, Zekun Wang, et al. COIG-CQIA: Quality is all you need for chinese instruction fine-tuning, 2024. Ali Furkan Biten, Rubèn Tito, Andrés Mafla, Lluis Gomez, Marçal Rusiñol, Ernest Valveny, C.V. Jawahar, and Dimosthenis Karatzas. Scene text visual question answering. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , pp. 4291–4301, 2019. Lin Chen, Jinsong Li, Xiaoyi Dong, Pan Zhang, Yuhang Zang, Zehui Chen, Haodong Duan, Jiaqi Wang, Yu Qiao, Dahua Lin, and Feng Zhu. Are we on the right way for evaluating large vision-language models? arXiv preprint arXiv:2403.20330 , 2024. Yew Ken Chia, Vernon Toh, Deepanway Ghosal, Lidong Bing, and Soujanya Poria. PuzzleVQA: Diagnos-ing multimodal reasoning challenges of language models with abstract visual patterns. In Findings of the Association for Computational Linguistics: ACL 2024 , pp. 16259–16273, Bangkok, Thailand, August 2024. Association for Computational Linguistics. Christopher Clark, Jieyu Zhang, Zixian Ma, Jae Sung Park, Mohammadreza Salehi, Rohun Tripathi, Sangho Lee, Zhongzheng Ren, Chris Dongjoo Kim, Yinuo Yang, Vincent Shao, Yue Yang, Weikai Huang, Ziqi Gao, Taira Anderson, Jianrui Zhang, Jitesh Jain, George Stoica, Winson Han, Ali Farhadi, and Ranjay Krishna. Molmo2: Open weights and data for vision-language models with video under-standing and grounding. arXiv preprint arXiv:2601.10611 , 2026. DeepSeek-AI. Deepseek-v3 technical report, 2025. Matt Deitke, Christopher Clark, Sangho Lee, Rohun Tripathi, Yue Yang, Jae Sung Park, Mohammadreza Salehi, Niklas Muennighoff, Kyle Lo, Luca Soldaini, et al. Molmo and PixMo: Open weights and open data for state-of-the-art vision-language models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2025. arXiv:2409.17146. Wei Du, Shubham Toshniwal, Branislav Kisacanin, Sadegh Mahdavi, Ivan Moshkov, George Armstrong, Stephen Ge, Edgar Minasyan, Feng Chen, and Igor Gitman. Nemotron-Math: Efficient long-context distillation of mathematical reasoning from multi-mode supervision. arXiv preprint arXiv:2512.15489 ,2025. Miquel Farré, Andi Marafioti, Lewis Tunstall, Leandro Von Werra, and Thomas Wolf. FineVideo. https: //huggingface.co/datasets/HuggingFaceFV/finevideo , 2024. Gustav Freytag. Die Technik des Dramas . S. Hirzel, Leipzig, 1863. Chaoyou Fu et al. Video-mme: The first-ever comprehensive evaluation benchmark of multi-modal llms in video analysis. arXiv preprint arXiv:2405.21075 , 2024a. Xingyu Fu et al. Blink: Multimodal large language models can see but not perceive. arXiv preprint arXiv:2404.12390 , 2024b. Jiyang Gao, Chen Sun, Zhenheng Yang, and Ram Nevatia. Localizing moments in video with natural language. arXiv preprint arXiv:1708.01641 , 2017. Philippe Gervais, Yue Zhu, and Rishit Bhatt. MathWriting: A dataset for handwritten mathematical expression recognition, 2024. URL https://arxiv.org/abs/2404.10690 .17 Tianrui Guan et al. Hallusionbench: An advanced diagnostic suite for entangled language hallucination and visual illusion in large vision-language models. arXiv preprint arXiv:2310.14566 , 2023. Seungju Han, Kavel Rao, Allyson Ettinger, Liwei Jiang, Bill Yuchen Lin, Nathan Lambert, Yejin Choi, and Nouha Dziri. WildGuard: Open one-stop moderation tools for safety risks, jailbreaks, and refusals of LLMs, 2024. URL https://arxiv.org/abs/2406.18495 .Wenyi Hao et al. Motionbench: Benchmarking and improving fine-grained video motion understanding for vision language models. arXiv preprint arXiv:2501.02955 , 2025. Zheng Huang, Kai Chen, Jianhua He, Xiang Bai, Dimosthenis Karatzas, Shijian Lu, and C.V. Jawahar. ICDAR2019 competition on scanned receipt OCR and information extraction. In Proceedings of the International Conference on Document Analysis and Recognition (ICDAR) , pp. 1516–1520, 2019. Guillaume Jaume, Hazim Kemal Ekenel, and Jean-Philippe Thiran. FUNSD: A dataset for form under-standing in noisy scanned documents. In Proceedings of the International Conference on Document Analysis and Recognition Workshops (ICDARW) , pp. 1–6, 2019. Dimosthenis Karatzas, Faisal Shafait, Seiichi Uchida, Masakazu Iwamura, Lluis Gomez i Bigorda, Sergi Robles Mestre, Joan Mas, David Fernandez Mota, Jon Almazan, and Lluis Pere de las Heras. ICDAR 2013 robust reading competition. In Proceedings of the International Conference on Document Analysis and Recognition (ICDAR) , pp. 1484–1493, 2013. Dimosthenis Karatzas, Lluis Gomez-Bigorda, Anguelos Nicolaou, Suman Ghosh, Andrew Bagdanov, Masakazu Iwamura, Jiri Matas, Lukas Neumann, Vijay Ramaseshan Chandrasekhar, Shijian Lu, et al. ICDAR 2015 competition on robust reading. In Proceedings of the International Conference on Document Analysis and Recognition (ICDAR) , pp. 1156–1160, 2015. Andreas Köpf, Yannic Kilcher, Dimitri von Rütte, Sotiris Anagnostidis, Zhi-Rui Tam, Keith Stevens, Abdullah Barhoum, Nguyen Minh Duc, Oliver Stanley, Richárd Nagyfi, Shahul ES, Sameer Suri, David Glushkov, Arnav Dantuluri, Andrew Maguire, Christoph Schuhmann, Huu Nguyen, and Alexander Mattick. OpenAssistant conversations – democratizing large language model alignment. In Advances in Neural Information Processing Systems (NeurIPS) , 2023. Harold W. Kuhn. The Hungarian method for the assignment problem. Naval Research Logistics Quarterly ,2(1–2):83–97, 1955. Hugo Laurençon, Léo Tronchon, Matthieu Cord, and Victor Sanh. What matters when building vision-language models?, 2024a. Hugo Laurençon, Léo Tronchon, and Victor Sanh. Unlocking the conversion of web screenshots into HTML code with the WebSight dataset, 2024b. URL https://arxiv.org/abs/2403.09029 .Kunchang Li, Yali Wang, Yinan He, Yizhuo Li, Yi Wang, Yi Liu, Zun Wang, Jilan Xu, Guo Chen, Ping Luo, Limin Wang, and Yu Qiao. Mvbench: A comprehensive multi-modal video understanding benchmark. 
+
+arXiv preprint arXiv:2311.17005 , 2023. Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. In Advances in Neural Information Processing Systems (NeurIPS) , 2023a. Haotian Liu, Chunyuan Li, Qingyang Wu, and Yong Jae Lee. Visual instruction tuning. In Advances in Neural Information Processing Systems , volume 36, 2024a. Yuan Liu et al. Mmbench: Is your multi-modal model an all-around player? arXiv preprint arXiv:2307.06281 , 2023b. Yuanxin Liu et al. Tempcompass: Do video llms really understand videos? arXiv preprint arXiv:2403.00476 ,2024b. Yuliang Liu et al. Ocrbench: On the hidden mystery of ocr in large multimodal models. arXiv preprint arXiv:2305.07895 , 2023c. Zuxin Liu, Thai Hoang, Jianguo Zhang, Ming Zhu, Tian Lan, Shirley Kokane, Juntao Tan, Weiran Yao, Zhiwei Liu, Yihao Feng, et al. APIGen: Automated pipeline for generating verifiable and diverse function-calling datasets. arXiv preprint arXiv:2406.18518 , 2024c. Pan Lu, Liang Qiu, Jiaqi Chen, Tony Xia, Yizhou Zhao, Wei Zhang, Zhou Yu, Xiaodan Liang, and Song-Chun Zhu. IconQA: A new benchmark for abstract diagram understanding and visual language reasoning. In The 35th Conference on Neural Information Processing Systems (NeurIPS) Track on Datasets and Benchmarks , 2021. 18 Pan Lu, Swaroop Mishra, Tony Xia, Liang Qiu, Kai-Wei Chang, Song-Chun Zhu, Oyvind Tafjord, Peter Clark, and Ashwin Kalyan. Learn to explain: Multimodal reasoning via thought chains for science question answering. In The 36th Conference on Neural Information Processing Systems (NeurIPS) , 2022. Ahmed Masry, Do Long, Jia Qing Tan, Shafiq Joty, and Enamul Hoque. ChartQA: A benchmark for question answering about charts with visual and logical reasoning. In Findings of the Association for Computational Linguistics: ACL 2022 , pp. 2263–2279, Dublin, Ireland, May 2022a. Association for Computational Linguistics. doi: 10.18653/v1/2022.findings-acl.177. URL https://aclanthology.org/ 2022.findings-acl.177 .Ahmed Masry, Do Xuan Long, Jia Qing Tan, Shafiq Joty, and Enamul Hoque. Chartqa: A benchmark for question answering about charts with visual and logical reasoning. arXiv preprint arXiv:2203.10244 ,2022b. Minesh Mathew, Dimosthenis Karatzas, and C. V. Jawahar. Docvqa: A dataset for vqa on document images. arXiv preprint arXiv:2007.00398 , 2020. Minesh Mathew, Dimosthenis Karatzas, and C.V. Jawahar. DocVQA: A dataset for VQA on document images. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) , pp. 2200–2209, January 2021. Anand Mishra, Karteek Alahari, and C.V. Jawahar. Scene text recognition using higher order language priors. In Proceedings of the British Machine Vision Conference (BMVC) , 2012. Harold Mouchère, Christian Viard-Gaudin, Richard Zanibbi, Utpal Garain, Do Hwi Kim, and Jin Hyung Kim. ICDAR 2013 CROHME: Third international competition on recognition of online handwritten mathematical expressions. In Proceedings of the International Conference on Document Analysis and Recognition (ICDAR) , pp. 1428–1432, 2013. Niklas Muennighoff, Zitong Yang, Weijia Shi, Xiang Lisa Li, Li Fei-Fei, Hannaneh Hajishirzi, Luke Zettlemoyer, Percy Liang, Emmanuel Candès, and Tatsunori Hashimoto. s1: Simple test-time scaling, 2025. URL https://arxiv.org/abs/2501.19393 .Yuansheng Ni, Ping Nie, Kai Zou, Xiang Yue, and Wenhu Chen. VisCoder: Fine-tuning LLMs for executable python visualization code generation. arXiv preprint arXiv:2506.03930 , 2025. OneThink Team. OneThinker: Training data for multimodal understanding. https://huggingface.co/ datasets/OneThink/OneThinker-train-data , 2024. Apache 2.0 License. Seunghyun Park, Seung Shin, Bado Lee, Junyeop Lee, Jaeheung Surh, Minjoon Seo, and Hwalsuk Lee. CORD: A consolidated receipt dataset for post-OCR parsing. In Workshop on Document Intelligence at NeurIPS , 2019. Yixuan Ren et al. Refineshot: Refining cinematography understanding with multi-granularity shot attributes. arXiv preprint arXiv:2502.12345 , 2025. Ziyao Shangguan et al. Tomato: Assessing visual temporal reasoning capabilities in multimodal founda-tion models. arXiv preprint arXiv:2410.23266 , 2024. Zhihong Shao et al. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 , 2024. Chenglei Si, Yanzhe Zhang, Zhengyuan Yang, Ruibo Liu, and Diyi Yang. Design2Code: How far are we from automating front-end engineering?, 2024. URL https://arxiv.org/abs/2403.03163 .Amanpreet Singh, Vivek Natarajan, Meet Shah, Yu Jiang, Xinlei Chen, Dhruv Batra, Devi Parikh, and Marcus Rohrbach. Towards VQA models that can read. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pp. 8317–8326, 2019a. Amanpreet Singh, Vivek Natarajan, Meet Shah, Yu Jiang, Xinlei Chen, Dhruv Batra, Devi Parikh, and Marcus Rohrbach. Towards vqa models that can read. arXiv preprint arXiv:1904.08920 , 2019b. Kwai Keye Team. Kwai keye-vl technical report, 2025a. URL https://arxiv.org/abs/2507.01949 .Qwen Team. Qwen3 technical report, 2025b. 19 V Team, Wenyi Hong, Wenmeng Yu, Xiaotao Gu, Guo Wang, Guobing Gan, Haomiao Tang, Jiale Cheng, Ji Qi, Junhui Ji, Lihang Pan, Shuaiqi Duan, Weihan Wang, Yan Wang, Yean Cheng, Zehai He, Zhe Su, Zhen Yang, Ziyang Pan, Aohan Zeng, Baoxu Wang, Bin Chen, Boyan Shi, Changyu Pang, Chenhui Zhang, Da Yin, Fan Yang, Guoqing Chen, Jiazheng Xu, Jiale Zhu, Jiali Chen, Jing Chen, Jinhao Chen, Jinghao Lin, Jinjiang Wang, Junjie Chen, Leqi Lei, Letian Gong, Leyi Pan, Mingdao Liu, Mingde Xu, Mingzhi Zhang, Qinkai Zheng, Sheng Yang, Shi Zhong, Shiyu Huang, Shuyuan Zhao, Siyan Xue, Shangqin Tu, Shengbiao Meng, Tianshu Zhang, Tianwei Luo, Tianxiang Hao, Tianyu Tong, Wenkai Li, Wei Jia, Xiao Liu, Xiaohan Zhang, Xin Lyu, Xinyue Fan, Xuancheng Huang, Yanling Wang, Yadong Xue, Yanfeng Wang, Yanzi Wang, Yifan An, Yifan Du, Yiming Shi, Yiheng Huang, Yilin Niu, Yuan Wang, Yuanchang Yue, Yuchen Li, Yutao Zhang, Yuting Wang, Yu Wang, Yuxuan Zhang, Zhao Xue, Zhenyu Hou, Zhengxiao Du, Zihan Wang, Peng Zhang, Debing Liu, Bin Xu, Juanzi Li, Minlie Huang, Yuxiao Dong, and Jie Tang. Glm-4.5v and glm-4.1v-thinking: Towards versatile multimodal reasoning with scalable reinforcement learning, 2025. URL https://arxiv.org/abs/2507.01006 .Teknium. OpenHermes 2.5: An open dataset of synthetic data for generalist LLM assistants. https: //huggingface.co/datasets/teknium/OpenHermes-2.5 , 2023. Jason Wei et al. Simpleqa: Measuring short-form factuality in large language models. arXiv preprint , 2024. Nils Wiedmann, Hugo Laurençon, Léo Tronchon, Tristan Thrush, and Victor Sanh. FineVision: Open data is all you need, 2025. URL https://arxiv.org/abs/2510.17269 .Haoning Wu et al. Longvideobench: A benchmark for long-context interleaved video-language under-standing. arXiv preprint arXiv:2407.15754 , 2024. xAI. Realworldqa. 2024. https://huggingface.co/datasets/xai-org/RealWorldQA .Guowei Xu, Peng Jin, Hao Li, Yibing Song, Lichao Sun, and Li Yuan. LLaVA-CoT: Let vision language models reason step-by-step, 2024. URL https://arxiv.org/abs/2411.10440 .Yuan Yao, Tianyu Yu, Ao Zhang, Chongyi Wang, Junbo Cui, Hongji Zhu, Tianchi Cai, Haoyu Li, Weilin Zhao, Zhihui He, et al. Minicpm-v: A gpt-4v level mllm on your phone. arXiv preprint arXiv:2408.01800 ,2024. Licheng Yu, Patrick Poirson, Shan Yang, Alexander C. Berg, and Tamara L. Berg. Modeling context in referring expressions. arXiv preprint arXiv:1608.00272 , 2016. Ye Yuan, Xiao Liu, Wondimu Dikubab, Hui Liu, Zhilong Ji, Zhongqin Wu, and Xiang Bai. Syntax-aware network for handwritten mathematical expression recognition. arXiv preprint arXiv:2203.01601 , 2022. Yuanhan Zhang, Jinming Wu, Wei Li, Bo Li, Zejun Ma, Ziwei Liu, and Chunyuan Li. Video instruction tuning with synthetic data, 2024. URL https://arxiv.org/abs/2410.02713 .Yifan Zhao et al. Favor-bench: A comprehensive benchmark for fine-grained video motion understanding. 
+
+arXiv preprint arXiv:2501.13868 , 2025. Fan Zhou, Zengzhi Wang, Nikhil Ranjan, Zhoujun Cheng, Liping Tang, Guowei He, Zhengzhong Liu, and Eric P. Xing. MegaMath: Pushing the limits of open math corpora. arXiv preprint arXiv:2504.02807 ,2025. Xinyu Zhu, Mengzhou Xia, Zhengping Wei, Wenhu Chen, Danqi Chen, and Yu Meng. CHIMERA: Compact synthetic data for generalizable LLM reasoning, 2026. URL https://arxiv.org/abs/2603. 00889 .20 Appendix A Benchmarks 
+
+We evaluate Leum-VL-8B on a range of public benchmarks covering general visual question answer-ing, document understanding, video understanding, visual grounding, and our in-house short-video benchmark FeedBench. Below we provide a description of each benchmark used. • General Visual Question Answering: – MMBench (Liu et al., 2023b): A large-scale multi-ability VQA benchmark with English (EN) and Chinese (CN) splits. We report test-set accuracy (submitted to the official leaderboard). Evaluation uses circular evaluation (each question asked four times in shuffled order; all must be correct to count), which strongly tests answer stability. 
+
+– MMStar (Chen et al., 2024): A carefully curated benchmark of 1,500 challenging visual questions designed to minimize language-only solvability. 
+
+– RealWorldQA (xAI, 2024): A benchmark of real-world spatial and scene understanding questions sourced from vehicle cameras and everyday environments. 
+
+– HallusionBench (Guan et al., 2023): A benchmark specifically designed to probe visual hallucina-tion and language-prior bias in VLMs. 
+
+– BLINK (Fu et al., 2024b): A multi-image perception benchmark requiring cross-image comparison, spatial reasoning, and visual correspondence. 
+
+– SimpleVQA (Wei et al., 2024): A factual VQA benchmark testing world knowledge grounded in visual evidence. • Document Understanding: – OCRBench (Liu et al., 2023c): A comprehensive OCR evaluation covering text recognition, scene-text VQA, document-oriented VQA, key information extraction, and handwritten mathematical expression recognition. We report the normalized final score (out of 100). 
+
+– DocVQA (Mathew et al., 2020): Document visual question answering evaluated with ANLS (Average Normalized Levenshtein Similarity). We report the test split. 
+
+– TextVQA (Singh et al., 2019b): Scene-text VQA requiring reading and reasoning over text embed-ded in natural images. We report val-set accuracy. 
+
+– ChartQA (Masry et al., 2022b): Chart understanding benchmark evaluated with relaxed accuracy. We report test-set results. • Video Understanding: – Video-MME (Fu et al., 2024a): A comprehensive video QA benchmark spanning short, medium, and long videos. We evaluate without subtitles (w/o sub.) and report overall accuracy. 
+
+– MVBench (Li et al., 2023): A comprehensive video QA benchmark covering 20 temporal under-standing tasks, including action recognition, scene transition, and object interaction. 
+
+– TempCompass (Liu et al., 2024b): A temporal reasoning benchmark testing fine-grained under-standing of event order, duration, and speed in videos. 
+
+– MotionBench (Hao et al., 2025): A motion-centric video understanding benchmark with six sub-tasks: Motion Recognition, Location-related Motion, Camera Motion, Motion-related Objects, Action Order, and Repetition Count. We report the dev-set average. 
+
+– FAVOR-Bench (Zhao et al., 2025): A fine-grained video motion understanding benchmark evalu-ating temporal perception across diverse motion categories. 
+
+– LongVideoBench (Wu et al., 2024): A benchmark for long-context interleaved video-language understanding, testing comprehension over extended video sequences. 
+
+– Tomato (Shangguan et al., 2024): A visual temporal reasoning benchmark assessing multimodal models’ ability to understand temporal order, duration, and causal relationships in video. • Shot and Camera Understanding: – RefineShot (Ren et al., 2025): A cinematography benchmark covering eight shot-level attributes: lens size (LS), lighting type (LT), lighting condition (LC), shot framing (SF), shot size (SS), camera angle (CA), shot composition (SC), and camera movement (CM). Evaluation uses step-by-step prompting with consistency checking to ensure reasoning and answer alignment. 
+
+– Charades-STA (Gao et al., 2017): A temporal grounding benchmark requiring localization of natural-language described events in video. We report mean IoU (mIoU) on the test set. • Visual Grounding: – RefCOCO/+/g (Yu et al., 2016): Referring expression comprehension benchmarks. We report the average accuracy (Acc@0.5 IoU) across RefCOCO val, testA, testB, RefCOCO+ val, testA, testB, and RefCOCOg val, test. 21 Appendix B Demonstrations 
+
+We present three qualitative demonstrations of Leum-VL-8B on real-world internet videos, showcasing its ability to perform complex video understanding tasks including editing strategy analysis, structured information extraction, and cinematographic evaluation. 
+
+B.1 Viral Editing Strategy Analysis 
+
+> User
+
+If the video were to be trimmed and re-edited to approximately 20 seconds, which segments should be retained to maximize its viral potential while maintaining narrative integrity? Please provide the rationale. 
+
+> Input Video 00:00:58
+
+22 Assistant 
+
+Retained: [00:00.0–00:04.4] [00:09.5–00:13.3] [00:17.9–00:21.8] [00:26.8–00:31.7] [00:43.4–00:47.2] [00:54.0–00:57.9] Discarded: [00:04.4–00:17.9] [00:21.8–00:39.3] [00:39.3–00:49.8] [00:49.8–00:54.0] Rationale: The video unfolds through a linear structure of “Pain Point Introduction – Scenario Demonstration – Core Features – Value Reinforcement.” The opening immediately leverages a high-engagement endorsement of “over 10 million viewers” and emphasizes the core selling point of “no wiring or plugging required” to rapidly capture attention. This is followed by a fast-paced montage across four typical life scenarios—bedside, bathroom, kitchen, and entryway—to intuitively demonstrate the convenience of “magnetic installation” and “motion-sensor lighting,” highlighting practicality for demographics like the elderly and children. Subsequently, the edit focuses on core functionalities such as “adjustable brightness levels” and “flashlight mode” to showcase product versatility. Finally, it concludes with hardcore specifications of a “1200mAh battery and nearly six months of endurance” to build trust through data. This compact “Pain Point – Scenario – Feature – Parameter” narrative ensures high information density and aligns with the “Golden 3 Seconds” rule of short-form video, effectively enhancing completion and conversion rates. 
+
+> Retained Time Segments
+
+23 B.2 Structured Step Extraction with Causal Dependencies 
+
+> User
+
+Extract the core executable steps from the video. Requirements: Distinguish between “visibly demonstrated actions” and “verbally stated instructions,” provide the causal dependencies between the steps, and output the result in JSON format. 
+
+> Input Video 00:00:38
+
+24 Assistant 
+
+{" visibly demonstrated actions ": [{" step ": " Depicting subjects ' awkwardness and unease in public settings ", " time_range ": ["00:00:00.0" , "00:00:15.0"] , " details ": " By showcasing the awkwardness and unease of various individuals in public , it implies the privacy leakage issue of health data being known by others ." , " evidence ": " The man who hasn 't brushed his teeth since Tuesday enters the room . Said Hillary , who 's only taken 347 steps today . And then there 's Bill , who woke up to pee twice last night ." }, {" step ": " Demonstrating the sensitivity of health data ", " time_range ": ["00:00:15.0" , "00:00:21.0"] , " details ": " Using specific examples to illustrate the sensitivity of health data , such as knowing someone was gassy yesterday ." , " evidence ": " How do they know so much about us ? Your health data says a lot about you . That 's how I know Kevin was gassy yesterday ." }, {" step ": " Showcasing the privacy protection of health data ", " time_range ": ["00:00:21.0" , "00:00:28.5"] , " details ": " By displaying the iPhone Health App interface , it emphasizes its privacy protection features to reassure users ." , " evidence ": " Your health data is personal . The Health app helps keep it private . Privacy . That 's iPhone ." }], " verbally stated instructions ": [{" step ": " Emphasizing the personal privacy of health data ", " time_range ": ["00:00:16.5" , "00:00:18.5"] , " details ": " Using voiceover to underscore the personal privacy of health data , resonating with the audience ." , " evidence ": " Your health data says a lot about you ." }, {" step ": " Stating the privacy protection measures for health data ", " time_range ": ["00:00:23.0" , "00:00:28.5"] , " details ": " Explicitly stating the privacy features via voiceover while showing the Health App interface to build user trust ." , " evidence ": " Your health data is personal . The Health app helps keep it private . Privacy . That 's iPhone ." }]}
+
+25 B.3 Opening Hook Identification and Cinematographic Ranking 
+
+> User
+
+Identify the three segments most suitable as “opening hooks,” and analyze as well as rank them based on content structure, visual aesthetics, and shot scales. 
+
+> Input Video 00:00:25
+
+26 Assistant 
+
+1. Segment 1: Surreal Opening at the Supermarket Checkout (00:00–00:05) 
+
+• Content Structure: This segment utilizes the everyday setting of a supermarket checkout, creating strong visual contrast and a sense of surrealism through hanging apples, bizarre scanning motions, and a final close-up of a giant floating apple. It rapidly captures the audience’s attention, serving as an effective opening hook. 
+
+• Visual Aesthetics: Employs a centered composition, with the subject and shopping basket positioned in the middle of the frame, flanked by symmetrically distributed shelves. The lighting is uniform indoor artificial light with medium color saturation and an overall warm tone, creating a cozy yet slightly dreamlike atmosphere. 
+
+• Shot Scale: A medium shot is used, framing the subject from the waist up to the top of the head. This fully displays upper-body movements and facial expressions while retaining some background information from the shelves. 
+
+• Rationale: Ranked first because the sharp contrast between “daily life” and “surreal elements” breaks the viewer’s visual expectations in the shortest time possible, stimulating immediate curiosity. 2. Segment 2: Close-up and Slicing of the Floating Apple (00:05–00:06) 
+
+• Content Structure: Following the initial visual impact of the opening, the dynamic footage of the apple being sliced by a supermarket barcode scanner demonstrates a playful and creative visual effect, further intensifying the visual appeal. 
+
+• Visual Aesthetics: Employs a centered composition with a giant red apple occupying the center of the frame against a blurred background. Light focuses on the apple’s surface to create specular highlights; the colors are vivid with high contrast, making it highly visually appealing. 
+
+• Shot Scale: A close-up shot is used, where the giant red apple fills nearly the entire frame, leaving only minimal background context to emphasize the object’s texture and detail. 
+
+• Rationale: Ranked second as it sustains the suspense of the opening, objectifying the abstract concept of “cuteness” through specific dynamic details (the slicing), thereby maintaining viewer interest. 3. Segment 3: Character Hat-removal Transformation (00:07–00:09) 
+
+• Content Structure: Through the action of removing a hat, the character completes an identity shift from a “working state” to a “home state.” This sets the stage for demonstrating the comfort of loungewear and serves as a key node for plot progression. 
+
+• Visual Aesthetics: Employs a centered composition with the character’s face in the middle, set against a background of blurred cartoon plushies. The lighting is soft and uniform with warm colors, creating a comfortable and healing domestic atmosphere. 
+
+• Shot Scale: A medium close-up is used, framing the character from the head to below the chest. It focuses on facial expressions and upper-body movements, with the background blurred to highlight the subject. 
+
+• Rationale: Ranked third because while it achieves a narrative transition, its visual impact is relatively weaker than the first two segments, acting more as an emotional bridge. 
+
+27

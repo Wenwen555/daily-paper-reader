@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-001.webp",
+      "caption": "Figure 9. Fine-grained quality annotation interface.",
+      "page": 15,
+      "index": 1,
+      "width": 1017,
+      "height": 604
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-002.webp",
+      "caption": "Table 1. Comparison on Perceptual Quality and Prompt Alignment of EduAIGV-1k. ↑: higher is better, ↓: lower is better.",
+      "page": 7,
+      "index": 2,
+      "width": 488,
+      "height": 337
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-003.webp",
+      "caption": "Figure 8. Representative samples from EduAIGV-1K, covering four categories: Numbers, Geometry, Measurement, and Probability.",
+      "page": 14,
+      "index": 3,
+      "width": 1011,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-004.webp",
+      "caption": "Figure 2. An overview of our dataset, divided into four categories: Numbers, Geometry, Measurement, and Probability.",
+      "page": 3,
+      "index": 4,
+      "width": 1017,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-005.webp",
+      "caption": "Figure 12. gMAD competition results between T2VQA and our EduVQA. Rows 1–2: perceptual quality comparison; Rows 3–4: prompt alignment comparison. 18",
+      "page": 18,
+      "index": 5,
+      "width": 983,
+      "height": 1350
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-006.webp",
+      "caption": "Figure 7. Word cloud of the prompts in our dataset.",
+      "page": 13,
+      "index": 6,
+      "width": 1017,
+      "height": 688
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-007.webp",
+      "caption": "Figure 5. Qualitative comparison of perceptual quality (top row) and prompt alignment (bottom row). We compare our EduVQA model against state-of-the-art baselines, IP-IQA and T2VQA, in each quality dimensions. In each video pair, the right video exhibits superior perceptual quality or prompt alignment compared to the left. EduVQA consistently aligns with human judgments, while IP-IQA and T2VQA produce rankings contrary to the MOS.",
+      "page": 8,
+      "index": 7,
+      "width": 1017,
+      "height": 360
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-008.webp",
+      "caption": "Figure 3. Annotation Analysis. (a)-(e): MOS distributions across five dimensions; (f): Average MOS of each scene category.",
+      "page": 4,
+      "index": 8,
+      "width": 510,
+      "height": 354
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-009.webp",
+      "caption": "Figure 11. Word-level alignment prediction curves compared with MOS annotations.",
+      "page": 17,
+      "index": 9,
+      "width": 1015,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-010.webp",
+      "caption": "Figure 4. Overview of EduVQA framework. We jointly predict five quality dimensions via a dual-path framework equipped with 2D MoE.",
+      "page": 5,
+      "index": 10,
+      "width": 1017,
+      "height": 485
+    },
+    {
+      "url": "assets/figures/arxiv/2603.03066v1/fig-011.webp",
+      "caption": "Figure 10. Qualitative examples across different quality dimensions. From left to right: good-, fair-, and low-quality samples in spatial, temporal, overall perceptual, and, alignment dimensions.",
+      "page": 16,
+      "index": 11,
+      "width": 1015,
+      "height": 754
+    }
+  ]
+}

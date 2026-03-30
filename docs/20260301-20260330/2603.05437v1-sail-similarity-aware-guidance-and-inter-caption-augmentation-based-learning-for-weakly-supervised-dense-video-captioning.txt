@@ -1,0 +1,741 @@
+Title: SAIL: Similarity-Aware Guidance and Inter-Caption Augmentation-based Learning for Weakly-Supervised Dense Video Captioning
+
+URL Source: https://arxiv.org/pdf/2603.05437v1
+
+Published Time: Fri, 06 Mar 2026 02:28:01 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# SAIL: Similarity-Aware Guidance and Inter-Caption Augmentation-based Learning for Weakly-Supervised Dense Video Captioning 
+
+## Ye-Chan Kim SeungJu Cha Si-Woo Kim Minju Jeon Hyungee Kim Dong-Jin Kim Hanyang University, South Korea 
+
+{dpcksdl78, sju9020, boreng0817, mnju5026, khjiiii2002, djdkim }@hanyang.ac.kr 
+
+## Abstract 
+
+Weakly-Supervised Dense Video Captioning aims to local-ize and describe events in videos trained only on caption an-notations, without temporal boundaries. Prior work intro-duced an implicit supervision paradigm based on Gaussian masking and complementary captioning. However, exist-ing method focuses merely on generating non-overlapping masks without considering their semantic relationship to corresponding events, resulting in simplistic, uniformly dis-tributed masks that fail to capture semantically meaningful regions. Moreover, relying solely on ground-truth captions leads to sub-optimal performance due to the inherent spar-sity of existing datasets. In this work, we propose SAIL, which constructs semantically-aware masks through cross-modal alignment. Our similarity-aware training objective guides masks to emphasize video regions with high simi-larity to their corresponding event captions. Furthermore, to guide more accurate mask generation under sparse an-notation settings, we introduce an LLM-based augmenta-tion strategy that generates synthetic captions to provide additional alignment signals. These synthetic captions are incorporated through an inter-mask mechanism, providing auxiliary guidance for precise temporal localization with-out degrading the main objective. Experiments on Activi-tyNet Captions and YouCook2 demonstrate state-of-the-art performance on both captioning and localization metrics. 
+
+## 1. Introduction 
+
+. In diverse multimodal applications [3, 17, 20], Dense Video Captioning (DVC) is one of the key research area in the video domain. Unlike conventional video caption-ing [5, 10, 34], DVC requires jointly localizing events and generating captions in long, untrimmed videos. Although diverse DVC methods have been proposed, research has mainly focused on fully-supervised settings [13–15, 41]. These methods depend on exhaustively labeled data with precise event boundaries and descriptive captions for each (a) Simple Mask  with Sparse Annotated Captions  (Previous Works) 
+
+(b)  Well -Aligned Mask with Dense Synthetic Captions  (Ours)       
+
+> Event1 Event2 Event3
+> Miss -Aligned!
+> Event1 Event2 Event3
+> Well -Aligned!
+> Can Generate Event Well -Aligned Gaussian Mask!
+> …
+> Simply, Uniform Gaussian Masks are Assigned!
+> (C1) A little boy is
+> laying on
+> an exercise ball.
+> (C3) He tries to sit on the
+> ball but the ball rolls away.
+> (C2) The boy falls of f
+> and gets back on the ball
+> before he falls off again.
+> (C1) A little boy is
+> laying on
+> an exercise ball.
+> (C3) He tries to sit on the
+> ball but the ball rolls away.
+> (C2) The boy falls of f
+> and gets back on the ball
+> before he falls off again.
+> (S1) The boy wobbles and loses
+> his balance on the exercise ball.
+> (S2) The boy struggles to stay on
+> the ball as he attempts to sit on it.
+> …
+
+Figure 1. (a) Previous work generates masks that simply cover dif-ferent temporal regions without considering semantic alignment with corresponding events. (b) Our proposed method leverages cross-modal similarity to guide masks toward event-relevant re-gions and addresses caption sparsity through LLM augmentation. 
+
+event, making annotation prohibitively expensive and labor-intensive for real-world applications. To address these is-sues, several Weakly-Supervised Dense Video Captioning (WSDVC) studies have emerged [7, 8, 11, 38], which do not rely on event boundaries and only use captions for training. Recently, ILCACM [11], the current state-of-the-art WS-DVC method, introduces a Gaussian masking strategy that applies differentiable masks to video features, enabling im-plicit event localization through complementary captioning. Although it shows promising results, we observe that this 
+
+> arXiv:2603.05437v1 [cs.CV] 5 Mar 2026
+
+(a)  (c) (b)  
+
+> She takes rollers out of
+> her hair, one at a time.
+> A woman wearing
+> a head scarf is seated,
+> talking to the camera.
+> She then styles her hair and
+> displays it to the camera.
+> (Removes her head scarf)
+> (Smooths hair)
+> Event 1 Event 2
+> Event 3
+
+Figure 2. (a) The fixed mask baseline applies Gaussian masks with equal width uniformly distributed according to the number of events. It performs comparably to the existing method [11]. (b) shows the dataset’s annotation sparsity example, where potential events are missed. (c) The majority of video samples have events spanning the entire duration but contain only a small number of events (red box). 
+
+method overlooks the semantic alignment between masked features and their corresponding events, which we believe is a critical aspect for learning discriminative event represen-tations. As shown in Figure 1, when constructing masks for target events, the existing approach merely focuses on gen-erating mutually exclusive masks without ensuring seman-tic consistency with corresponding events, often resulting in simplistic and uniformly distributed masks. These simplis-tic and uniformly distributed masks lead the model to fail to learn meaningful event emphasis, resulting in low-quality captions and inaccurate localization. As shown in Figure 2 (a), we find that even a fixed, non-trainable mask baseline performs comparably to the existing method [11] on both captioning and localization tasks. This indicates that the existing approach merely learns to emphasize distinct tem-poral regions without capturing semantic event relevance. To address this issue, our primary goal is to construct genuinely informative masks for target events. We define an informative mask as one that, rather than simply cov-ering a distinct temporal region, highlights video segments whose features exhibit high cross-modal similarity with the corresponding event caption. To achieve this, we lever-age the strong cross-modal alignment of Vision-Language model CLIP [32] and guide the model to generate masks based on cross-modal similarity signals rather than enforc-ing only non-overlap constraints. We train the model to align masked video features with corresponding ground-truth captions while distinguishing non-corresponding ones. Despite the strong overall performance of the cross-modal similarity guide, we observe some failure cases when videos have very sparse annotations (e.g., only 1-2 events). We hy-pothesize that these failures stem from the sparse charac-teristic of ground-truth annotations [24], which leads to in-sufficient signal for the model to effectively learn the align-ment between masked features and their corresponding cap-tions. For example, as illustrated in Figure 2(b), a sample video from ActivityNet [22] spans 235 seconds yet con-tains only three event annotations, leaving numerous po-tential events unannotated. Also, as shown in Figure 2(c), although the majority of videos have annotations covering their entire duration, the event density remains consistently low, demonstrating that most videos show sparse event dis-tributions. In such sparse annotation regimes, we conjec-ture that over-reliance on only ground-truth caption guid-ance provides insufficient supervision for learning accurate mask-event alignment, especially in WSDVC. To overcome these limitations, we introduce a Large-Language Model (LLM) based caption augmentation strat-egy that leverages recent advances in LLMs’ contextual un-derstanding and reasoning capabilities [1, 37]. Specifically, we construct prompts using consecutive pairs of ground-truth captions and task the LLM with generating plausi-ble descriptions for the temporal segments connecting them. These synthetic captions are then interleaved with the orig-inal annotations, creating a dense supervision signal that captures a more diverse range of potential events. By train-ing on both real and synthetic captions, our cross-modal ob-jective learns more nuanced similarity guidance, enabling masks to capture finer-grained event details. To this end, we propose SAIL , Similarity-Aware Guidance and Inter-Caption Augmentation-based Learning for WSDVC. Our contributions are as follows: • We propose similarity-aware mask guide, which lever-ages the cross-modal alignment information to generate event-focused masks. • We propose a novel method that generates synthetic cap-tions via LLM and utilizes them as auxiliary supervision to address annotation sparsity, enabling the model to learn from dense alignment signals. • We validate our method on ActivityNet and YouCook2, achieving state-of-the-art results in both the localization and captioning tasks. 2. Related Work 
+
+2.1. Dense Video Captioning 
+
+DVC is a challenging multi-task that requires the simultane-ous execution of event localization and event captioning in untrimmed videos. In the early stages of DVC [12, 22, 35], many studies adopted a “localize-then-caption” strategy, where events are first localized and then a caption is gen-erated for each event. However, this 2-stage approach over-looked the interaction between the localization and caption-ing tasks; also, they rely on complex, hand-crafted com-ponents and extensive hyper-parameter tuning. To over-come these limitations, DETR-based transformer architec-ture [13–15, 41] emerged to decode both event timestamps and captions in parallel. Yang et al. [41] proposed a method of pre-training on a large-scale narrated video dataset using ASR and then fine-tuning. Based on the above pre-trained model, [13–15, 41] enhances captioning ability by utiliz-ing an external memory of captions. Despite extensive re-search into various DVC methods, most studies still oper-ate in fully supervised settings. This is a notable limitation, given the extremely high annotation cost associated with lo-calizing and captioning events in video data. 
+
+2.2. Weakly-Supervised Dense Video Captioning 
+
+WSDVC aims to perform the DVC task without this tem-poral supervision. Duan et al. [8] first addressed WSDVC by decomposing the problem into sentence localization and event captioning. Building upon this, subsequent research has largely revolved around cycle training systems [6]. Among these, Chen and Jiang [4] introduced a concept learner approach and Choi et al. [7] further enhanced per-formance by leveraging the MSR-VTT dataset [40] for pre-training. Recently, Ge et al. [11] has proposed a method that implicitly performs localization and captioning through complementary masked captioning. Although this comple-mentary masked captioning has proven effective, its mask-ing strategy is simplistic, as it merely ensures that the masks cover different regions. To address this issue, we propose a method to ensure that the masked region is well-aligned with its corresponding caption. 
+
+## 3. Method 
+
+In WSDVC, given a video V = {vi}Nv 
+
+> i=1
+
+with Nv frames that encompass Ns distinct events, the goal is to generate corresponding captions {Ci}Ns 
+
+> i=1
+
+for each event and local-ize them temporally. As WSDVC is trained only with cap-tion annotations, the model learns to infer temporal event boundaries by aligning video frames with their correspond-ing textual descriptions [7, 8, 11]. Our goal is to construct informative masks that empha-size the visual features most relevant to their correspond-ing event captions. To achieve this, we simultaneously en-force semantic alignment via a cross-modal objective and improve mask quality by supplementing supervision signals with synthetic captions, as illustrated in Figure 3. 
+
+3.1. Preliminaries 
+
+Baseline. ILCACM [11] introduces a Gaussian masking strategy that applies differentiable masks to video features, enabling implicit event localization through complementary captioning. Specifically, for each learnable event query, a transformer-based mask decoder outputs an event-specific feature embedding. This embedding is then passed through two separate fully-connected layers to predict two scalar values for the i-th event: its temporal center (ci) and its width (wi). These values are then used to construct a Gaus-sian mask Mi across the video’s temporal axis t:
+
+Mi(t) = exp 
+
+
+
+− (t − ci)2
+
+2( wi/τ )2
+
+
+
+, (1) where τ is a temperature parameter that controls the sharp-ness of the Gaussian curve. To ensure that masks cover different regions, ILCACM employs a mask diversity loss based on cosine similarity between mask distributions. Utilizing these Gaussian masks, the model generates two complementary features: the “positive” masked video fea-tures (v · Mi) to produce a caption describing only the target event, while the “negative” masked video features 
+
+(v · (1 − Mi)) are used to produce a caption describing all remaining events in the video, where v are frame-level embeddings from the spatial encoder and then these masked features are fed into the video encoder. The decoder takes as input these encoded visual features, along with prompts and target captions for both the positive and negative sets, and generates the corresponding captions in an auto-regressive manner. The resulting outputs are used to compute the pos-itive captioning loss Lpos and negative captioning loss Lneg .By constraining these two captions to form the complete video description (i.e., C = Ci ∪ { Cj }Ns 
+
+> j=1 ,j ̸=i
+
+), the mask prediction module learns to localize events implicitly. 
+
+3.2. Similarity-Aware Mask Guide 
+
+As established in the introduction, our goal is to gener-ate event masks that are not merely temporally separated but are semantically aligned with their corresponding event captions. To achieve this, we design a mask generation pro-cess that is directly guided by cross-modal similarity. 
+
+Similarity-Aware Mask Training. We make the differ-entiable masks informative by designing a training objec-tive that encourages them to highlight semantically salient regions. After a mask Mi is generated, it is multiplied element-wise with the video features v to produce positive masked video features v′ 
+
+> i
+
+= ( v · Mi). These masked fea-tures serve as the visual representation of the emphasized region for event i. To ensure v′ 
+
+> i
+
+truly captures the correct Temporal 
+
+Encoder 
+
+Hard Prompt 
+
+Hard Prompt 
+
+Event queries 
+
+Input Video  Mask Module          
+
+> Differentiable
+> Mask
+> Construction
+> Similarity Aware
+> Mask Guide
+> We see a hallway
+> with a wooden floor
+> A dog in socks walks
+> slowly out onto the
+> floor as a lady films
+> him.
+> The dog turns
+> around and goes
+> back to the other
+> room
+> LLM
+> Guidance
+> Consecutive
+> Event
+> Captions
+> LLM
+> Prompting &
+> Reasoning
+> LLM
+> The dog is
+> approaching the
+> edge of the
+> hallway.
+> The dog looking
+> back toward the
+> room.
+> Synthetic
+> captions
+> Similarity Aware Mask Guide
+> Auxiliary
+> Guidance
+> 0.7 0.5 0.3
+> 0.3 0.6
+> 0.2 0.4
+> 0.2
+> 0.7
+> SIM Aware
+> Mask
+> If)
+> POS: [MASK] 1 event
+> Else)
+> NEG: [MASK] 𝑵 𝒔 −𝟏 events
+
+Tokenizer 
+
+Text 
+
+Encoder 
+
+Masked Video Feature 
+
+> Event
+> captions
+> Tokenized
+> Prompt Feature
+> Tokenized
+> Target Caption
+> Caption Decoder
+> Spatial
+> Encoder
+
+K
+
+V
+
+Q
+
+NEG         
+
+> Maximize Sim!
+> “Soft narrative guide”
+> Pull Positive / Push HN
+> “Similarity Guide”
+> Masked Video
+> Feature
+> Video feat
+> The dog is approaching
+> the edge of the hallway.
+> The dog looking back
+> toward the room.
+> Synthetic Caption 1 Synthetic Caption 2
+
+Figure 3. SAIL Pipeline. Our method exploits cross-modal similarity to guide mask optimization toward increased alignment with event captions and further enriches supervision through LLM-generated synthetic captions. 
+
+event content, we leverage event captions as semantic guid-ance. We maximize the cross-modal cosine similarity be-tween the average pooled masked features ¯v′ 
+
+> i
+
+and their cor-responding caption features ci while minimizing similarity to other event captions in the same video through a margin ranking loss [19]: 
+
+Lsim = 1
+
+B
+
+> B
+
+X
+
+> b=1
+
+1
+
+NsNsX
+
+> i=1
+
+max 
+
+
+
+0, ∆ − s+ 
+
+> b,i
+
++ s−
+
+> b,i
+
+
+
+, (2) where s+ 
+
+> b,i
+
+= sim (¯ v′
+
+> b,i
+
+, cb,i ) is the positive pair similarity, 
+
+s− 
+
+> b,i
+
+= max j̸ =i sim (¯ v′
+
+> b,i
+
+, cb,j ) is the hard negative similar-ity within video v, B is the batch size, Ns is the number of events in video v, and ∆ is a margin hyperparameter. By optimizing Lsim , each mask learns to emphasize video regions that are semantically closest to its corresponding caption, effectively aligning the masks with event-specific visual content. For negative captioning, we follow the same approach as [11], constructing inverse masks and training them in the same manner as described above. 
+
+3.3. LLM-Based Caption Augmentation 
+
+While Lsim enables the masks to localize semantically salient event regions, we observe that the model often gen-erates coarse event boundaries, especially when captions are temporally sparse in a given video. Empirically, we find that although event annotations may cover most of the video du-ration, they often consist of only a few coarse-grained de-scriptions with large temporal gaps between consecutive an-notations (Figure 2 (c)). We hypothesize that such sparsity in temporal descriptions limits the model’s ability to learn fine-grained event localization. To better capture fine-grained event boundaries, we pro-pose an LLM-based augmentation strategy that generates synthetic captions for intermediate events between consec-utive ground-truth annotations. By leveraging the LLM’s world knowledge and contextual reasoning [21, 30, 37], we guide the model to infer plausible transitional events that bridge these temporal gaps, thereby providing denser and more informative supervision across the video timeline. 
+
+Transition Caption Generation. First, we design a care-fully structured prompt to guide the LLM in generating high-quality synthetic captions. Inspired by the effec-tiveness of role-based prompting in task-specific reason-ing [37], we define the LLM’s role as a “Video Context Inference Expert” specializing in temporal event analysis. The system prompt explicitly instructs the model to: (1) analyze both preceding and succeeding captions to under-stand narrative flow, (2) infer the most probable transitional action or change of state rather than merely rephrasing ex-isting captions, and (3) maintain consistency in style, tone, and detail level with the original annotations. This struc-tured format helps the LLM focus on the specific temporal gap while avoiding extraneous information. Then, we feed consecutive captions Ci and Ci+1 along with the structured query into the LLM to generate a synthetic description Csyn i
+
+representing the transitional event. We apply this generation process to each pair of consecutive captions in a video, pro-ducing Ns − 1 synthetic captions per video. Further details about prompts are provided in the supplementary material. 
+
+Auxiliary Guidance via Synthetic Captions. The syn-thetic captions generated by LLM can provide a much denser, more fine-grained narrative guide. Although the synthetic captions contain plausible information, using them directly in the main contrastive loss Lsim (e.g., as hard negatives) could introduce noise and degrade perfor-mance (Table 6). Therefore, we propose to use these syn-thetic captions as a separate, auxiliary training signal. The goal is to guide the model to find visual evidence from these potential transitional events without strictly enforc-ing them. To achieve this, we first create a new set of “inter-masks” (M inter i ), designed to represent the temporal segments between the predicted ground-truth events masks 
+
+(Mi, M i+1 ). For each adjacent pair of predicted event cen-ters (ci, c i+1 ), we define a new inter-mask center cinter i
+
+as their average: cinter i = ci+ci+1  
+
+> 2
+
+. The width for these inter-masks is set to a fixed hyperparameter winter . These parameters (cinter i , w inter ) are fed into the same Gaus-sian function Equation (1) to generate a total of Ns − 1
+
+new masks, M inter i . We then apply these inter-masks to the video features to get the augmented masked features 
+
+v′inter i = ( v · M inter i ), which are aggregated into represen-tations. We apply average pooling to the augmented masked features, and Laug encourages the resulting representations to align with their corresponding transition caption embed-dings csyn i :
+
+Laug = 1
+
+B
+
+> B
+
+X
+
+> b=1
+
+1
+
+Ns − 1
+
+> Ns−1
+
+X
+
+> i=1
+
+
+
+1 − sim (¯ v′inter b,i , csyn b,i )
+
+
+
+.
+
+(3) This loss acts as a soft narrative guide, encouraging the model to capture the transitional events. This in turn, helps the main predictors for ci and ci+1 to be more precise, allowing the model to represent more fine-grained event boundaries. 
+
+Final Objective. Our final training objective is a positive & negative captioning loss, cross-modal similarity loss, and the auxiliary augmentation loss: 
+
+L = Lpos + Lneg + Lsim + αaug Laug . (4) 
+
+αaug is a hyper-parameters that controls the scale of Laug .
+
+## 4. Experiments 
+
+4.1. Experimental Settings. 
+
+Datasets. Our experiments are conducted on two standard benchmarks for DVC. ActivityNet Captions [22] dataset is a larger collection of 20k untrimmed instructional videos, which average 120 seconds in length and are annotated with 3.7 localized events per video. YouCook2 [43] dataset com-prises approximately 2K untrimmed culinary videos, each with an average duration of 320 seconds and annotated with 7.7 localized language sentences. 
+
+Evaluation Metrics. We evaluate our model’s performance on the two primary sub-tasks of DVC: caption generation and event localization. To evaluate caption quality, we adopt the official evaluation tool [22] to report standard metrics: METEOR [2], CIDEr [33], ROUGE-L [26] and BLEU-N [29]. To assess the narrative quality of the gener-ated descriptions, we also employ the SODA c metric [9]. For the event localization task, we measure the mean Av-erage Precision (mAP), mean Average Recall (mAR), and the F1 score. In line with the standard protocol, all metrics for both tasks are averaged over a set of Intersection over Union (IoU) thresholds: {0.3, 0.5, 0.7, 0.9 }.
+
+Implementation Details. Following previous work [11], we use the Distilled-GPT2 model [31] as our caption de-coder and the AdamW optimizer for training. For the Ac-tivityNet Captions dataset [22], we set the initial learning rate to 1e-4 and train for 10 epochs for both the captioning and localization stages. For the YouCook2 dataset [43], we use an initial learning rate of 5e-5 and train for 5 and 15 epochs for the captioning and localization stages, respec-tively. For the synthetic caption generation, we utilize the Qwen3-8B [42]. The hyperparameters are fixed across all experiments with ∆ = 0 .1, winter = 0 .6 and αaug = 0 .25 .
+
+4.2. Comparison with State-of-the-Art. 
+
+The results for the captioning and localization tasks on the ActivityNet Captions dataset are presented in Table 1 and Table 3, respectively. Our proposed model, SAIL ,demonstrates the highest overall performance in both tasks. As shown in Table 1, our model achieves a CIDEr of 35.38, surpassing the previous state-of-the-art WSDVC model [11] and consistently outperforming it across all other captioning metrics. In the localization task, SAIL 
+
+also shows the best performance, achieving the best F1 score of 57.00, which is driven by the highest recall (54.39) and precision (59.87) among all weakly-supervised meth-ods. Remarkably, our weakly-supervised approach outper-forms the fully-supervised method [14, 39] across the ma-jority of metrics, despite not using temporal boundary an-notations during training. These results validate that our semantically-aware masks successfully emphasize event-relevant regions, enabling the generation of high-quality captions that accurately describe target events. In Table 2, 
+
+SAIL also achieves the highest captioning and localization scores on YouCook2 [43] compared to other WSDVC meth-ods. These consistent improvements across datasets demon-strate our model’s strong performance in both tasks. Setting Model Features Captioning SODA c METEOR CIDEr ROUGE-L BLEU-1 BLEU-2 BLEU-3 BLEU-4 Fully-Supervised 
+
+DCE [22] C3D – 5.69 12.43 – 10.81 4.57 1.90 0.71 DVC [25] C3D – 6.93 12.61 – 12.22 5.72 2.27 0.73 PDVC [36] C3D 5.26 7.50 25.87 – – – – 1.65 Vid2Seq [41] CLIP 5.80 8.50 30.10 – – – – –CM 2 [14] CLIP 6.18 8.55 33.01 – – – – 2.38 E2DVC [39] CLIP 6.13 8.57 33.63 – – – – 2.43 
+
+Weakly-Supervised 
+
+WSDEC [8] C3D – 6.30 18.77 12.55 12.41 5.50 2.62 1.27 ECG [38] C3D – 7.06 14.25 – 11.85 5.64 2.71 1.33 EC-SL [4] C3D – 7.49 21.21 13.02 13.36 5.96 2.78 1.33 PWS-DVC ∗ [7] C3D – 7.28 20.59 12.71 – – – 1.35 ILCACM [11] CLIP 6.08 8.48 33.42 14.77 15.36 8.12 4.17 2.26 
+
+SAIL (Ours) CLIP 6.29 8.63 35.38 15.29 15.86 8.30 4.27 2.30 
+
+Table 1. Comparison with state-of-the-art methods on ActivityNet validation set. ∗ denotes results reported in [11]. Our method outperforms the previous state-of-the-art weakly-supervised approach [11] and remarkably surpasses several fully-supervised meth-ods [14, 39, 41]. This demonstrates semantic alignment and caption augmentation can effectively replace temporal boundary supervision. 
+
+Setting Model Features Captioning Localization SODA c METEOR CIDEr ROUGE-L BLEU@N R@AVG P@AVG F1 Weakly-Supervised 
+
+WSDEC ∗ [8] C3D 2.11 1.47 8.43 – – – – –PWS-DVC ∗ [7] C3D 3.14 2.48 9.81 – – – – –ILCACM † [11] CLIP 3.60 3.41 13.49 4.75 2.59 17.76 18.01 17.88 
+
+SAIL (Ours) CLIP 4.08 3.63 14.61 5.42 2.94 20.76 21.13 20.94 
+
+Table 2. Comparison with other weakly-supervised methods on YouCook2 validation set. † means our re-implementation results, as the original paper does not report localization performance on this dataset. Our approach also achieves the best captioning and localization performance among all weakly-supervised methods on this dataset. BLEU@N denotes the average of BLEU-1 through BLEU-4.                                                 
+
+> Setting Model Features Localization R@Avg P@Avg F1 Fully-Supervised
+> SDVC [27] C3D 55.58 57.57 56.56 PDVC [36] TSN 55.42 58.07 56.71 Vid2Seq [41] CLIP 52.70 53.90 53.29 CM 2[14] CLIP 53.71 56.81 55.21 E2DVC [39] CLIP 54.67 57.70 56.14
+> Weakly-Supervised
+> WSDEC ∗[8] C3D 29.57 59.33 39.18 PWS-DVC ∗[7] C3D 40.85 55.82 47.09 ILCACM [11] C3D 53.09 59.20 55.98 ILCACM [11] CLIP 53.72 58.92 56.20
+> SAIL (Ours) CLIP 54.39 59.87 57.00
+
+Table 3. Comparison of the event localization performance across various fully-supervised and weakly-supervised models on Activ-ityNet validation set. SAIL achieves state-of-the-art performance in most of the localization metrics. 
+
+Correlation between Caption Density and Model Perfor-mance. To analyze the impact of event annotation density on WSDVC performance, we conduct experiments on the baseline method [11] using different proportions of ground-truth captions: 25%, 50%, 75%, and 100% (Baseline [11]). As shown in Figure 4, the model’s performance drops con-sistently as the number of annotated events decreases. No-tably, as WSDVC must learn event localization using only 25%   
+
+> 50%
+> 75%
+> 100%
+> (Baseline) Baseline
+> +
+> Synthetic SAIL
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> 6.5
+> SODA_c
+> 5.8
+> 6.0
+> 6.2
+> 6.4
+> SODA_c
+> CIDEr
+> 10
+> 15
+> 20
+> 25
+> 30
+> 35
+> 40
+> CIDEr
+> Correlation between Caption Density and Model Performance
+> 33
+> 35
+> 37
+> 39
+
+Figure 4. Impact of caption density on model performance. Perfor-mance decreases consistently as annotation density reduces from 100% to 25% (left), highlighting annotation sparsity as a critical challenge. Densifying supervision through LLM-generated syn-thetic captions (right) improves performance. 
+
+captions without temporal boundaries, sparse captions sig-nificantly degrade both the captioning quality (CIDEr) and the inter-sentence temporal alignment (SODA c). The right side shows the performance when event annotations are densified through our LLM-based augmentation strategy. Beyond the original ground-truth descriptions, our synthetic caption generation improves performance even when sim-ply incorporating them into the baseline method. Syth 1: The boy wobbles and loses      
+
+> his balance on the exercise ball.
+> Synth 2: The boy struggles to stay on
+> the ball as he attempts to sit on it.
+> The boy falls of and gets back
+> on the ball before he falls off again.
+> He tries to sit on the ball
+> but the ball rolls away.
+> A little boy is laying
+> on an exercise ball.
+
+…
+
+> VideoID :v_epqnpUCVLK8
+
+Figure 5. Synthetic caption’s qualitative results. Our synthetic captions effectively capture potential intermediate events occurring between consecutive ground-truth annotations. 
+
+Sim Synth Captioning Localization S c M C F1 
+
+✗ ✗ 6.08 8.48 33.42 56.20 
+
+✓ ✗ 6.27 8.58 35.18 56.89 
+
+✗ ✓ 6.29 8.52 34.92 56.79 
+
+✓ ✓ 6.29 8.63 35.38 57.00 
+
+Table 4. Ablation study on our key components on ActivityNet. 
+
+Sim denotes similarity-aware mask, and Synth denotes Synthetic Captions with inter mask. S c, M, and C denote SODA c, ME-TEOR, and CIDEr, respectively. 
+
+4.3. Ablation Studies. 
+
+Component Ablation. In Table 4, we analyze the con-tribution of each component. We observe that applying a similarity-aware mask alone improves CIDEr by +1.76 and SODA c by +0.21, indicating that similarity-based loss effectively produces masked features that are well-aligned with caption content. Similarly, employing synthetic cap-tions with inter-event masks provides improvements for both captioning and localization, demonstrating the effec-tiveness of dense event supervision. Combining both com-ponents achieves the best performance, improving all met-rics. This synergy enables our model to learn more discrim-inative event representations. 
+
+Data Scale Ablations. As shown in Table 5, incorporating even a small fraction (25%) of the synthetic captions leads to a performance gain over the baseline in both captioning and localization. Also, we observe that the performance in both tasks improves monotonically as the ratio of syn-thetic captions increases. Our full model (100%) achieves the highest scores across all metrics. Regardless of the ra-tio used, every configuration of our method consistently and substantially outperforms the baseline. 
+
+Synthetic Caption Utilization. We conduct experiments on different strategies for utilizing synthetic captions. First, we include synthetic captions and their corresponding inter-event masked video features when computing hard nega-tives for positive pairs in Lsim . Second, as described in our 
+
+Method Captioning Localization S c C R F1 
+
+0% (Baseline) 6.08 33.42 14.77 56.20 25% 6.08 33.76 15.02 56.38 50% 6.27 34.19 15.00 56.39 75% 6.23 34.66 15.09 56.91 100% (Ours) 6.29 35.38 15.29 57.00 
+
+Table 5. Ablation study on the amount of synthetic captions used. The results suggest that the benefits of synthetic captions are evi-dent even at a small scale. R denotes ROUGE-L. 
+
+Method Captioning S c M C R B@4 
+
+ILCACM [11] 6.08 8.48 33.42 14.77 2.26 Synth + HN 6.24 8.44 33.84 15.10 2.02 Synth + Inter 6.29 8.63 35.38 15.29 2.30 
+
+Table 6. Ablation study on synthetic caption utilization strategies. Leveraging synthetic captions indirectly via an inter-mask mecha-nism yields the best overall performance. B @4 denotes BLEU-4. 
+
+method, we treat synthetic captions and inter-event masked features as auxiliary signals, computing Lsim only on the ground-truth annotation set while using synthetic captions as supplementary supervision through Laug . As shown in Table 6, simply incorporating synthetic captions (Synth + HN) already outperforms ILCACM [11], demonstrating the effectiveness of densifying supervision signals. Moreover, our auxiliary guidance approach, which provides a separate alignment signal, achieves the best results, validating our design choice of treating synthetic captions as soft guidance rather than hard constraints. 
+
+Mask-type Ablations. In Table 7, we evaluate differ-ent mask types used for video feature masking. Gaussian masks achieve the best performance at 35.38 CIDEr and 6.29 SODA c, substantially outperforming Hard binary and Cauchy alternatives. Notably, all mask types show con-sistent improvements when combined with our proposed Mask Type Model Captioning Localization SODA c METEOR CIDEr ROUGE-L R@Avg P@Avg F1 
+
+Gaussian Mask ILCACM [11] 6.08 8.48 33.42 14.77 53.72 58.92 56.20 
+
+SAIL (Ours) 6.29 8.63 35.38 15.29 54.39 59.87 57.00 
+
+Hard Binary Mask ILCACM † [11] 3.89 6.52 16.96 11.24 35.76 50.85 41.91 
+
+SAIL (Ours) 4.09 6.53 17.54 11.07 35.81 51.00 42.00 
+
+Cauchy Mask ILCACM † [11] 6.02 8.32 32.22 14.50 53.06 58.87 55.81 
+
+SAIL (Ours) 6.18 8.66 33.85 15.06 54.36 59.11 56.63 
+
+Table 7. Ablation study of various mask designs. SAIL demonstrates consistent performance improvements over the baseline across all mask designs. † means our re-implementation localization results, as the original paper does not report localization performance. 0.4 0.55 0.6 0.65       
+
+> winter
+> 33.6
+> 34.4
+> 35.2
+> 36.0
+> CIDEr
+> ILCACM CIDEr
+> ILCACM METEOR
+> 0.4 0.55 0.6 0.65
+> winter
+> 55.5
+> 56.0
+> 56.5
+> 57.0
+> 57.5
+> F1
+> ILCACM F1
+> 8.4
+> 8.6
+> 8.8
+> 9.0
+> METEOR
+
+Figure 6. Impact of hyper-parameter winter for inter masks on captioning and localization performance. 
+
+Method Train time Inference time GPU usage 
+
+ILCACM 1H 38M 27S 7M 11S 33.06 GiB 
+
+SAIL (Ours) 1H 41M 59S 7M 01S 33.11 GiB 
+
+Table 8. Computational cost comparison against the baseline [11]. 
+
+framework compared to the baseline [11], demonstrating the effectiveness of our similarity-aware guidance and the use of synthetic captions with inter-event masks. 
+
+Performance-computation trade-off. We analyze the computational cost of our method in comparison to the baseline. All metrics are averaged over five independent runs. As shown in Table 8, the training time, inference time, and GPU memory consumption of SAIL remain nearly iden-tical to those of the baseline [11]. Our approach only intro-duces a lightweight dot-product operation, incurring negli-gible overhead. Furthermore, the LLM-based caption aug-mentation is highly efficient; it is a one-time preprocessing step that operates solely on textual data, requiring only 0.28 hours to complete for the ActivityNet dataset. 
+
+Hyper-parameter Ablations. We conduct ablation exper-iments to evaluate captioning and localization scores un-der different values of winter , which controls the inter-event mask width, and maintain robust performance across differ-ent values(Figure 6). We choose winter = 0 .6 for its bal-anced captioning and localization scores. Additional hyper-parameter experiments are in the supplementary material. Video ID: 
+
+> v_RrVsNvO6Yd4
+> A large group of
+> people are seen
+> standing in a circle
+> with a man break
+> dancing in the middle.
+> More people take turns with the man
+> break dancing in the middle.
+> More men continue
+> taking turns with one
+> another while people
+> watch on the sides.
+> A group of people
+> are gathered in a
+> gymnasium.
+> The people continue
+> dancing around one
+> another and end by
+> holding a pose.
+> A group of people
+> are gathered in a
+> gymnasium.
+> A man in a black shirt starts dancing in
+> the center of the room.
+> The people continue to
+> dance around one
+> another and end by
+> walking away
+> Ground -Truth (GT)
+> ILCACM
+> Ours
+
+Figure 7. A qualitative result from the ActivityNet validation set. 
+
+Qualitative Results. Figure 5 shows that our synthetic captions accurately describe the events situated between ground-truth annotations. Additionally, Figure 7 shows that our SAIL predicts event boundaries and captions that align well with the video content. 
+
+## 5. Conclusion 
+
+In this work, we propose SAIL , a novel weakly supervised approach to dense video captioning. Previous methods ap-ply Gaussian masks to merely different temporal segments without accounting for semantic alignment between events and visual regions, leading to sub-optimal results. Our model addresses this limitation by leveraging cross-modal similarity to guide masks toward event-relevant regions. Crucially, we augment sparse GT annotations with LLM-augmented events, enabling our model to learn from a richer set of event-region alignments. Extensive experiments on ActivityNet and YouCook2 demonstrate the effectiveness of our proposed method. In future work, we plan to investigate methods for mitigating data scarcity across a diverse range of multimodal tasks [16, 18, 23, 28], beyond the DVC task. Acknowledgments. This was partly supported by the Institute of Information & Communications Technol-ogy Planning & Evaluation (IITP) grant funded by the Korean government(MSIT) (No.RS-2020-II201373, Ar-tificial Intelligence Graduate School Program(Hanyang University)) and the Institute of Information & Commu-nications Technology Planning & Evaluation (IITP) grant funded by the Korean government(MSIT) (No.RS-2025-02215122, Development and Demon-stration of Lightweight AI Model for Smart Homes). 
+
+## References 
+
+[1] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ah-mad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 ,2023. 2 [2] Satanjeev Banerjee and Alon Lavie. Meteor: An automatic metric for mt evaluation with improved correlation with hu-man judgments. In Proceedings of the acl workshop on in-trinsic and extrinsic evaluation measures for machine trans-lation and/or summarization , pages 65–72, 2005. 5 [3] SeungJu Cha, Kwanyoung Lee, Ye-Chan Kim, Hyunwoo Oh, and Dong-Jin Kim. Verbdiff: Text-only diffusion models with enhanced interaction awareness. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 8041–8050, 2025. 1 [4] Shaoxiang Chen and Yu-Gang Jiang. Towards bridging event captioner and sentence localizer for weakly supervised dense event captioning. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pages 8425–8435, 2021. 3, 6 [5] Shizhe Chen, Jia Chen, Qin Jin, and Alexander Hauptmann. Video captioning with guidance of multimodal latent topics. In Proceedings of the 25th ACM international conference on Multimedia , pages 1838–1846, 2017. 1 [6] CE Chidume. Iterative approximation of fixed points of lips-chitzian strictly pseudocontractive mappings. Proceedings of the American Mathematical Society , 99(2):283–288, 1987. 3 [7] Wangyu Choi, Jiasi Chen, and Jongwon Yoon. Pws-dvc: En-hancing weakly supervised dense video captioning with pre-training approach. IEEE Access , 11:128162–128174, 2023. 1, 3, 6 [8] Xuguang Duan, Wenbing Huang, Chuang Gan, Jingdong Wang, Wenwu Zhu, and Junzhou Huang. Weakly supervised dense event captioning in videos. Advances in Neural Infor-mation Processing Systems , 31, 2018. 1, 3, 6 [9] Soichiro Fujita, Tsutomu Hirao, Hidetaka Kamigaito, Man-abu Okumura, and Masaaki Nagata. Soda: Story oriented dense video captioning evaluation framework. In Computer Vision–ECCV 2020: 16th European Conference, Glasgow, UK, August 23–28, 2020, Proceedings, Part VI 16 , pages 517–531. Springer, 2020. 5 [10] Lianli Gao, Zhao Guo, Hanwang Zhang, Xing Xu, and Heng Tao Shen. Video captioning with attention-based lstm and semantic consistency. IEEE Transactions on Multime-dia , 19(9):2045–2055, 2017. 1 [11] Shiping Ge, Qiang Chen, Zhiwei Jiang, Yafeng Yin, Liu Qin, Ziyao Chen, and Qing Gu. Implicit location-caption align-ment via complementary masking for weakly-supervised dense video captioning. In Proceedings of the AAAI Con-ference on Artificial Intelligence , pages 3113–3121, 2025. 1, 2, 3, 4, 5, 6, 7, 8 [12] Vladimir Iashin and Esa Rahtu. Multi-modal dense video captioning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops , pages 958–959, 2020. 3 [13] MinJu Jeon, Si-Woo Kim, Ye-Chan Kim, HyunGee Kim, and Dong-Jin Kim. Sali4vid: Saliency-aware video reweighting and adaptive caption retrieval for dense video captioning. In 
+
+Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing , pages 25788–25801, 2025. 1, 3 [14] Minkuk Kim, Hyeon Bae Kim, Jinyoung Moon, Jinwoo Choi, and Seong Tae Kim. Do you remember? dense video captioning with cross-modal memory retrieval. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 13894–13904, 2024. 5, 6 [15] Minkuk Kim, Hyeon Bae Kim, Jinyoung Moon, Jinwoo Choi, and Seong Tae Kim. Hicm 2: Hierarchical compact memory modeling for dense video captioning. In Proceed-ings of the AAAI Conference on Artificial Intelligence , pages 4293–4301, 2025. 1, 3 [16] Si-Woo Kim, MinJu Jeon, Ye-Chan Kim, Soeun Lee, Tae-whan Kim, and Dong-Jin Kim. Sync: Synthetic image cap-tion dataset refinement with one-to-many mapping for zero-shot image captioning. In Proceedings of the 33rd ACM International Conference on Multimedia , pages 2683–2692, 2025. 8 [17] Taewhan Kim, Soeun Lee, Si-Woo Kim, and Dong-Jin Kim. Vipcap: Retrieval text-based visual prompts for lightweight image captioning. In Proceedings of the AAAI conference on artificial intelligence , pages 4320–4328, 2025. 1 [18] Ye-Chan Kim, SeungJu Cha, Si-Woo Kim, Taewhan Kim, and Dong-Jin Kim. Sida: Synthetic image driven zero-shot domain adaptation. In Proceedings of the 33rd ACM Inter-national Conference on Multimedia , pages 34–42, 2025. 8 [19] Ryan Kiros, Ruslan Salakhutdinov, and Richard Zemel. Uni-fying visual-semantic embeddings with multimodal neural language models. In Advances in neural information pro-cessing systems , 2014. 4 [20] Sungho Koh, SeungJu Cha, Hyunwoo Oh, Kwanyoung Lee, and Dong-Jin Kim. Scalediff: Higher-resolution image syn-thesis via efficient and model-agnostic diffusion. arXiv preprint arXiv:2510.25818 , 2025. 1 [21] Takeshi Kojima, Shixiang Shane Gu, Machel Reid, Yutaka Matsuo, and Yusuke Iwasawa. Large language models are zero-shot reasoners. Advances in neural information pro-cessing systems , 35:22199–22213, 2022. 4 [22] Ranjay Krishna, Kenji Hata, Frederic Ren, Li Fei-Fei, and Juan Carlos Niebles. Dense-captioning events in videos. In 
+
+Proceedings of the IEEE international conference on com-puter vision , pages 706–715, 2017. 2, 3, 5, 6 [23] Soeun Lee, Si-Woo Kim, Taewhan Kim, and Dong-Jin Kim. Ifcap: Image-like retrieval and frequency-based entity filter-ing for zero-shot captioning. In Proceedings of the 2024 Conference on Empirical Methods in Natural Language Pro-cessing , pages 20715–20727, 2024. 8 [24] Hongxiang Li, Meng Cao, Xuxin Cheng, Yaowei Li, Zhi-hong Zhu, and Yuexian Zou. Exploiting auxiliary caption for video grounding. In Proceedings of the AAAI conference on artificial intelligence , pages 18508–18516, 2024. 2 [25] Yehao Li, Ting Yao, Yingwei Pan, Hongyang Chao, and Tao Mei. Jointly localizing and describing events for dense video captioning. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 7492–7500, 2018. 6 [26] Chin-Yew Lin. Rouge: A package for automatic evaluation of summaries. In Text summarization branches out , pages 74–81, 2004. 5 [27] Jonghwan Mun, Linjie Yang, Zhou Ren, Ning Xu, and Bo-hyung Han. Streamlined dense video captioning. In Pro-ceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 6588–6597, 2019. 6 [28] Hyunwoo Oh, SeungJu Cha, Kwanyoung Lee, Si-Woo Kim, and Dong-Jin Kim. Catchphrase: Exprompt-guided encoder adaptation for audio-to-image generation. In Proceedings of the 33rd ACM International Conference on Multimedia ,pages 9773–9782, 2025. 8 [29] Kishore Papineni, Salim Roukos, Todd Ward, and Wei-Jing Zhu. Bleu: a method for automatic evaluation of machine translation. In Proceedings of the 40th annual meeting of the Association for Computational Linguistics , pages 311–318, 2002. 5 [30] Fabio Petroni, Tim Rockt¨ aschel, Sebastian Riedel, Patrick Lewis, Anton Bakhtin, Yuxiang Wu, and Alexander Miller. Language models as knowledge bases? In Proceedings of the 2019 conference on empirical methods in natural language processing and the 9th international joint conference on nat-ural language processing (EMNLP-IJCNLP) , pages 2463– 2473, 2019. 4 [31] Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever, et al. Language models are unsu-pervised multitask learners. OpenAI blog , 1(8):9, 2019. 5 [32] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervi-sion. In International conference on machine learning , pages 8748–8763. PmLR, 2021. 2, 1 [33] Ramakrishna Vedantam, C Lawrence Zitnick, and Devi Parikh. Cider: Consensus-based image description evalua-tion. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 4566–4575, 2015. 5 [34] Bairui Wang, Lin Ma, Wei Zhang, and Wei Liu. Recon-struction network for video captioning. In Proceedings of the IEEE conference on computer vision and pattern recog-nition , pages 7622–7631, 2018. 1 [35] Jingwen Wang, Wenhao Jiang, Lin Ma, Wei Liu, and Yong Xu. Bidirectional attentive fusion with context gating for dense video captioning. In Proceedings of the IEEE Confer-ence on Computer Vision and Pattern Recognition (CVPR) ,2018. 3 [36] Teng Wang, Ruimao Zhang, Zhichao Lu, Feng Zheng, Ran Cheng, and Ping Luo. End-to-end dense video captioning with parallel decoding. In Proceedings of the IEEE/CVF international conference on computer vision , pages 6847– 6857, 2021. 6 [37] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al. Chain-of-thought prompting elicits reasoning in large lan-guage models. Advances in neural information processing systems , 35:24824–24837, 2022. 2, 4 [38] Bofeng Wu, Guocheng Niu, Jun Yu, Xinyan Xiao, Jian Zhang, and Hua Wu. Weakly supervised dense video cap-tioning via jointly usage of knowledge distillation and cross-modal matching. arXiv preprint arXiv:2105.08252 , 2021. 1, 6[39] Kangyi Wu, Pengna Li, Jingwen Fu, Yizhe Li, Yang Wu, Yuhan Liu, Jinjun Wang, and Sanping Zhou. Event-equalized dense video captioning. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 8417–8427, 2025. 5, 6 [40] Jun Xu, Tao Mei, Ting Yao, and Yong Rui. Msr-vtt: A large video description dataset for bridging video and language. In 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition , pages 5288–5296, 2016. 3 [41] Antoine Yang, Arsha Nagrani, Paul Hongsuck Seo, An-toine Miech, Jordi Pont-Tuset, Ivan Laptev, Josef Sivic, and Cordelia Schmid. Vid2seq: Large-scale pretraining of a vi-sual language model for dense video captioning. In Proceed-ings of the IEEE/CVF conference on computer vision and pattern recognition , pages 10714–10726, 2023. 1, 3, 6 [42] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv preprint arXiv:2505.09388 , 2025. 5, 1 [43] Luowei Zhou, Chenliang Xu, and Jason Corso. Towards automatic learning of procedures from web instructional videos. In Proceedings of the AAAI conference on artificial intelligence , 2018. 5 SAIL: Similarity-Aware Guidance and Inter-Caption Augmentation-based Learning for Weakly-Supervised Dense Video Captioning 
+
+# Supplementary Material 
+
+## A. Implementation Details 
+
+Backbone. We use CLIP ViT-L/14 [32] to extract vi-sual features from video frames. For ActivityNet Cap-tions, we uniformly sample 32 frames per video, while for YouCook2, we sample 100 frames. Text features are ex-tracted using the CLIP text encoder. 
+
+LLM Settings. We employ the Qwen3-8B model [42] for synthetic caption generation with the following hyperpa-rameters: maximum new tokens = 50, temperature = 0.7. 
+
+Event Queries. The number of event queries is set to 14 for ActivityNet Captions and 18 for YouCook2, respectively, to accommodate the different annotation densities of the two datasets. 
+
+Mask Generation Module. Following [11], our mask gen-eration module consists of a transformer-based decoder that processes learnable event queries. Specifically, the trans-former layers take the event queries as input and produce event-aware embeddings, which are then passed through separate fully-connected layers to predict the temporal cen-ter ci and width wi for each event. These values are used to construct Gaussian masks via Eq. (1). 
+
+## B. Inference Details 
+
+At test time, our model employs the same inference proce-dure as [11] to generate temporally localized event captions. First, we obtain an initial set of event descriptions by feed-ing the complete video embedding into the caption decoder with a global context prompt (“[FULL]”). The model adap-tively infers the number of events present in the video dur-ing this phase. Subsequently, we apply the mask generation module to predict temporal parameters (centers and widths) for each identified event, from which we derive Gaus-sian attention masks. Finally, we enhance caption qual-ity through a refinement mechanism: each event’s masked video representation is decoded using event-specific condi-tioning (“[MASK] 1 events:”) to produce more precise and contextually appropriate descriptions. 
+
+B.1. Hyper-parameter Ablations. 
+
+We conduct additional hyper-parameter ablation experi-ments to evaluate captioning and localization performance under different values of αaug . Figure 8 shows the caption-ing and localization scores under different values of αaug .The hyperparameter αaug serves to scale the auxiliary loss to a comparable magnitude with the main losses. The re-sults demonstrate robust performance across different val-0.15 0.25 0.3 0.35       
+
+> aug
+> 33
+> 34
+> 35
+> 36
+> 37
+> CIDEr
+> ILCACM CIDEr
+> ILCACM METEOR
+> 0.15 0.25 0.3 0.35
+> aug
+> 56.0
+> 56.5
+> 57.0
+> 57.5
+> 58.0
+> F1
+> ILCACM F1
+> 8.00
+> 8.25
+> 8.50
+> 8.75
+> 9.00
+> METEOR
+
+Figure 8. Impact of hyper-parameter αaug for scaling Laug on cap-tioning and localization performance. 
+
+ues, consistently outperforming the baseline [11] regardless of the specific weight choice. We select αaug as 0.25. 
+
+B.2. Qualitative Results. 
+
+In this section, we provide additional qualitative results to demonstrate the effectiveness of our approach. As shown in Figure 9, our method generates captions that are more closely aligned with ground-truth descriptions and achieves more accurate event localization compared to the baseline method [11]. 
+
+B.3. Augmented Captions Quality. 
+
+We present additional qualitative results for LLM-generated captions in Figure 10. As shown, our LLM-generated cap-tions effectively describe potential intermediate events such as “holding up a chart” and “playing the harmonica” that bridge consecutive ground-truth annotations. The generated captions are contextually coherent and semantically appro-priate, demonstrating the LLM’s capability to infer plausi-ble transitional events from textual context. 
+
+B.4. Mask Quality. 
+
+As discussed earlier, the baseline method [11] focuses solely on ensuring that masks cover different temporal re-gions without considering semantic alignment with their corresponding events. If this is indeed the case, masks should exhibit similar width values to simply partition the video into distinct segments. To investigate this hypoth-esis, we calculate the standard deviation of mask widths across all videos in the training set and report the mean, minimum, and maximum standard deviation values in Ta-ble 9. As shown in the results, our similarity-aware mask construction generates masks with varying widths that ac-curately capture event-specific temporal characteristics. Additionally, qualitative results in Figure 11 show that our approach produces event boundaries that align more A close up of leaves are   
+
+> shown followed by a person
+> blowing them along the yard.
+> A person blows leaves
+> using a leaf blower.
+> Aclose up of leaves are
+> shown followed by a person
+> walking in and out of frame.
+> The man continues to speak
+> to the camera while blowing
+> leaves in the distance.
+> The leaves blow all around
+> the house while the camera
+> pans around the area.
+> The man continues to blow
+> leaves around while the camera
+> captures his movements.
+> Ground -Truth (GT)
+> ILCACM
+> Ours
+> Several leaves move at once with a machine
+> shown and a man speaking to the camera.
+> The leaves blow all around the yard
+> while the camera pans around the area.
+> A person is using a leaf blower to
+> blow the leaves off the lawn.
+> Video ID:
+> v_gY0qgtM0Gt8
+
+Figure 9. Another qualitative result from the ActivityNet validation set. He continues speaking and 
+
+> begins playing a harmonica.
+> He holds up the sign more while
+> continuing to play and speak to the camera.
+> A young man wearing a hat is
+> seen speaking to the camera
+> and holding up a chart.
+> He transitions to holding up a sign as
+> he speaks and plays the harmonica.
+> The young man transitions from
+> holding up the chart to putting it down
+> as he starts playing the harmonica.
+> v_PgZ2e0H1ZVE
+
+Figure 10. Qualitative results LLM augmentation captions. Our LLM-generated synthetic captions effectively describe the intermediate events occurring between consecutive ground-truth annotations. 
+
+Method Mean Min Max 
+
+ILCACM [11] 0.3489 0.2690 0.3900 
+
+SAIL 0.3535 0.2549 0.3914 
+
+Table 9. Analysis of mask width diversity during training. We report the mean (Mean), minimum (Min), and maximum (Max) standard deviation of mask widths across all training videos. 
+
+closely with the non-uniform ground-truth timestamps com-pared to the baseline’s uniform partitioning. The base-line method focuses primarily on distributing masks evenly across the video, resulting in masks with uniform widths re-gardless of actual event durations. For instance, the mask width for event 3 in ILCACM remains nearly constant throughout training epochs (0.3530 → 0.3530 → 0.3525 
+
+→ 0.3507 → 0.3523), showing minimal adaptation to the event’s actual temporal extent. In contrast, our method learns masks by considering semantic alignment with cor-responding event captions, enabling adaptive width adjust-ment. As shown in Figure 11, the mask width for event 3 in our method progressively decreases during training (0.3529 
+
+→ 0.3489 → 0.3467 → 0.3398 → 0.3281), demonstrat-ing that it adapts to align with the event’s shorter duration. These results validate that our similarity-aware guidance enables masks to learn event-specific temporal character-istics rather than converging to uniform partitioning, lead-ing to more accurate event localization aligned with ground-truth boundaries. 
+
+## C. Prompt Details 
+
+In Algorithm 1, we provide our instructions to the LLM for creating scene descriptions between consecutive events. We specify five instructions: (1) analyzing both preceding and succeeding captions, (2) inferring the most probable tran-sitional action or change of state, (3) maintaining consis-tency with the original annotations, (4) ensuring the gener-ated event is highly plausible, and (5) adhering to the speci-fied output format. This structured approach helps the LLM concentrate on the specific temporal gap between events. ILCACM mask sample  Ours mask sample 
+
+0.3530 0.3438 0.3531  0.3346  0.3751 
+
+0.3530 0.3651 0.3679  0.3575  0.3733 
+
+0.3525 0.3642 0.3735  0.3560  0.3813 
+
+0.3507 0.3672 0.3740  0.3562  0.3877 
+
+0.3523 0.3664 0.3671  0.3556  0.3710 
+
+0.3529 0.3425 0.3530  0.3476  0.3671 
+
+0.3489 0.3575 0.3383  0.3529  0.3736 
+
+0.3467 0.3545 0.3475  0.3547  0.3829 
+
+0.3398 0.3573 0.3438  0.3592  0.3827 
+
+0.3281 0.3451 0.3384  0.3570  0.3701 Figure 11. We visualize the mask outputs from the mask generation module during training and annotate each mask with its corresponding width value. ILCACM maintains almost constant mask widths throughout training, whereas SAIL shows progressive adaptation: masks for shorter events (blue, green) decrease in width, while masks for longer events (red) increase, aligning with actual event durations. Algorithm 1: Our instruction prompts for LLM 
+
+SYSTEM PROMPT 
+
+You are a “Video Context Inference Expert,” an AI specialized in analyzing sequences of video event captions. Your primary goal is to generate one new, plausible caption for the event that likely occurred *between* the two provided captions, creating a smooth and logical narrative flow. 1. **Context is Key**: Deeply analyze the preceding and succeeding captions. The generated caption must serve as a logical bridge, connecting the two events seamlessly. 2. **Infer the Unseen Action**: Do not simply rephrase or combine the given captions. Your task is to infer the most probable *transitional action* or *change of state*. Focus on the single most important action that connects the two moments. 3. **Maintain Consistency**: The style, tone, and level of detail of your generated captions should match the input captions. They should be concise, descriptive, and written from the perspective of an objective observer. 4. **Plausibility over Creativity**: The generated event must be highly plausible. Avoid introducing new elements that cannot be reasonably inferred. 5. **Output**: Provide ONLY the single generated caption text, without any labels or explanations. 
+
+USER PROMPT Analyze the following two consecutive video captions and generate a single, concise caption that describes the most plausible event happening between them. **Caption 1:**: {caption1 }
+
+**Caption 2:** : {caption2 }
+
+Based on the rules, what is the single event that connects these two captions?

@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-001.webp",
+      "caption": "Figure 1. (a) Previous work generates masks that simply cover different temporal regions without considering semantic alignment with corresponding events. (b) Our proposed method leverages cross-modal similarity to guide masks toward event-relevant regions and addresses caption sparsity through LLM augmentation.",
+      "page": 1,
+      "index": 1,
+      "width": 494,
+      "height": 524
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-002.webp",
+      "caption": "Table 3. Comparison of the event localization performance across various fully-supervised and weakly-supervised models on ActivityNet validation set. SAIL achieves state-of-the-art performance in most of the localization metrics.",
+      "page": 6,
+      "index": 2,
+      "width": 487,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-003.webp",
+      "caption": "Table 1. Comparison with state-of-the-art methods on ActivityNet validation set. ∗ denotes results reported in [11]. Our method outperforms the previous state-of-the-art weakly-supervised approach [11] and remarkably surpasses several fully-supervised methods [14, 39, 41]. This demonstrates semantic alignment and caption augmentation can effectively replace temporal boundary supervision.",
+      "page": 6,
+      "index": 3,
+      "width": 1022,
+      "height": 314
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-004.webp",
+      "caption": "Figure 2. (a) The fixed mask baseline applies Gaussian masks with equal width uniformly distributed according to the number of events. It performs comparably to the existing method [11]. (b) shows the dataset’s annotation sparsity example, where potential events are missed. (c) The majority of video samples have events spanning the entire duration but contain only a small number of events (red box).",
+      "page": 2,
+      "index": 4,
+      "width": 1029,
+      "height": 297
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-005.webp",
+      "caption": "Figure 5. Synthetic caption’s qualitative results. Our synthetic captions effectively capture potential intermediate events occurring between consecutive ground-truth annotations.",
+      "page": 7,
+      "index": 5,
+      "width": 979,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-006.webp",
+      "caption": "Figure 11. We visualize the mask outputs from the mask generation module during training and annotate each mask with its corresponding width value. ILCACM maintains almost constant mask widths throughout training, whereas SAIL shows progressive adaptation: masks for shorter events (blue, green) decrease in width, while masks for longer events (red) increase, aligning with actual event durations.",
+      "page": 13,
+      "index": 6,
+      "width": 966,
+      "height": 1077
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-007.webp",
+      "caption": "Table 7. Ablation study of various mask designs. SAIL demonstrates consistent performance improvements over the baseline across all mask designs. † means our re-implementation localization results, as the original paper does not report localization performance.",
+      "page": 8,
+      "index": 7,
+      "width": 972,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-008.webp",
+      "caption": "Figure 7. A qualitative result from the ActivityNet validation set.",
+      "page": 8,
+      "index": 8,
+      "width": 479,
+      "height": 358
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-009.webp",
+      "caption": "Figure 3. SAIL Pipeline. Our method exploits cross-modal similarity to guide mask optimization toward increased alignment with event captions and further enriches supervision through LLM-generated synthetic captions.",
+      "page": 4,
+      "index": 9,
+      "width": 962,
+      "height": 539
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-010.webp",
+      "caption": "Figure 9. Another qualitative result from the ActivityNet validation set.",
+      "page": 12,
+      "index": 10,
+      "width": 986,
+      "height": 372
+    },
+    {
+      "url": "assets/figures/arxiv/2603.05437v1/fig-011.webp",
+      "caption": "Figure 10. Qualitative results LLM augmentation captions. Our LLM-generated synthetic captions effectively describe the intermediate events occurring between consecutive ground-truth annotations.",
+      "page": 12,
+      "index": 11,
+      "width": 983,
+      "height": 223
+    }
+  ]
+}

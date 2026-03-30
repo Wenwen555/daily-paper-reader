@@ -1,0 +1,46 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.04977v1/fig-001.webp",
+      "caption": "Figure 1. From correlation-based search to hypothesis verification: prior agents search and aggregate related clips, while VideoHVAgent verifies testable clues with focused visual evidence.",
+      "page": 1,
+      "index": 1,
+      "width": 496,
+      "height": 331
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04977v1/fig-002.webp",
+      "caption": "Table 2. Results on NextQA dataset compared to the state of the art.",
+      "page": 6,
+      "index": 2,
+      "width": 416,
+      "height": 421
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04977v1/fig-003.webp",
+      "caption": "Figure 3. Ablations of different maximum number of loops.",
+      "page": 7,
+      "index": 3,
+      "width": 496,
+      "height": 370
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04977v1/fig-004.webp",
+      "caption": "Figure 5. Qualitative study of event understanding in long videos. VideoHV-Agent uses hypothesis–verification to locate decisive evidence, highlighting its ability to avoid search purposefully and ground conclusions in explicit visual proof.",
+      "page": 8,
+      "index": 4,
+      "width": 1036,
+      "height": 549
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04977v1/fig-005.webp",
+      "caption": "Figure 2. Overview of the proposed VideoHV-Agent framework. The framework first (a) summarizes the long video captions, then performs (b) two-step reasoning where a Thinker and a Judge agent rewrite options into hypotheses and a discriminative clue, and a Verifier agent grounds this clue to collect visual evidence, finally an Answer agent integrates the evidence to (c) answer the question.",
+      "page": 4,
+      "index": 5,
+      "width": 1032,
+      "height": 489
+    }
+  ]
+}

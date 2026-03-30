@@ -1,0 +1,102 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-001.webp",
+      "caption": "Table 5: Ablations on professor forcing and using text or visual observation for procedure planning on all datasets with T = 3 and T = 4. LAP-tf indicates training with teaching forcing. LAP-vo indicates using visual feature. The best numbers are in bold.",
+      "page": 11,
+      "index": 1,
+      "width": 550,
+      "height": 302
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-002.webp",
+      "caption": "Table 9: Comparison with LLaVA-Next-Video 7B on CrossTask and Coin dataset with time horizon T = 3 and T = 4. Best numbers are shown in bold.",
+      "page": 21,
+      "index": 2,
+      "width": 710,
+      "height": 275
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-003.webp",
+      "caption": "Fig. 1: Orange boxes show the labels of actions. Blue boxes show the language descriptions of actions. Left: Visualisation of extracted features of visual observations in the latent space. Each point represents one video. Middle: Visualisation of text embeddings of actions in the latent space. Right: Start visual observation of “Fill filter with ground coffee” and “Even the surface of coffee”.",
+      "page": 2,
+      "index": 3,
+      "width": 725,
+      "height": 190
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-004.webp",
+      "caption": "Table 3: Comparisons with baseline methods on NIV dataset with time horizon T = 3 and T = 4. ↑ means higher is better. The best results are shown in bold. The second best numbers are shown with underline. All baselines and our method use KEPP setting for data curation. † indicates the model uses intermediate visual observations.",
+      "page": 10,
+      "index": 4,
+      "width": 654,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-005.webp",
+      "caption": "Table 2: Comparisons with baseline methods on Coin dataset with time horizon T = 3 and T = 4. ↑ means higher is better. The best results are shown in bold. The second best numbers are shown with underline. All baselines and our method use KEPP setting for data curation. † indicates the model uses intermediate visual observations.",
+      "page": 10,
+      "index": 5,
+      "width": 654,
+      "height": 263
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-006.webp",
+      "caption": "Fig. 5: Qualitative results on NIV dataset. Purple boxes indicate the ground truth actions. Green boxes indicate the correctly predicted actions in action sequences. Red boxes indicate the wrong predictions. Top: predictions when âs and âg are “unknown” from VLM. Middle: predictions when âs is “unknown” and âg is correct. Bottom: predictions when âs is correct and âg is “unknown”.",
+      "page": 14,
+      "index": 6,
+      "width": 581,
+      "height": 256
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-007.webp",
+      "caption": "Table 11: Comparison of “Unknown” label and random label when the generated descriptions of start or goal action have lower ROUGE-1 score than the threshold. Bold numbers are the best. † indicates LAP with random label.",
+      "page": 23,
+      "index": 7,
+      "width": 538,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-008.webp",
+      "caption": "Table 10: Results of using a different threshold for LAP on all datasets with time horizon T = 3. Bold numbers indicate the best results.",
+      "page": 23,
+      "index": 8,
+      "width": 538,
+      "height": 342
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-009.webp",
+      "caption": "Fig. 6: An example of the prompt we use to obtain language descriptions of actions.",
+      "page": 19,
+      "index": 9,
+      "width": 725,
+      "height": 288
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-010.webp",
+      "caption": "Fig. 4: Visualisation of features of visual observation and text embedding in latent space on CrossTask, Coin and NIV dataset. The first row shows the visual observation and the second row shows the text embedding. All visualisations are the samples from test sets with time horizon T = 3.",
+      "page": 12,
+      "index": 10,
+      "width": 579,
+      "height": 306
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-011.webp",
+      "caption": "Table 1: Comparisons with baseline methods on CrossTask dataset with time horizon from T = 3 to T = 6. ↑ means higher is better. The best results are shown in bold. The second best numbers are shown with underline. All baselines and our method use KEPP setting for data curation.",
+      "page": 9,
+      "index": 11,
+      "width": 712,
+      "height": 219
+    },
+    {
+      "url": "assets/figures/arxiv/2603.09743v1/fig-012.webp",
+      "caption": "Fig. 2: Overview of our proposed LAP. Professor Forcing: We finetune a VLM using professor forcing to predict the elaborated description D̂ai of an action ai. The elaborated description is obtained by prompting ai to a pretrained LLM. Video-toText: we use the finetuned VLM to generate descriptions for start and goal visual observation Vas and Vag and find out the descriptions that are most similar to Das and Dag to represent the predicted action âs and âg. Then the extractor extracts the corresponding embeddings Eâs and Eâg . Planning: We use a diffusion model to plan the action sequence. We use the embeddings of start and end embeddings Eâs and Eâg as well as action sequence to construct the input to the diffusion model. During training, only the action dimension is noised.",
+      "page": 5,
+      "index": 12,
+      "width": 725,
+      "height": 260
+    }
+  ]
+}

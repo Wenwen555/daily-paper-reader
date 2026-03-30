@@ -1,0 +1,422 @@
+Title: Seeing Beyond 8bits: Subjective and Objective Quality Assessment of HDR-UGC Videos
+
+URL Source: https://arxiv.org/pdf/2603.00938v1
+
+Published Time: Tue, 03 Mar 2026 02:28:07 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# Seeing Beyond 8bits: Subjective and Objective Quality Assessment of HDR-UGC Videos 
+
+Shreshth Saini 1, Bowen Chen 1, Neil Birkbeck 2, Yilin Wang 2, Balu Adsumilli 2, Alan C. Bovik 11Laboratory for Image and Video Engineering (LIVE), UT Austin., 2Google/YouTube High Dynamic Range (HDR) user-generated (UGC) videos are rapidly proliferating across social platforms, yet most perceptual video quality assessment (VQA) systems remain tailored to Standard Dynamic Range (SDR). HDR’s higher bit depth, wide color gamut, and elevated luminance range expose distortions such as near-black crushing, highlight clipping, banding, and exposure flicker that amplify UGC artifacts and challenge SDR models. To catalyze progress, we curate Beyond8Bits , a large-scale subjective dataset of ∼44K videos from 6.5K sources with >1.5M crowd ratings, spanning diverse scenes, capture conditions, and compression settings. We further introduce HDR-Q , the first Multimodal Large Language Model (MLLM) for HDR-UGC VQA. We propose (i) a novel HDR-aware vision encoder to produce HDR-sensitive embeddings, and (ii) HDR-Aware Policy Optimization (HAPO), an RL finetuning framework that anchors reasoning to HDR cues. HAPO augments GRPO via an HDR–SDR contrastive KL that encourages token reliance on HDR inputs and a gaussian weighted regression reward for fine-grained MOS calibration. Across Beyond8Bits and public HDR-VQA benchmarks, HDR-Q delivers state-of-the-art performance.  
+
+> Date:
+
+March 3, 2026  
+
+> Page:
+
+https://shreshthsaini.github.io/Beyond8Bits  
+
+> Correspondence:
+
+Shreshth Saini at saini.2@utexas.edu 
+
+## 1 Introduction 
+
+The digital media ecosystem has been transformed by the explosive growth of user-generated content (UGC) on platforms such as YouTube, TikTok, and Instagram (99Firms, 2024; Omnicore, 2024; Mohsin, 2020). In parallel, High Dynamic Range (HDR) video has become mainstream, offering higher bit depth, wider color gamut, and extended luminance range compared to Standard Dynamic Range (SDR) (Chen et al., 2025a; Shang et al., 2023; Saini et al., 2024, 2025). These characteristics enhance perceptual realism but also accentuate distortions that are less visible in SDR such as near-black crushing, highlight clipping, banding, and exposure flicker often compounded by compression or capture artifacts common in UGC (Fig. 2). As a result, evaluating the perceptual quality of HDR-UGC content remains an open and underexplored challenge. Existing Video Quality Assessment (VQA) models struggle in this regime. Methods trained on professionally generated HDR datasets (Shang et al., 2023; Chen et al., 2025a) or SDR-UGC videos (Lu et al., 2024; Zhang et al., 2023) fail to generalize to the heterogeneous capture conditions, device variations, and uncontrolled distortions of real-world HDR-UGC. Moreover, current HDR subjective datasets are small and limited in scope, focusing primarily on synthetic distortions or curated professional content (Wang et al., 2024; Ebenezer et al., 2024a). This lack of large-scale, real-world HDR-UGC annotations represents a major obstacle to developing models that align with human perceptual judgments. Meanwhile, multimodal large language models (MLLMs) have emerged as powerful reasoning systems that unify perception and language, showing promise for explainable image and video quality assessment (Wu et al., 2023d, 2024a,b; You et al., 2025, 2024b; Wu et al., 2025; Li et al., 2025). However, their direct application to HDR-UGC VQA faces key obstacles: (i) standard visual encoders are pre-trained on SDR data and fail to capture HDR-specific cues; (ii) obtaining accurate, continuous MOS predictions remains challenging within the next-token prediction paradigm, as discrete-level or regression-head approaches (Wu et al., 2025; You et al., 2025; Wu et al., 2023d; Duan et al., 2025; Zhu et al., 2024) lack fine-grained calibration; (iii) without explicit 
+
+> †LIVE-YouTube Beyond8Bits Dataset.
+
+1    
+
+> arXiv:2603.00938v1 [cs.CV] 1 Mar 2026 Figure 1 Overview of our dataset and performance evaluation. Top: Example comparisons between HDR and SDR frames, illustrating differences in brightness range, color depth, and visual detail across diverse scenes. Bottom-left: The distribution of video categories in the Beyond8Bits dataset, covering human-centered content, nature & outdoor scenes, and various other real-world scenarios. Bottom-right: Performance comparison between our proposed HDR-Q model and baseline methods on three datasets, where HDR-Q achieves significant improvements in PLCC.
+
+incentives, policies often neglect HDR inputs and rely on textual priors, a form of modality neglect (Zheng et al., 2025; Chen et al., 2025c; Wang et al., 2025). To address these challenges, we introduce Beyond8Bits , the first large-scale, crowdsourced subjective HDR-UGC quality dataset containing ∼44K videos from 6,861 diverse sources with over 1.5M human ratings. This dataset provides the necessary foundation for training and evaluating models that reflect real-world HDR perceptual phenomena. Building upon it, we propose HDR-Q , the first multimodal large language model specifically designed for HDR-UGC quality assessment. HDR-Q integrates two novel components: (i) an HDR-aware vision encoder that learns HDR-sensitive representations while maintaining semantic alignment, and (ii) HDR-Aware Policy Optimization (HAPO), a reinforcement learning framework that enforces HDR grounding through an HDR–SDR contrastive KL term, stabilizes entropy, and refines token-level credit assignment via entropy-weighted advantages. A Gaussian regression reward further enables fine-grained MOS calibration, while group-level self-rewarding improves reasoning consistency. Our contributions are: 
+
+• We introduce Beyond8Bits , the largest subjective HDR-UGC quality dataset. 
+
+• We propose HDR-Q , a novel MLLM-based VQA model that combines new HDR-aware vision encoder with our novel HAPO policy, an RL finetuning paradigm tailored for perceptual reasoning under HDR conditions. 
+
+• Extensive experiments on Beyond8Bits and public HDR benchmarks demonstrate that HDR-Q achieves state-of-the-art MOS prediction and generates concise, HDR-grounded rationales, establishing a new direction for HDR-aware VQA research. 
+
+## 2 Related Work 
+
+2.1 HDR-VQA: Datasets & Models 
+
+Early VQA datasets such as CVD2014 (Nuutinen et al., 2016), LIVE-VQA (Seshadrinathan et al., 2010), LIVE-VQC (Sinno and Bovik, 2019), LSVQ (Ying et al., 2021), MDVQA (Zhang et al., 2023), and Maxwell (Wu et al., 2Figure 2 Typical challenges in HDR-UGC videos, including HDR-specific issues (e.g., highlight clipping, color blooming, dark grain) and UGC/compression-related artifacts (e.g., color distortion, blocking, ringing, blurring). 
+
+2023b) enabled both handcrafted (Mittal et al., 2013, 2012; Saad et al., 2014; Korhonen, 2019; Mittal et al., 2016; Ebenezer et al., 2021) and deep VQA models (Li et al., 2019; Wu et al., 2022a,b; Madhusudana et al., 2022; He et al., 2024; Wu et al., 2022c), but remain SDR-oriented and unsuitable for HDR due to fundamental differences in luminance and tone-mapping. HDR-specific subjective datasets (Azimi et al., 2021; Pan et al., 2018; Baroncini et al., 2016; Rerabek et al., 2015; Athar et al., 2019) addressed this gap, though many are outdated or restricted. Recent releases such as LIVE-HDR (Shang et al., 2023) (310 annotated videos) and SFV+HDR (Wang et al., 2024) (2,000 clips, 300 rated) provide more reliable benchmarks for modern HDR algorithms. Correspondingly, HDR-VQA models have emerged: full-reference metrics HDR-VQM (Narwaria et al., 2015), HDR-BVQM (Aamir et al., 2021), and PU21 (Mantiuk and Azimi, 2021) use brightness-aware or perceptually uniform transforms but rely on references and struggle with diverse HDR distortions. Blind methods such as HDR-ChipQA (Ebenezer et al., 2024b) and HIDRO-VQA (Saini et al., 2024) extend ChipQA and CONTRIQUE (Madhusudana et al., 2022) through nonlinear luminance mappings or large-scale unlabeled HDR data. Nonetheless, existing datasets and models still fail to capture the heterogeneous degradations of HDR UGC, motivating new data and modeling strategies. 
+
+2.2 MLLM-Based Perceptual Quality Assessment 
+
+MLLMs have recently been explored for IQA/VQA. Benchmarks such as Q-Bench (Wu et al., 2023c) revealed large gaps between MLLMs and human judgments, spurring instruction tuning (Q-Instruct (Wu et al., 2024a)) and descriptive distortion reasoning (DepictQA, DepictQA-Wild (You et al., 2024b,a)). Comparative and ranking-based methods (Compare2Score (Zhu et al., 2024), VisualQuality-R1 (Wu et al., 2025)) further improved human alignment, while Q-Align (Wu et al., 2023d), DeQA-Score (You et al., 2025), and Q-Insight (Li et al., 2025) targeted interpretability, regression fidelity, and joint degradation reasoning. Video extensions include Q-Bench-Video (Zhang et al., 2025) and MVQA-68K (Pu et al., 2025), which provide large-scale, multi-dimensional annotations and textual rationales for training video-aware MLLM quality evaluators. 
+
+## 3 Dataset: Beyond8Bits 
+
+Existing HDR VQA datasets (Shang et al., 2023; Wang et al., 2024; Saini et al., 2025; Ebenezer et al., 2024a; Chen et al., 2025b) are limited in scale, diversity, or dynamic range, and primarily focus on professionally produced content. In contrast, real-world HDR user-generated videos (HDR-UGC) exhibit a far wider range of luminance, motion, and compression characteristics, often captured under uncontrolled conditions. To bridge this gap, we introduce Beyond8Bits , the largest and most diverse HDR VQA dataset to date, explicitly designed for real-world HDR-UGC quality assessment. 3Figure 3 Pipeline of Beyond8Bits construction. 
+
+3.1 Data Collection and Processing 
+
+We collected 6,861 unique HDR source videos from two complementary sources: (1) a dedicated crowdsourcing campaign where users contributed HDR clips captured on consumer devices (iPhone, Pixel, Galaxy, etc. )under research consents, contributing 2,253 videos, and (2) public HDR videos from Vimeo licensed under Creative Commons, contributing 4,608 videos. This combination ensures coverage across human-centric, natural, and low-light scenes with rich intra and inter-device variability. Each source video was verified for HDR metadata (PQ transfer, 10-bit HEVC, BT.2020 gamut) and filtered to remove duplicates, static frames, and unsuitable content. Clips were trimmed to a maximum of 10 seconds and transcoded under a bitrate ladder simulating real-world streaming conditions (Google Support, 2024; Apple Inc., 2024) at multiple resolutions (1080p–360p) and bitrates (0.2–5 Mbps), see Appendix D. All versions retained full HDR signaling, producing a total of ∼44,276 processed video clips, an equal mix of landscape and portrait orientations was maintained where possible. Fig. 1 visualizes the dataset composition and example content diversity. 
+
+3.2 Subjective Quality Study 
+
+We conducted a large-scale subjective study on Amazon Mechanical Turk (AMT), marking the first HDR large-scale crowdsourced VQA study at this scale. To ensure display fidelity, only workers with verified HDR-capable devices and browsers were admitted. Our Human Intelligence Task (HIT) design incorporated several quality control measures. Each HIT began with instructions and a qualification quiz checking for HDR display capability, and understanding of the task. Participants first completed a training and calibration phase with representative examples and then rated batches of clips using a continuous 0–100 likert-scale following ITU-R BT.500-14 (International Telecommunication Union, 2019) guidelines. To ensure reliability, we embedded hidden quality control videos (repeats and golden-set videos with known quality ranges established in pilot studies). Strict participant screening and rejection criteria were applied based on consistency checks on control videos, display bit depth, internet speed, task completion times, and reported viewing conditions. Golden-set and repeat videos were embedded to assess intra and inter-subject consistency. Over 1.5M valid ratings were collected after rigorous quality control. Each video received on average ∼35 independent ratings. This large-scale design captures genuine perceptual variability under realistic HDR viewing conditions. 
+
+3.3 MOS Aggregation 
+
+To aggregate the subjective ratings into reliable MOS, we employed the Subjective Reliability (SUREAL) method (Li et al., 2020). SUREAL provides a Maximum Likelihood Estimate (MLE) of the true video quality (ψj ) by modeling individual subject ratings ( Sij ) while accounting for subject bias ( ∆i) and inconsistency (νi). The model is given by: 
+
+Sij = ψj + ∆ i + νiX, X ∼ N (0 , 1) (1) Parameters were estimated to maximize the log-likelihood. The resulting MOS values exhibit strong inter-subject correlation (median SRCC 0.90 ), confirming study reliability.  
+
+> Beyond8Bits
+
+spans diverse content categories (human, indoor, outdoor, night, motion-intensive), varying brightness distributions, and wide MOS coverage ( 10 –95 ). Key statistics, including spatial/temporal complexity and comparisons with existing datasets, is provided in the Appendix D. Beyond8Bits provides an essential foundation for modern HDR-aware training perceptual models such as HDR-Q .4Figure 4 Overview of HDR-Q with HAPO. Left: HAPO compares rollouts under HDR inputs (text + SDR + HDR tokens) versus an HDR-deprived pathway (text + SDR only), maximizing their KL divergence to enforce HDR grounding and applying dual-entropy regularization to prevent reward hacking. Group-wise rewards include MOS/attribute accuracy, reasoning quality, and self-rewarding. Right: a LoRA-tuned LLM decodes the HDR-aware reasoning; visual inputs originate from both a standard encoder and our HDR-aware adapter. 
+
+## 4 Preliminaries 
+
+Large-scale multimodal reinforcement learning requires stable optimization without the high variance of critic-based methods such as PPO (Schulman et al., 2017). Group Relative Policy Optimization (GRPO) (Shao et al., 2024) achieves this by normalizing rewards within a sampled response group, eliminating the need for a learned value network while preserving sample efficiency. GRPO (Shao et al., 2024) has become a key component of modern LLM and MLLM post-training pipelines (Yu et al., 2025; Chu et al., 2025), particularly when direct reward modeling is infeasible.  
+
+> Formulation.
+
+Given a multimodal dataset D = {(q, I, a )} with input prompt q, multimodal input I, and target answer a, we sample K candidate completions {oi}Ki=1 from the previous policy πθold . Each completion receives a scalar reward Ri, and its normalized group-relative advantage is computed as: 
+
+ˆAi = Ri − μR
+
+σR + ϵ , μR = 1
+
+K
+
+> K
+
+X
+
+> j=1
+
+Rj ,σR =
+
+vuut 1
+
+K
+
+> K
+
+X
+
+> j=1
+
+(Rj − μR)2.
+
+(2) The clipped surrogate objective becomes: 
+
+JGRPO (θ) = E(q,I )∼D , o i∼πθold 
+
+1
+
+K
+
+> K
+
+X
+
+> i=1
+
+1
+
+|oi|
+
+X
+
+> t
+
+h
+
+min  ρi,t ˆAi, clip( ρi,t , 1 − ϵ, 1 + ϵ) ˆAi
+
+ − β D KL (πθ ∥πref )
+
+i
+
+. (3) where ρi,t = πθ (oi,t |q, I, o i,<t )/π θold (oi,t |q, I, o i,<t ) denotes the token-level importance ratio, and πref is a frozen reference policy that anchors stability.  
+
+> Limitations.
+
+Despite its stability, vanilla GRPO (Shao et al., 2024) lacks explicit mechanisms to ensure that the learned policy grounds its behavior in perceptual cues from the input modality (Wang et al., 2025). In perception-heavy tasks such as HDR-UGC VQA, this leads to modality neglect (Zheng et al., 2025; Wang et al., 2025), where the policy achieves high textual coherence yet ignores HDR visual information. It also treats all output tokens equally, disregarding token-level uncertainty and reasoning structure issues critical in multimodal reasoning tasks. These limitations motivate our proposed HDR-Aware Policy Optimization (HAPO) (Sec. 5.2), which extends GRPO (Shao et al., 2024) with HDR–SDR contrastive grounding, dual-entropy regularization, and entropy-weighted advantage shaping. 55 Method: HDR-Q 
+
+We introduce HDR-Q , a multimodal large language model (MLLM) designed for perceptual quality assessment of HDR user-generated videos. The framework couples an HDR-aware vision encoder with a reinforcement learning (RL) objective, HDR-Aware Policy Optimization (HAPO), that explicitly enforces HDR grounding, stabilizes learning against reward hacking, and improves reasoning fidelity. As illustrated in Fig. 4, HDR-Q integrates both perceptual and reasoning pathways: (i) the HDR-aware encoder yields HDR-sensitive embeddings that capture luminance extremes and color-volume fidelity, while (ii) HAPO fine-tunes the policy to rely on these cues through contrastive, entropy-regularized RL. 
+
+5.1 HDR-Aware Vision Encoder 
+
+Let v = {xt}Tt=1 denote a 10-bit HDR video in PQ (BT.2020). We preserve the HDR signal at full precision avoiding tone compression to retain near-black structure, highlight dynamics, and wide-gamut color relationships. For contrastive supervision, an SDR counterpart vSDR = {T M (xt)}Tt=1 is obtained via a deterministic tone-mapping operator T M (·) (PQ → γ mapping, quantization, and BT.709 contraction).       
+
+> Figure 5HDR-aware vision encoder finetuning. We adapt SigLIP-2 (Tschannen et al., 2025) using HDR–SDR frame–caption pairs with captions generated by Qwen2.5-VL-72B, promoting perceptually aligned HDR embeddings.
+
+We adapt a pretrained SigLIP-2 encoder (Tschan-nen et al., 2025) Eψ on HDR frame–caption pairs 
+
+(xt, c t), where captions are generated by Qwen2.5-VL-72B (Bai et al., 2025). The goal is to yield embeddings that remain semantically aligned yet intrinsically sensitive to HDR variations. 
+
+Dual-Domain Supervision. A key challenge is that generic captions ct are equally valid for xt and 
+
+xSDR t , potentially causing collapse where HDR and SDR embeddings overlap. To avoid this, we in-troduce dual-domain supervision. For each HDR frame xt, we generate xSDR t and enforce contrastive separation: the HDR embedding must remain closer to its caption than the SDR embedding: 
+
+Lcontrast = max 
+
+
+
+0, δ − D Eψ (xt), Eψ (ct) + D Eψ (xSDR t ), Eψ (ct)
+
+. (4) where D(·, ·) denotes cosine distance and δ is a margin. The full encoder loss combines alignment and HDR discrimination: 
+
+Lenc = LSigmoid (xt, c t) + λctr Lcontrast (5) ensuring that the learned embeddings remain semantically faithful while being perceptually attuned to HDR contrast and luminance cues (see Fig. 5). 
+
+5.2 HDR-Aware Policy Optimization (HAPO) 
+
+While GRPO (Shao et al., 2024) stabilizes multimodal RL, it offers no guarantee that the policy exploits visual cues rather than textual priors. HAPO extends GRPO (Shao et al., 2024) with three HDR-specific components that explicitly enforce modality grounding (See Appendix E): 
+
+(i) HDR–SDR Contrastive KL. To prevent modality neglect (Zheng et al., 2025), we contrast rollouts with and without HDR tokens:     
+
+> KHDR (θ) = DKL
+>  πHDR θ∥πSDR θ
+> (6)
+
+6where πHDR θ and πSDR θ are policies with and without HDR input. Maximizing KHDR ensures that removing HDR tokens significantly perturbs the decoding distribution, thereby incentivizing the model to exploit HDR-specific information rather than collapsing into SDR-only reasoning. 
+
+(ii) Dual-Entropy Regularization. A well-known pitfall in contrastive KL maximization is entropy inflation, the policy can trivially satisfy the objective by producing overly uncertain outputs (Rafailov et al., 2023; Zeng et al., 2024). To prevent this, we introduce policy entropy regularization on both HDR and SDR pathways: 
+
+Hdual (θ) = Eo∼πθold 
+
+1
+
+K
+
+X
+
+> i,t
+
+h
+
+η1 H πHDR θ (oi,t ) + η2 H πSDR θ (oi,t ) i
+
+. (7) where H denotes token-level entropy, i.e. H(πθ ) = log πθ , and η1 and η2 are hyperparameters. This prevents collapse while preserving sharp, HDR-grounded distributions. 
+
+(iii) High-Entropy Weighting (HEW). GRPO assigns the same normalized advantage ˆAi to all tokens of a completion oi, regardless of their informativeness. However, recent work (Cui et al., 2025) demonstrates that reinforcement learning benefits from focusing policy gradients of tokens promoting exploration, and thus improving reasoning, while tokens following fixed reasoning path provide little signal. In HDR-UGC VQA, high-entropy tokens typically occur when the model must identify or calibrate HDR-specific distortions (e.g., banding in gradients, highlight clipping, near-black crushing). By amplifying the learning signal at these tokens, HEW directs policy optimization toward the most informative reasoning steps, yielding stronger HDR grounding and more precise MOS predictions. We then rescale the group-normalized advantage ˆAi into a token-specific advantage: 
+
+wi,t = clip 1 + λHEW 
+
+Hi,t 
+
+> 1
+> |oi|
+
+P|oi| 
+
+> t′=1
+
+Hi,t ′
+
+, w min , w max 
+
+!
+
+, ˜Ai,t = wi,t · ˆAi. (8) where Hi,t is per-token entropy. 
+
+Full HAPO Objective. Combining these terms yields: 
+
+JHAPO (θ) = Eo∼πθold 
+
+"
+
+1
+
+K
+
+X
+
+> i,t
+
+min 
+
+
+
+ρi,t ˜Ai,t , clip( ρi,t , 1 − ϵ, 1 + ϵ) ˜Ai,t 
+
+#
+
+−β D KL 
+
+ πHDR θ ∥ πref 
+
+ + γ KHDR (θ) − H dual (θ).
+
+(9) This enforces HDR-aware reasoning while maintaining stable optimization. 
+
+Mutual Information Perspective. Our HDR–SDR contrastive KL can be interpreted as enforcing an information-theoretic dependency between HDR inputs and model outputs. Let v denote the HDR video, vSDR its SDR tone-mapped counterpart, and o the output sequence. By applying variational mutual information bounds (Ish-mael Belghazi et al., 2018; Ma et al., 2023), we obtain Ev,v SDR [KHDR (θ)] as: 
+
+Ev,v SDR Eo∼πθ (· | v,v SDR )
+
+"
+
+log πθ (o | v, v SDR )
+
+πθ (o | vSDR )
+
+#
+
+≥ Iθ
+
+ o; v, v SDR vSDR  − κθ . (10) where Iθ (o; v, v SDR |vSDR ) is the conditional mutual information under πθ , and κθ captures mismatch due to conditioning on vSDR . This result shows that maximizing equation 6 provably increases HDR informativeness, ensuring the policy relies on HDR-specific cues rather than collapsing to SDR-only reasoning. 75.3 Rewards and Training Pipeline 
+
+HAPO jointly optimizes three reward signals: format ( Rfmt ), regression accuracy ( Rsc ) (Li et al., 2025; You et al., 2024b; Wu et al., 2025), and self-consistency ( Rself ) (Zhou et al., 2025) combined as 
+
+Ri = wfmt Rfmt + wsc Rsc + wself Rself . (11) A Gaussian-weighted score reward stabilizes fine-grained MOS prediction, while the self-reward consolidates within-group consensus. 
+
+Two-Stage RL Training. Our training follows a two-stage RL-based paradigm (Chen et al., 2025c; Dai et al., 2025), both optimized with the same objective but serving distinct purposes: 
+
+• Stage 1 (Modality Alignment): aligns HDR tokens and projection layers via short HAPO runs. 
+
+• Stage 2 (Full-RFT): applies complete HAPO optimization on the HDR-UGC corpus, balancing distortion diversity and reasoning quality. Overall, HDR-Q unifies perceptual sensitivity and reasoning stability, the HDR encoder injects physical luminance awareness, contrastive KL enforces grounding, entropy regularization curbs uncertainty, and HEW refines token-level learning yielding accurate, interpretable HDR-aware quality judgments.     
+
+> Table 1 Performance on Beyond8Bits . Best results in blue bold , second best are underlined .
+> Model
+
+SRCC( ↑) PLCC( ↑) RMSE( ↓) KRCC( ↑)
+
+> DL models
+
+BRISQUE (Mittal et al., 2012) 0.4096 0.4689 11.7019 0.2797 CONTRIQUE (Madhusudana et al., 2022) 0.6245 0.6054 15.0224 0.4464 RE-IQA (Saha et al., 2023) 0.5698 0.5441 17.9049 0.4038 VBLIINDS (Saad et al., 2014) 0.4440 0.4397 11.7234 0.3044 CONVIQT (Madhusudana et al., 2023) 0.7987 0.8099 8.4807 0.6095 FastVQA (Wu et al., 2022a) 0.4909 0.4193 26.1325 0.3398 FasterVQA (Wu et al., 2022b) 0.4808 0.3224 29.6357 0.3367 DOVER (Wu et al., 2022c) 0.5094 0.5037 16.7176 0.3548 COVER (He et al., 2024) 0.6645 0.6645 16.8597 0.4870 HDRMAX (Shang et al., 2023) 0.6054 0.6070 10.1400 0.4277 HDRChipQA (Ebenezer et al., 2024b) 0.7180 0.7290 8.2987 0.5282 HIDROVQA (Saini et al., 2024) 0.8508 0.8784 6.0875 0.6694 
+
+> MLLM base model
+
+Qwen2.5-VL(7B) (Bai et al., 2025) 0.3089 0.3228 27.8899 0.2432 GLM-4.1V-Thinking(9B) (Hong et al., 2025) 0.2641 0.3944 23.8883 0.2924 Ovis2.5(9B) (Lu et al., 2025) 0.3423 0.3860 26.7570 0.2823 OmniLong-Qwen2.5-VL(7B) (Song and Wu, 2025) 0.3472 0.3595 25.7616 0.2677 
+
+> MLLM VQA model
+
+Q-Align (Wu et al., 2023d) 0.4615 0.3673 20.3411 0.3257 Q-Insight (Li et al., 2025) 0.5170 0.5621 20.7832 0.4138 Q-Instruct (Li et al., 2025) 0.5035 0.4712 19.6567 0.3496 DeQA (You et al., 2025) 0.5064 0.4642 19.5772 0.3586 Visual-Quality-Q1 (Wu et al., 2025) 0.3909 0.3617 23.6462 0.2809 HDR-Q (SDR) 0.8914 0.8895 7.4240 0.7052     
+
+> HDR-Q (full) 0.9206 0.9118 5.1594 0.7218
+
+## 6 Experiments 
+
+6.1 Experimental Setup 
+
+Datasets. We evaluate HDR-Q on the curated Beyond8Bits benchmark and test generalization on two public HDR-VQA datasets: LIVE-HDR (Shang et al., 2023) and SFV+HDR (Wang et al., 2024). Beyond8Bits is split by source identity into 70%/20%/10% train/val/test to avoid overlap. 8Metrics. Following VQA convention (Madhusudana et al., 2023; Lu et al., 2024; Saini et al., 2025, 2024), we report Spearman’s Rank (SRCC), Pearson’s Linear (PLCC), and Kendall’s Rank (KRCC) correlations ( ↑
+
+higher is better), and RMSE ( ↓ lower is better) against MOS. 
+
+Baselines. We compare four category of methods. (i) NR-VQA: BRISQUE (Mittal et al., 2012), VBLI-INDS (Saad et al., 2014), FastVQA (Wu et al., 2023a), FasterVQA (Wu et al., 2022b), DOVER (Wu et al., 2022c), CONVIQT (Madhusudana et al., 2023), COVER (He et al., 2024); (ii) HDR-VQA: HDR-MAX (Ebenezer et al., 2023), HDR-ChipQA (Ebenezer et al., 2024b), HIDRO-VQA (Saini et al., 2024); (iii) MLLM/VLM-VQA: Q-Align (Wu et al., 2023d), Q-Instruct (Wu et al., 2024a), Q-Insight (Li et al., 2025), DeQA (You et al., 2025), Visual-Quality-R1 (Wu et al., 2025); (iv) Base MLLMs: Qwen2.5-VL (Bai et al., 2025), GLM-4.1V-Thinking (Hong et al., 2025), Ovis2.5 (Lu et al., 2025), OmniLong-Qwen2.5-VL (Song and Wu, 2025). Where applicable, methods are re-trained on Beyond8Bits using authors’ protocols; others are evaluated in their released form. You are an expert HDR video quality assessor. Analyze the video content and technical quality.             
+
+> You must provide step-by-step .... Rate the overall quality of the video in 0-100 range, ... output
+> the final answer with only score in <answer></answer>.
+> Question
+> Ovis 2.5
+> HAPO (ours)
+> <think> The image shows an indoor scene ... Overall, the details are well preserved, the colors look natural. ...
+> However, further checking is necessary. ... The brightness of the image appears uneven: the trees on the left
+> seem clearly underexposed , while the right side appears overexposed due to strong light . The plant colors
+> lean toward a grayish green, suggesting poor color reproduction . The purple flowers also show color blooming ,
+> making the hues look unnatural .Therefore, the final score is 95.</think>
+> <answer>95</answer>
+> <think>The video shows a lush indoor botanical space... highlights in the mist roll off smoothly without harsh
+> clipping , ... the hues remain stable without notable chroma shifts . Some fine detail is softened in the mistier
+> regions, but this aligns with the natural ambience . Motion through the foliage likely feels gentle, with no
+> obvious signs of jitter or smear . Overall, the scene benefits from balanced luminance, strong color
+> reproduction, and clean gradients, giving the video a polished HDR appearance .</think>
+> <answer>{“82”}</answer>
+
+Figure 6 Given the same HDR video, OVIS 2.5 produces multiple incorrect judgments. In contrast, our HAPO-enhanced HDR-Q 
+
+provides HDR-grounded reasoning. (Best viewed zoomed in) 
+
+Implementation details. HDR-Q is built on Ovis2.5 (Lu et al., 2025) with rank-4 LoRA adapters (Hu et al., 2022). Frames are in-gested at native 10-bit PQ (no linear down-scaling). Each clip is uniformly sampled into 
+
+T = 8 frames; visual tokens from Eψ (xt)
+
+and SDR tokens from Eψ (xSDR 
+
+t ) feed the lan-guage decoder via learned projections. In HAPO, group size K = 8 ; clip range ϵ = 0 .1
+
+(clip-higher); reference KL weight β = 0 .02 ;HDR–SDR contrastive KL weight γ = 0 .5;policy entropy η1, η 2 = 0 .01 , 0.05 ; HEW mod-ulation λHEW = 0 .3 with wmin = 0 .5, w max =2.0. In gaussian score reward Rsc we use σ = 3 
+
+and α = 1 ; weights (wfmt , w sc , w self ) tuned on validation. We use AdamW (Loshchilov and Hutter, 2017), lr 1×10 −5, batch size of 4. We use four NVIDIA H200 GPUs for training. 
+
+Table 2 Cross-dataset performance Comparison on LIVE-HDR (Shang et al., 2023) and SFV+HDR (Wang et al., 2024) Datasets. 
+
+Model LIVE-HDR SFV+HDR 
+
+SROCC( ↑) PLCC( ↑) RMSE( ↓) KRCC( ↑) SROCC( ↑) PLCC( ↑) RMSE( ↓) KRCC( ↑)
+
+DL models 
+
+BRISQUE (Mittal et al., 2012) 0.7251 0.7139 12.6404 0.3424 0.4664 0.4186 0.3811 0.3165 CONTRIQUE (Madhusudana et al., 2022) 0.8170 0.7875 11.2514 0.5876 0.5901 0.5959 0.3368 0.4204 RE-IQA (Saha et al., 2023) 0.7196 0.6883 15.1653 0.5197 0.5822 0.5998 0.3072 0.4145 VBLIINDS (Saad et al., 2014) 0.7483 0.7193 12.7794 0.2541 0.3335 0.2713 0.3988 0.2300 CONVIQT (Madhusudana et al., 2023) 0.7922 0.8001 11.9681 0.6041 0.5736 0.6017 0.3412 0.4170 FastVQA (Wu et al., 2022a) 0.5182 0.5727 18.8379 0.3822 0.7130 0.7295 0.7467 0.5193 FasterVQA (Wu et al., 2023a) 0.3385 0.4114 22.1425 0.2282 0.6948 0.6889 0.3081 0.5089 DOVER (Wu et al., 2022c) 0.6303 0.6832 17.0005 0.4692 0.6001 0.6154 0.5750 0.4270 COVER (He et al., 2024) 0.5022 0.5013 21.3297 0.3731 0.6613 0.7048 0.6831 0.4705 HDRMAX (Shang et al., 2023) 0.6308 0.5088 15.4146 0.4509 0.5371 0.5463 0.3495 0.3821 HDRChipQA (Ebenezer et al., 2024b) 0.8250 0.8344 9.8038 0.4501 0.6296 0.6508 0.3271 0.4440 HIDROVQA (Saini et al., 2024) 0.8793 0.8678 8.8743 0.6919 0.7003 0.7320 0.2735 0.5156 
+
+MLLM base model 
+
+Qwen2.5-VL(7B) (Bai et al., 2025) 0.3099 0.3630 30.2082 0.2411 0.2925 0.2696 0.7480 0.2270 GLM-4.1V-Thinking(9B) (Hong et al., 2025) 0.4513 0.5517 26.3800 0.3464 0.5971 0.6066 0.4591 0.4484 Ovis2.5(9B) (Lu et al., 2025) 0.2948 0.3124 29.7789 0.2154 0.5909 0.5317 0.7016 0.4528 OmniLong-Qwen2.5-VL(7B) (Song and Wu, 2025) 0.2403 0.2223 29.7394 0.1853 0.2363 0.2212 0.7403 0.1823 
+
+MLLM VQA model 
+
+Q-Align (Wu et al., 2023d) 0.3346 0.3604 19.8287 0.2313 0.6968 0.6709 0.5097 0.4991 Q-Insight (Li et al., 2025) 0.3675 0.3825 25.0578 0.2820 0.6266 0.4685 0.6636 0.4747 Q-Instruct (Wu et al., 2024a) 0.4083 0.4340 23.1015 0.2839 0.5830 0.5501 1.0250 0.3975 DeQA (You et al., 2025) 0.3321 0.3809 19.3193 0.2298 0.6850 0.6721 0.4452 0.4845 Visual-Quality-Q1 (Wu et al., 2025) 0.4824 0.5394 20.8971 0.3564 0.5955 0.5577 0.5878 0.4416 HDR-Q (SDR) 0.8542 0.8445 12.4121 0.6681 0.6971 0.7019 0.3075 0.4885 
+
+HDR-Q (full) 0.9081 0.8978 7.6031 0.7363 0.7251 0.7502 0.2514 0.5261 
+
+9Table 3 Component ablation on Beyond8Bits. ✓=enabled, ✗=disabled. CoT len: CoT length and Tok. H: mean token entropy.                                                                                                  
+
+> Variant HDR-Enc. HAPO HDR–SDR KL Dual Ent. HEW Self-R. PLCC SRCC RMSE KRCC CoT len Tok. H
+> GRPO baseline ✗✗✗✗✗✗0.79 0.81 10.73 0.56 168 0.20 GRPO + HDR-Enc. ✓✗✗✗✗✗0.81 0.83 8.96 0.61 161 0.24 HAPO w/o HDR–SDR KL ✓✓✗✓✓✓0.84 0.86 7.10 0.64 142 0.29 HAPO w/o Dual Ent. ✓✓✓✗✓✓0.89 0.91 5.82 0.71 148 0.26 HAPO w/o HEW ✓✓✓✓✗✓0.87 0.88 6.11 0.68 155 0.27 HAPO w/o Self-Reward ✓✓✓✓✓✗0.90 0.92 5.22 0.71 140 0.31
+> HDR-Q (Full) ✓✓✓✓✓✓0.91 0.92 5.15 0.72 137 0.33
+
+6.2 Main Results 
+
+Table 1 reports quantitative results on Beyond8Bits . HDR-Q consistently outperforms all SDR, HDR, and MLLM-based baselines across correlation metrics, with substantial gains in RMSE. Against HDR-ChipQA (Ebenezer et al., 2024b) and HIDRO-VQA (Saini et al., 2024), HDR-Q achieves higher SRCC/PLCC with lower RMSE, indicating the benefits of HDR-aware embeddings plus HAPO grounding. Against FastVQA (Wu et al., 2023a) and DOVER (Wu et al., 2022c), HDR-Q remains robust despite diverse UGC capture pipelines. Relative to all MLLM and VLM models, HDR-Q ’s gains stem from HDR-aware encoder finetuning on 10-bit PQ without linear SDR scaling, and HDR–SDR contrastive KL (prevents modality neglect).  
+
+> (a)
+
+CoT Length (b) Token Entropy  
+
+> Figure 7
+
+Analysis of Chain-of-Thought (CoT) Length and Token Entropy over training iterations. (a) shows the decrease in CoT length, while (b) shows the corresponding increase in token en-tropy. 
+
+To test robustness, we evaluate zero-shot transfer on LIVE-HDR (Shang et al., 2023) and SFV+HDR (Wang et al., 2024) (Table 2). 
+
+HDR-Q retains high correlation and low error without retraining evidence that its HDR-aware encoder and HAPO grounding produce representations that generalize across UGC and PGC HDR domains. 
+
+HDR-Q generates concise, HDR-aware reason-ing (Fig. 6), detecting “natural indoor scene,” “possible hues from chroma shifts,” or “jit-ter” and linking them to perceptual judg-ments. Fig. 7 shows that HAPO stabilizes CoT length while HEW concentrates gradi-ents on informative tokens yielding efficient and interpretable reasoning. 
+
+6.3 Ablation Studies 
+
+Table 3 quantifies the contribution of each component. Removing HDR finetuning drops SRCC markedly, confirming that 10-bit cues are essential. Omitting HDR–SDR KL causes modality neglect, while disabling entropy regularization yields unstable, verbose reasoning. HEW improves token-level credit assignment, and self-rewarding enhances stability on noisy samples. Fig. 7 shows that HAPO reduces unnecessary CoT length over time while maintaining or improving accuracy, suggesting better use of visual evidence rather than increase in boilerplate rationales. 
+
+6.4 Complexity and Throughput 
+
+HAPO only adds an additional SDR-path forward pass only during training. Inference cost equals a single HDR path decode, maintaining competitive throughput on NVIDIA H200 GPUs. 10 7 Conclusion 
+
+We tackled the critical challenge of perceptual quality assessment for the fast-growing domain of HDR user-generated videos. We introduced Beyond8Bits , the largest crowdsourced subjective dataset for real-world HDR content, spanning diverse scenes, devices, and compression settings. We further proposed HDR-Q , the first multimodal large language model for HDR quality assessment, combining our novel HDR-aware vision encoder with HDR-Aware Policy Optimization (HAPO), a reinforcement learning framework that enforces HDR–SDR perceptual grounding and stabilizes reasoning via dual-entropy regularization and entropy-weighted credit assignment. HAPO enables accurate, interpretable, and HDR-sensitive quality reasoning. HDR-Q achieves state-of-the-art alignment with human opinion scores across Beyond8Bits , LIVE-HDR, and SFV+HDR. By releasing the dataset, we hope to catalyze future research in HDR-aware perception, evaluation, and generative model alignment. 
+
+## 8 Acknowledgment 
+
+This work was supported by the National Science Foundation AI Institute for Foundations of Machine Learning (IFML) under Grant 2019844. The authors thank the Texas Advanced Computing Center (TACC) at The University of Texas at Austin for providing VISTA compute infrastructure that contributed to the part of research outcomes in this paper. 
+
+## References 
+
+99Firms. Facebook video statistics, 2024. https://99firms.com/blog/facebook-video-statistics/ . [Online]. Naima Aamir, Junaid Mir, Imran Fareed Nizami, Furqan Shaukat, and Muhammad Majid. Hdr-bvqm: High dynamic range blind video quality model. Multimedia Tools and Applications , 80:27701 – 27715, 2021. https: //api.semanticscholar.org/CorpusID:236339560 .Apple Inc. Hls authoring specification for apple devices, 2024. https://developer.apple.com/documentation/ http-live-streaming/hls-authoring-specification-for-apple-devices . Accessed: Feb. 2024. Shahrukh Athar, Thilan Costa, Kai Zeng, and Zhou Wang. Perceptual quality assessment of UHD-HDR-WCG videos. In 2019 IEEE International Conference on Image Processing (ICIP) , pages 1740–1744. IEEE, 2019. Maryam Azimi et al. PU21: A novel perceptually uniform encoding for adapting existing quality metrics for HDR. In 
+
+2021 Picture Coding Symposium (PCS) , pages 1–5. IEEE, 2021. Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang, Jun Tang, et al. Qwen2. 5-vl technical report. arXiv preprint arXiv:2502.13923 , 2025. V Baroncini, K Andersson, AK Ramasubramonian, and G Sullivan. Verification test report for HDR/WCG video coding using HEVC main 10 profile. In Proc. JCTVC-X1018 24th JCT-VC Meeting , pages 293–303, 2016. Bowen Chen, Cheng-han Lee, Yixu Chen, Zaixi Shang, Hai Wei, and Alan C Bovik. Hdrsdr-vqa: A subjective video quality dataset for hdr and sdr comparative evaluation. arXiv preprint arXiv:2505.21831 , 2025a. Bowen Chen, Cheng-han Lee, Yixu Chen, Zaixi Shang, Hai Wei, and Alan C Bovik. Hdrsdr-vqa: A subjective video quality dataset for hdr and sdr comparative evaluation. arXiv preprint arXiv:2505.21831 , 2025b. Hardy Chen, Haoqin Tu, Fali Wang, Hui Liu, Xianfeng Tang, Xinya Du, Yuyin Zhou, and Cihang Xie. Sft or rl? an early investigation into training r1-like reasoning large vision-language models. arXiv preprint arXiv:2504.11468 ,2025c. Tianzhe Chu, Yuexiang Zhai, Jihan Yang, Shengbang Tong, Saining Xie, Dale Schuurmans, Quoc V Le, Sergey Levine, and Yi Ma. Sft memorizes, rl generalizes: A comparative study of foundation model post-training. arXiv preprint arXiv:2501.17161 , 2025. Ganqu Cui, Yuchen Zhang, Jiacheng Chen, Lifan Yuan, Zhi Wang, Yuxin Zuo, Haozhan Li, Yuchen Fan, Huayu Chen, Weize Chen, et al. The entropy mechanism of reinforcement learning for reasoning language models. URL https://arxiv. org/abs/2505.22617 , 2025. 
+
+11 Wei Dai, Peilin Chen, Chanakya Ekbote, and Paul Pu Liang. Qoq-med: Building multimodal clinical foundation models with domain-aware grpo training. arXiv preprint arXiv:2506.00711 , 2025. Huiyu Duan, Qiang Hu, Jiarui Wang, Liu Yang, Zitong Xu, Lu Liu, Xiongkuo Min, Chunlei Cai, Tianxiao Ye, Xiaoyun Zhang, et al. Finevq: Fine-grained user generated content video quality assessment. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 3206–3217, 2025. Joshua P Ebenezer, Zaixi Shang, Yongjun Wu, Hai Wei, Sriram Sethuraman, and Alan C Bovik. Making video quality assessment models robust to bit depth. IEEE Signal Processing Letters , 30:488–492, 2023. Joshua P Ebenezer, Zaixi Shang, Yixu Chen, Yongjun Wu, Hai Wei, Sriram Sethuraman, and Alan C Bovik. Hdr or sdr? a subjective and objective study of scaled and compressed videos. IEEE Transactions on Image Processing ,2024a. Joshua P Ebenezer, Zaixi Shang, Yongjun Wu, Hai Wei, Sriram Sethuraman, and Alan C Bovik. Hdr-chipqa: No-reference quality assessment on high dynamic range videos. Signal Processing: Image Communication , 129:117191, 2024b. Joshua Peter Ebenezer, Zaixi Shang, Yongjun Wu, Hai Wei, Sriram Sethuraman, and Alan C Bovik. Chipqa: No-reference video quality prediction via space-time chips. IEEE Transactions on Image Processing , 30:8059–8074, 2021. Google Support. Recommended upload encoding settings, 2024. https://support.google.com/youtube/answer/ 1722171?hl=en . Accessed: Feb. 2024. Chenlong He, Qi Zheng, Ruoxi Zhu, Xiaoyang Zeng, Yibo Fan, and Zhengzhong Tu. Cover: A comprehensive video quality evaluator. In 2024 IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW) , pages 5799–5809, 2024. doi: 10.1109/CVPRW63382.2024.00589. Wenyi Hong, Wenmeng Yu, Xiaotao Gu, Guo Wang, Guobing Gan, Haomiao Tang, Jiale Cheng, Ji Qi, Junhui Ji, Lihang Pan, et al. Glm-4.1 v-thinking: Towards versatile multimodal reasoning with scalable reinforcement learning. 
+
+arXiv e-prints , pages arXiv–2507, 2025. Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, Weizhu Chen, et al. Lora: Low-rank adaptation of large language models. ICLR , 1(2):3, 2022. International Telecommunication Union. Methodology for the Subjective Assessment of the Quality of Television Pictures. Technical Report BT.500-14, International Telecommunication Union, 2019. https://www.itu.int/rec/ R-REC-BT.500-14-201910-I/en .Mohamed Ishmael Belghazi, Aristide Baratin, Sai Rajeswar, Sherjil Ozair, Yoshua Bengio, Aaron Courville, and R Devon Hjelm. Mine: mutual information neural estimation. arXiv e-prints , pages arXiv–1801, 2018. Jari Korhonen. Two-level approach for no-reference consumer video quality assessment. IEEE Trans. Image Process. ,28(12):5923–5938, 2019. Dingquan Li, Tingting Jiang, and Ming Jiang. Quality assessment of in-the-wild videos. In ACM Multimedia , pages 2351–2359. ACM, 2019. Weiqi Li, Xuanyu Zhang, Shijie Zhao, Yabin Zhang, Junlin Li, Li Zhang, and Jian Zhang. Q-insight: Understanding image quality via visual reinforcement learning. arXiv preprint arXiv:2503.22679 , 2025. Zhi Li, Christos G. Bampis, Lucjan Janowski, and Ioannis Katsavounidis. A simple model for subject behavior in subjective experiments. In Electronic Imaging , volume 2020, pages 131–1–131–14, 2020. doi: 10.2352/ISSN. 2470-1173.2020.11.HVEI-131. https://doi.org/10.2352/ISSN.2470-1173.2020.11.HVEI-131 .Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. arXiv preprint arXiv:1711.05101 , 2017. Shiyin Lu, Yang Li, Yu Xia, Yuwei Hu, Shanshan Zhao, Yanqing Ma, Zhichao Wei, Yinglun Li, Lunhao Duan, Jianshan Zhao, et al. Ovis2. 5 technical report. arXiv preprint arXiv:2508.11737 , 2025. Yiting Lu, Xin Li, Yajing Pei, Kun Yuan, Qizhi Xie, Yunpeng Qu, Ming Sun, Chao Zhou, and Zhibo Chen. Kvq: Kwai video quality assessment for short-form videos. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 25963–25973, 2024. Xiao Ma, Bingyi Kang, Zhongwen Xu, Min Lin, and Shuicheng Yan. Mutual information regularized offline reinforcement learning. Advances in Neural Information Processing Systems , 36:19058–19072, 2023. 
+
+12 Pavan C. Madhusudana, Neil Birkbeck, Yilin Wang, Balu Adsumilli, and Alan C. Bovik. Image quality assessment using contrastive learning. IEEE Trans. Image Process. , 31:4149–4161, 2022. Pavan C Madhusudana, Neil Birkbeck, Yilin Wang, Balu Adsumilli, and Alan C Bovik. Conviqt: Contrastive video quality estimator. IEEE Transactions on Image Processing , 32:5138–5152, 2023. RK Mantiuk and M Azimi. Pu21: A novel perceptually uniform encoding for adapting existing quality metrics for hdr. 2021. doi: 10.17863/CAM.74563. https://www.repository.cam.ac.uk/handle/1810/327114 .Anish Mittal, Anush Krishna Moorthy, and Alan Conrad Bovik. No-reference image quality assessment in the spatial domain. IEEE Transactions on Image Processing , 21(12):4695–4708, 2012. doi: 10.1109/TIP.2012.2214050. Anish Mittal, Rajiv Soundararajan, and Alan C. Bovik. Making a “completely blind” image quality analyzer. IEEE Signal Processing Letters , 20(3):209–212, 2013. doi: 10.1109/LSP.2012.2227726. Anish Mittal, Michele A. Saad, and Alan C. Bovik. A completely blind video integrity oracle. IEEE Trans. Image Process. , 25(1):289–300, 2016. Maryam Mohsin. 10 youtube statistics every marketer should know in 2020, 2020. https://www.oberlo.com/blog/ youtube-statistics . [Online]. Manish Narwaria, Matthieu Perreira Da Silva, and Patrick Le Callet. Hdr-vqm: An objective quality measure for high dynamic range video. Signal Processing: Image Communication , 35:46–60, 2015. ISSN 0923-5965. doi: https://doi. org/10.1016/j.image.2015.04.009. https://www.sciencedirect.com/science/article/pii/S0923596515000703 .Mikko Nuutinen, Toni Virtanen, Mikko Vaahteranoksa, Tero Vuori, Pirkko Oittinen, and Jukka Häkkinen. CVD2014 -A database for evaluating no-reference video quality assessment algorithms. IEEE Trans. Image Process. , 25(7): 3073–3086, 2016. Omnicore. Tiktok by the numbers, 2024. https://www.omnicoreagency.com/tiktok-statistics/ . [Online]. Xiaofei Pan, Jiaqi Zhang, Shanshe Wang, Shiqi Wang, Yun Zhou, Wenhua Ding, and Yahui Yang. Hdr video quality assessment: Perceptual evaluation of compressed hdr video. Journal of Visual Communication and Image Representation , 57:76–83, 2018. Yanyun Pu, Kehan Li, Zeyi Huang, Zhijie Zhong, and Kaixiang Yang. Mvqa-68k: A multi-dimensional and causally-annotated dataset with quality interpretability for video assessment. arXiv preprint arXiv:2509.11589 , 2025. Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and Chelsea Finn. Direct preference optimization: Your language model is secretly a reward model. Advances in neural information processing systems , 36:53728–53741, 2023. Martin Rerabek, Philippe Hanhart, Pavel Korshunov, and Touradj Ebrahimi. Subjective and objective evaluation of hdr video compression. In 9th International Workshop on Video Processing and Quality Metrics for Consumer Electronics (VPQM) , 2015. Michele A. Saad, Alan C. Bovik, and Christophe Charrier. Blind prediction of natural video quality. IEEE Trans. Image Process. , 23(3):1352–1365, 2014. Avinab Saha, Sandeep Mishra, and Alan C. Bovik. Re-iqa: Unsupervised learning for image quality assessment in the wild. In IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 , pages 5846–5855. IEEE, 2023. doi: 10.1109/CVPR52729.2023.00566. https: //doi.org/10.1109/CVPR52729.2023.00566 .Shreshth Saini, Avinab Saha, and Alan C Bovik. Hidro-vqa: High dynamic range oracle for video quality assessment. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 469–479, 2024. Shreshth Saini, Alan C Bovik, Neil Birkbeck, Yilin Wang, and Balu Adsumilli. Chug: Crowdsourced user-generated hdr video quality dataset. In 2025 IEEE International Conference on Image Processing (ICIP) , pages 2504–2509. IEEE, 2025. John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 , 2017. Kalpana Seshadrinathan, Rajiv Soundararajan, Alan Conrad Bovik, and Lawrence K. Cormack. Study of subjective and objective quality assessment of video. IEEE Transactions on Image Processing , 19(6):1427–1441, 2010. doi: 10.1109/TIP.2010.2042111. 
+
+13 Zaixi Shang, Joshua P Ebenezer, Abhinau K Venkataramanan, Yongjun Wu, Hai Wei, Sriram Sethuraman, and Alan C Bovik. A study of subjective and objective quality assessment of hdr videos. IEEE Transactions on Image Processing ,33:42–57, 2023. Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 , 2024. Zeina Sinno and Alan Conrad Bovik. Large-scale study of perceptual video quality. IEEE Trans. Image Process. , 28 (2):612–627, 2019. Yin Song and Chen Wu. aws-prototyping/omnilong-qwen2.5-vl-7b, 2025. https://huggingface.co/aws-prototyping/ OmniLong-Qwen2.5-VL-7B .Michael Tschannen, Alexey Gritsenko, Xiao Wang, Muhammad Ferjad Naeem, Ibrahim Alabdulmohsin, Nikhil Parthasarathy, Talfan Evans, Lucas Beyer, Ye Xia, Basil Mustafa, et al. Siglip 2: Multilingual vision-language encoders with improved semantic understanding, localization, and dense features. arXiv preprint arXiv:2502.14786 ,2025. Yilin Wang, Joong Gon Yim, Neil Birkbeck, and Balu Adsumilli. Youtube sfv+ hdr quality dataset. In 2024 IEEE International Conference on Image Processing (ICIP) , pages 96–102. IEEE, 2024. Zhenhailong Wang, Xuehang Guo, Sofia Stoica, Haiyang Xu, Hongru Wang, Hyeonjeong Ha, Xiusi Chen, Yangyi Chen, Ming Yan, Fei Huang, et al. Perception-aware policy optimization for multimodal reasoning. arXiv preprint arXiv:2507.06448 , 2025. Haoning Wu, Chaofeng Chen, Jingwen Hou, Liang Liao, Annan Wang, Wenxiu Sun, Qiong Yan, and Weisi Lin. Fast-vqa: Efficient end-to-end video quality assessment with fragment sampling. In Computer Vision – ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23–27, 2022, Proceedings, Part VI , page 538–554, Berlin, Heidelberg, 2022a. Springer-Verlag. ISBN 978-3-031-20067-0. doi: 10.1007/978-3-031-20068-7_31. https: //doi.org/10.1007/978-3-031-20068-7_31 .Haoning Wu, Chaofeng Chen, Liang Liao, Jingwen Hou, Wenxiu Sun, Qiong Yan, Jinwei Gu, and Weisi Lin. Neighbourhood representative sampling for efficient end-to-end video quality assessment, 2022b. Haoning Wu, Liang Liao, Chaofeng Chen, Jingwen Hou, Annan Wang, Wenxiu Sun, Qiong Yan, and Weisi Lin. Disentangling aesthetic and technical effects for video quality assessment of user generated content. CoRR ,abs/2211.04894, 2022c. Haoning Wu, Chaofeng Chen, Liang Liao, Jingwen Hou, Wenxiu Sun, Qiong Yan, Jinwei Gu, and Weisi Lin. Neighbourhood representative sampling for efficient end-to-end video quality assessment. IEEE Trans. Pattern Anal. Mach. Intell. , 45(12):15185–15202, 2023a. doi: 10.1109/TPAMI.2023.3319332. https://doi.org/10.1109/TPAMI. 2023.3319332 .Haoning Wu, Erli Zhang, Liang Liao, Chaofeng Chen, Jingwen Hou, Annan Wang, Wenxiu Sun, Qiong Yan, and Weisi Lin. Towards explainable in-the-wild video quality assessment: A database and a language-prompted approach. In Abdulmotaleb El-Saddik, Tao Mei, Rita Cucchiara, Marco Bertini, Diana Patricia Tobon Vallejo, Pradeep K. Atrey, and M. Shamim Hossain, editors, Proceedings of the 31st ACM International Conference on Multimedia, MM 2023, Ottawa, ON, Canada, 29 October 2023- 3 November 2023 , pages 1045–1054. ACM, 2023b. doi: 10.1145/3581783.3611737. https://doi.org/10.1145/3581783.3611737 .Haoning Wu, Zicheng Zhang, Erli Zhang, Chaofeng Chen, Liang Liao, Annan Wang, Chunyi Li, Wenxiu Sun, Qiong Yan, Guangtao Zhai, et al. Q-bench: A benchmark for general-purpose foundation models on low-level vision. arXiv preprint arXiv:2309.14181 , 2023c. Haoning Wu, Zicheng Zhang, Weixia Zhang, Chaofeng Chen, Liang Liao, Chunyi Li, Yixuan Gao, Annan Wang, Erli Zhang, Wenxiu Sun, et al. Q-align: Teaching lmms for visual scoring via discrete text-defined levels. arXiv preprint arXiv:2312.17090 , 2023d. Haoning Wu, Zicheng Zhang, Erli Zhang, Chaofeng Chen, Liang Liao, Annan Wang, Kaixin Xu, Chunyi Li, Jingwen Hou, Guangtao Zhai, et al. Q-instruct: Improving low-level visual abilities for multi-modality foundation models. In 
+
+Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 25490–25500, 2024a. Haoning Wu, Hanwei Zhu, Zicheng Zhang, Erli Zhang, Chaofeng Chen, Liang Liao, Chunyi Li, Annan Wang, Wenxiu Sun, Qiong Yan, et al. Towards open-ended visual quality comparison. In European Conference on Computer Vision ,pages 360–377. Springer, 2024b. 
+
+14 Tianhe Wu, Jian Zou, Jie Liang, Lei Zhang, and Kede Ma. Visualquality-r1: Reasoning-induced image quality assessment via reinforcement learning to rank. arXiv preprint arXiv:2505.14460 , 2025. Zhenqiang Ying, Maniratnam Mandal, Deepti Ghadiyaram, and Alan Bovik. Patch-vq:’patching up’the video quality problem. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 14019–14029, 2021. Zhiyuan You, Jinjin Gu, Zheyuan Li, Xin Cai, Kaiwen Zhu, Chao Dong, and Tianfan Xue. Descriptive image quality assessment in the wild. arXiv preprint arXiv:2405.18842 , 2024a. Zhiyuan You, Zheyuan Li, Jinjin Gu, Zhenfei Yin, Tianfan Xue, and Chao Dong. Depicting beyond scores: Advancing image quality assessment through multi-modal language models. In European Conference on Computer Vision ,pages 259–276. Springer, 2024b. Zhiyuan You, Xin Cai, Jinjin Gu, Tianfan Xue, and Chao Dong. Teaching large language models to regress accurate image quality scores using score distribution. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 14483–14494, 2025. Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong Liu, Lingjun Liu, et al. Dapo: An open-source llm reinforcement learning system at scale. arXiv preprint arXiv:2503.14476 ,2025. Qingcheng Zeng, Mingyu Jin, Qinkai Yu, Zhenting Wang, Wenyue Hua, Zihao Zhou, Guangyan Sun, Yanda Meng, Shiqing Ma, Qifan Wang, et al. Uncertainty is fragile: Manipulating uncertainty in large language models. arXiv preprint arXiv:2407.11282 , 2024. Zicheng Zhang, Wei Wu, Wei Sun, Dangyang Tu, Wei Lu, Xiongkuo Min, Ying Chen, and Guangtao Zhai. Md-vqa: Multi-dimensional quality assessment for ugc live videos, 2023. https://arxiv.org/abs/2303.14933 .Zicheng Zhang, Ziheng Jia, Haoning Wu, Chunyi Li, Zijian Chen, Yingjie Zhou, Wei Sun, Xiaohong Liu, Xiongkuo Min, Weisi Lin, et al. Q-bench-video: Benchmark the video quality understanding of lmms. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 3229–3239, 2025. Xu Zheng, Chenfei Liao, Yuqian Fu, Kaiyu Lei, Yuanhuiyi Lyu, Lutao Jiang, Bin Ren, Jialei Chen, Jiawen Wang, Chengxin Li, et al. Mllms are deeply affected by modality bias. arXiv preprint arXiv:2505.18657 , 2025. Xin Zhou, Yiwen Guo, Ruotian Ma, Tao Gui, Qi Zhang, and Xuanjing Huang. Self-consistency of the internal reward models improves self-rewarding language models. arXiv preprint arXiv:2502.08922 , 2025. Hanwei Zhu, Haoning Wu, Yixuan Li, Zicheng Zhang, Baoliang Chen, Lingyu Zhu, Yuming Fang, Guangtao Zhai, Weisi Lin, and Shiqi Wang. Adaptive image quality assessment via teaching large multimodal model to compare. 
+
+Advances in Neural Information Processing Systems , 37:32611–32629, 2024. 
+
+15

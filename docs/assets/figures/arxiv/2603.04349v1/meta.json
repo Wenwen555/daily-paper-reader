@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.04349v1/fig-001.webp",
+      "caption": "Fig. 2: FocusGraph overview. FocusGraph takes egocentric video as input and splits it into clips with a fixed number of frames. Then, for each clip, a pretrained MLLM constructs an object-centric representation of the scene in the form of a hierarchical textual scene graph, containing a list of objects and a scene description. We also store the time range of the original video from which a clip is extracted. Next, a timeaugmented clip caption is generated from each graph-based clip description, which is then projected into the Scene-Caption LLM Selector. The Scene-Caption LLM Selector selects the clips that contain the answer to the question. From the selected clips, K key frames are chosen using the proposed training-free PSFR algorithm. The K key frames are then fed into an MLLM, which uses them to solve various tasks, such as navigation goal selection (FindingDory) or multi-choice question answering (HourVideo).",
+      "page": 6,
+      "index": 1,
+      "width": 723,
+      "height": 411
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04349v1/fig-002.webp",
+      "caption": "Fig. 3: Comparison of frame sampling methods (Finding Dory: episode 2, task 49). Green-bordered frames are present in the ground truth; red-bordered frames are not.",
+      "page": 14,
+      "index": 2,
+      "width": 725,
+      "height": 558
+    },
+    {
+      "url": "assets/figures/arxiv/2603.04349v1/fig-003.webp",
+      "caption": "Table 1: Performance comparison across frame sampling methods and LLM settings (Finding Dory).",
+      "page": 12,
+      "index": 3,
+      "width": 706,
+      "height": 187
+    }
+  ]
+}

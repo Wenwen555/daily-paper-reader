@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-001.webp",
+      "caption": "Figure 1 Overview of our dataset and performance evaluation. Top: Example comparisons between HDR and SDR frames, illustrating differences in brightness range, color depth, and visual detail across diverse scenes. Bottom-left: The distribution of video categories in the Beyond8Bits dataset, covering human-centered content, nature & outdoor scenes, and various other real-world scenarios. Bottom-right: Performance comparison between our proposed HDR-Q model and baseline methods on three datasets, where HDR-Q achieves significant improvements in PLCC.",
+      "page": 2,
+      "index": 1,
+      "width": 864,
+      "height": 512
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-002.webp",
+      "caption": "Figure 7 Analysis of Chain-of-Thought (CoT) Length and Token Entropy over training iterations. (a) shows the decrease in CoT length, while (b) shows the corresponding increase in token entropy.",
+      "page": 10,
+      "index": 2,
+      "width": 544,
+      "height": 258
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-003.webp",
+      "caption": "Figure 2 Typical challenges in HDR-UGC videos, including HDR-specific issues (e.g., highlight clipping, color blooming, dark grain) and UGC/compression-related artifacts (e.g., color distortion, blocking, ringing, blurring).",
+      "page": 3,
+      "index": 3,
+      "width": 986,
+      "height": 343
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-004.webp",
+      "caption": "Table 1 Performance on Beyond8Bits. Best results in blue bold, second best are underlined",
+      "page": 8,
+      "index": 4,
+      "width": 973,
+      "height": 704
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-005.webp",
+      "caption": "Figure 6 Given the same HDR video, OVIS 2.5 produces multiple incorrect judgments. In contrast, our HAPO-enhanced HDR-Q provides HDR-grounded reasoning. (Best viewed zoomed in)",
+      "page": 9,
+      "index": 5,
+      "width": 535,
+      "height": 369
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-006.webp",
+      "caption": "Table 2 Cross-dataset performance Comparison on LIVE-HDR (Shang et al., 2023) and SFV+HDR (Wang et al., 2024) Datasets.",
+      "page": 9,
+      "index": 6,
+      "width": 986,
+      "height": 454
+    },
+    {
+      "url": "assets/figures/arxiv/2603.00938v1/fig-007.webp",
+      "caption": "Figure 4 Overview of HDR-Qwith HAPO. Left: HAPO compares rollouts under HDR inputs (text + SDR + HDR tokens) versus an HDR-deprived pathway (text + SDR only), maximizing their KL divergence to enforce HDR grounding and applying dual-entropy regularization to prevent reward hacking. Group-wise rewards include MOS/attribute accuracy, reasoning quality, and self-rewarding. Right: a LoRA-tuned LLM decodes the HDR-aware reasoning; visual inputs originate from both a standard encoder and our HDR-aware adapter.",
+      "page": 5,
+      "index": 7,
+      "width": 986,
+      "height": 289
+    }
+  ]
+}

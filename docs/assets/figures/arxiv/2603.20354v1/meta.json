@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-001.webp",
+      "caption": "Table 1: Per-dimension label taxonomy of FeedBench. Sub-dimensions are listed for each of the six structural dimensions.",
+      "page": 11,
+      "index": 1,
+      "width": 398,
+      "height": 576
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-002.webp",
+      "caption": "Table 2: Overview of FeedBench, containing 60 short-form videos from 27 content categories. All core items are grounded in either a temporal interval or a timestamp, instantiated as closed-vocabulary multiple-choice or IoU-scored temporal localization tasks. †Subject items are currently IoU-only (temporal localization); narrative items are under construction ([WIP]). Single, Multi, and Ordered denote singlelabel, multi-label, and ordered-transition items, respectively.",
+      "page": 11,
+      "index": 2,
+      "width": 746,
+      "height": 235
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-003.webp",
+      "caption": "Table 6: Performance of Leum-VL-8B and other 8B-scale models on open benchmarks.",
+      "page": 15,
+      "index": 3,
+      "width": 945,
+      "height": 409
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-004.webp",
+      "caption": "Figure 2: Overview of the data synthesis pipeline. Starting from raw internet video, the pipeline proceeds through shot segmentation, LoRA-based structural annotation, scorer-based quality filtering, LLMassisted structural extension, and dense report generation, producing the SV6D SFT training corpus.",
+      "page": 7,
+      "index": 4,
+      "width": 924,
+      "height": 794
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-005.webp",
+      "caption": "Table 5: Performance of Leum-VL-8B on FeedBench.",
+      "page": 14,
+      "index": 5,
+      "width": 944,
+      "height": 223
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-006.webp",
+      "caption": "Figure 3: GRPO training dynamics over 150 steps. Left: actor entropy decreases steadily, indicating the policy becomes more confident. Center: mean reward score rises from ∼0.66 to ∼0.80. Right: mean response length remains stable, showing no reward hacking through verbosity.",
+      "page": 14,
+      "index": 6,
+      "width": 933,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2603.20354v1/fig-007.webp",
+      "caption": "Table 3: GRPO training hyperparameters.",
+      "page": 13,
+      "index": 7,
+      "width": 533,
+      "height": 233
+    }
+  ]
+}

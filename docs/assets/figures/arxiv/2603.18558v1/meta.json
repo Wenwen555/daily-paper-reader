@@ -1,0 +1,118 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-001.webp",
+      "caption": "Figure 3: The HiMu pipeline. (1) An LLM parses the question into a logic tree of modality-specific experts. (2) Experts (CLIP, ASR, OVD, CLAP) extract raw signals, which are then normalized and smoothed. (3) Fuzzy logic operators compose signals into a temporal satisfaction curve. (4) Top frames are sampled for the LVLM using PASS.",
+      "page": 6,
+      "index": 1,
+      "width": 976,
+      "height": 526
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-002.webp",
+      "caption": "Table 2: Comparison of HiMu with baseline frame selection methods and its generalization across different LVLMs. We report accuracy on Video-MME (Overall, Short, Medium, Long), LongVideoBenchval, and HERBench-Lite. Unless stated otherwise, all methods selectK=16 frames. Gray entries denote results reported by the respective authors under different frame budgets.",
+      "page": 11,
+      "index": 2,
+      "width": 972,
+      "height": 612
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-003.webp",
+      "caption": "Table 7: Component-level ablation on a random 50% subset of Video-MME (Qwen3-VL-8B,K=16): expert backbone swaps and selection strategy. Each row changes one component from the default configuration. ∆ is the difference from the baseline.",
+      "page": 25,
+      "index": 3,
+      "width": 814,
+      "height": 332
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-004.webp",
+      "caption": "Table 9: Per-component selector latency breakdown for HiMu on 8×A100 (80GB). A 10-minute video at 1FPS yields 600 candidate frames. Preprocessing is executed once per video and cached; per-query stages run for each new question. DP=data-parallel. †Conditional on the corresponding expert appearing in the logic tree; when absent, the component is skipped entirely.",
+      "page": 26,
+      "index": 4,
+      "width": 740,
+      "height": 473
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-005.webp",
+      "caption": "Table 5: Complete hyperparameter settings for HiMu.",
+      "page": 21,
+      "index": 5,
+      "width": 814,
+      "height": 1225
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-006.webp",
+      "caption": "Figure 2: Accuracy vs. computational cost of frame selection methods. Top-reported accuracy on Video-MME versus total pipeline FLOPs (TFLOPs, log scale) for a 10-minute video on 8×A100 GPUs. Similarity-based selectors (blue) are computationally efficient but plateau at low accuracy; agentic and iterative detector based methods (red region) reach higher accuracy at a substantially greater cost; and HiMu (ours, green star) breaks the prior Pareto front.",
+      "page": 2,
+      "index": 6,
+      "width": 947,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-007.webp",
+      "caption": "Figure 4: Logic tree examples on VideoMME questions, combining visual and audio experts.",
+      "page": 7,
+      "index": 7,
+      "width": 979,
+      "height": 470
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-008.webp",
+      "caption": "Figure 6: PASS vs. naive top-K selection. Given the multimodal satisfaction curve T (t), naive top-K (left, red) concentrates all selected frames around the single highest peak, missing other relevant events. PASS (right, blue) detects multiple peaks, spreads neighbors around each, and fills the remaining budget greedily, yielding diverse temporal coverage.",
+      "page": 22,
+      "index": 8,
+      "width": 976,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-009.webp",
+      "caption": "Figure 7: Per-leaf activation heatmap for a sampled Video-MME question. Top-left: the MCQ question (“What does the black dog do in the water?”) with its four answer options. Centre: the logic tree with per-leaf scores for each of the K=16 selected frames (columns, in temporal order). Cell colour encodes s (i) e (t) ∈ [0, 1] (dark ≈ 1: predicate strongly satisfied; light/pale ≈ 0: not satisfied). Bottom: a filmstrip of few of the 1 fps sampled frames and enlarged thumbnails of five representatives from the selected frames. This leaf-level transparency is a structural consequence of HiMu’s neuro-symbolic design and is unavailable in similarity-based or agent-based selectors.",
+      "page": 28,
+      "index": 9,
+      "width": 976,
+      "height": 863
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-010.webp",
+      "caption": "Table 4: Per-benchmark prompt adaptations for HiMu’s logic-tree parser. The common prompt (Listing 1) is shared across all benchmarks; only the dimensions shown below differ per benchmark.",
+      "page": 19,
+      "index": 10,
+      "width": 979,
+      "height": 1160
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-011.webp",
+      "caption": "Figure 5: HiMu pipeline overview. Given a natural-language query, an LLM decomposes it into a hierarchical logic tree whose leaves are routed to modality-specific experts (OCR, CLIP, ASR, OVD, CLAP). Each expert produces a per-frame relevance signal over time; these signals are composed bottom-up via fuzzy-logic operators into a satisfaction curve T (t). The top-scoring frames are selected and passed to the LVLM for answering.",
+      "page": 17,
+      "index": 11,
+      "width": 736,
+      "height": 698
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-012.webp",
+      "caption": "Table 3: Ablation studies on Video-MME using Qwen3-VL-8B. Left: Expert ablation (K=16). “Flat Fusion” replaces the logic tree with a flat summation of all leaf scores; each “w/o” row removes one expert. Right: Effect of frame budget K. HiMu at K=16 rivals Uniform at K=64.",
+      "page": 12,
+      "index": 12,
+      "width": 962,
+      "height": 262
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-013.webp",
+      "caption": "Table 6: Hyperparameter sensitivity on a random 50% subset of Video-MME (Qwen3-VL-8B, K=16). Each row changes one hyperparameter from the default. ∆ is the difference from the baseline.",
+      "page": 24,
+      "index": 13,
+      "width": 736,
+      "height": 457
+    },
+    {
+      "url": "assets/figures/arxiv/2603.18558v1/fig-014.webp",
+      "caption": "Table 1: Comparison of frame selection methods for long-form video QA. Selector latency excludes the final QA call. Latency is estimated for a 10-minute video (600 frames at 1FPS, K=16) on 8×A100 (80GB). E2E is first-query selector latency (Q=1); Amort. is per-query selector latency amortised over Q=10 queries on the same video.",
+      "page": 5,
+      "index": 14,
+      "width": 980,
+      "height": 402
+    }
+  ]
+}

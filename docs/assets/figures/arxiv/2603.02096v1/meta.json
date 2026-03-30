@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.02096v1/fig-001.webp",
+      "caption": "Table 2. Results on the online video understanding benchmarks OVO-Bench and StreamingBench real-time, as well as on the offline benchmarks VideoMME (w/o sub.), MLVU, and LongVideoBench. Here, “w/o sub.” denotes evaluation on VideoMME without subtitles. Best overall results are in bold and the best results among training-free methods are underlined. † indicates the reproduced results.",
+      "page": 6,
+      "index": 1,
+      "width": 1036,
+      "height": 517
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02096v1/fig-002.webp",
+      "caption": "Figure 3. Ablation of FluxMem. (a) Method comparison across drop ratios on the MLVU dataset. (b) and (c) Comparison of our adaptive and fixed thresholds in the mid- and long-term memory banks. The cosine distance of each token is compared against these thresholds to determine whether it is kept or dropped. The shaded area presents the distribution of average per-video drop ratios for the adaptive and optimal fixed thresholds, aggregated across all videos in the MLVU benchmark.",
+      "page": 7,
+      "index": 2,
+      "width": 1036,
+      "height": 357
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02096v1/fig-003.webp",
+      "caption": "Figure 2. Overview of FluxMem: Adaptive Hierarchical Memory. Each incoming frame is encoded into visual tokens and written to FluxMem in a cascaded short–mid–long process. On short-term memory overflow, Temporal Adjacency Selection (TAS) retains temporally variant tokens for mid-term memory; on mid-term memory overflow, Spatial Domain Consolidation (SDC) merges spatially redundant regions into compact anchors for long-term memory. The overflow process is guided by distribution-adaptive thresholds, autonomously calibrating retention strength to the video’s temporal dynamics. Notably, the similarity metric against the preceding frame, required for TAS, is computed upon the token’s entry into the short-term memory, enabling it to serve as a zero-overhead trigger for active LLM output.",
+      "page": 4,
+      "index": 3,
+      "width": 1036,
+      "height": 471
+    },
+    {
+      "url": "assets/figures/arxiv/2603.02096v1/fig-004.webp",
+      "caption": "Table 1. Results on the real-time subtasks of OVO-Bench and StreamingBench. OVO-Bench real-time encompasses: [OCR] Optical Character Recognition; [ACR] Action Recognition; [ATR] Attribute Recognition; [STU] Spatial Understanding; [FPD] Future Prediction; [OJR] Object Recognition. StreamingBench real-time encompasses: [OP] Object Perception; [CR] Causal Reasoning; [CS] Clip Summarization; [ATP] Attribute Perception; [EU] Event Understanding; [TR] Text-Rich Understanding; [PR] Prospective Reasoning; [SU] Spatial Understanding; [ACP] Action Perception; [CT] Counting. Best results among open-source models are in bold and the best results among training-free methods are underlined. † indicates the reproduced results.",
+      "page": 5,
+      "index": 4,
+      "width": 1026,
+      "height": 595
+    }
+  ]
+}

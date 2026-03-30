@@ -1,0 +1,886 @@
+Title: Less Data, Faster Convergence: Goal-Driven Data Optimization for Multimodal Instruction Tuning
+
+URL Source: https://arxiv.org/pdf/2603.12478v1
+
+Published Time: Mon, 16 Mar 2026 00:19:27 GMT
+
+Number of Pages: 26
+
+Markdown Content:
+# Less Data, Faster Convergence: Goal-Driven Data Optimization for Multimodal Instruction Tuning 
+
+Rujie Wu 1*, Haozhe Zhao 2*, Hai Ci 3B, and Yizhou Wang 1 
+
+> 1
+
+Peking University  
+
+> 2
+
+University of Illinois at Urbana-Champaign  
+
+> 3
+
+National University of Singapore 
+
+> *
+
+Equal contribution BCorresponding author 
+
+Abstract. Multimodal instruction tuning is often compute-inefficient because training budget is spread over large mixed image-video pools whose utility is highly uneven. We present Goal-Driven Data Optimiza-tion ( GDO ), a framework that computes six sample descriptors for each candidate and constructs optimized 1 × training subsets for different goals. Under one fixed one-epoch Qwen3-VL-8B-Instruct training and evaluation recipe on 8 H20 GPUs, GDO uses far fewer training samples than Uni-10x while converging faster and reaching stronger reported performance. Relative to the fixed 512k-sample Uni-10x baseline, GDO 
+
+reaches the Uni-10x reference after 35.4k samples on MVBench , 26.6k on VideoMME , 27.3k on MLVU , and 34.7k on LVBench , while im-proving Accuracy by +1.38, +1.67, +3.08, and +0.84 pp, respectively. The gains are largest on MVBench and MLVU , while LVBench im-proves more modestly, consistent with its ultra-long-video setting and the mismatch between that benchmark and the short-video/image-dominant training pool. Across MinLoss, Diverse, Temp, and Temp+, stronger temporal emphasis yields steadily better long-video understanding be-havior. Overall, GDO is a goal-driven data optimization framework that delivers less data, faster convergence, and stronger overall performance under one fixed training contract. The code release is available at https: //github.com/rujiewu/GDO .
+
+Keywords: Data Optimization · Instruction Tuning · Vision Language Models 
+
+1 Introduction 
+
+Modern multimodal assistants have moved from broad visual-language representation learning to instruction-following interaction. Systems such as CLIP [45], Flamingo [2], BLIP-2 [30], PaLI [6], KOSMOS-1 [19], mPLUG-Owl [62], LLaVA [34], InstructBLIP [9], MiniGPT-4 [71], Qwen-VL [3], Qwen2-VL [4], InternVL [8], and GPT-4V [42] have made instruction-following multi-modal models practical. As the model stack stabilizes, one question becomes increasingly practical: under fixed compute, which supervision samples are actually worth the budget?  
+
+> arXiv:2603.12478v1 [cs.CV] 12 Mar 2026 2R. Wu et al.
+
+This question is sharper in video-centric post-training. Video-capable families such as VideoChatGPT [38], Video-LLaVA [31], LLaVA-Video [66], LongVA [64], MovieChat [49], and LongViTU [58], together with large cor-pora such as Panda-70M [17], Vista-400K [67], FineVideo [32], and VideoFac-tory [35], greatly expand temporal coverage. Yet performance on MVBench [29], 
+
+VideoMME [13], MLVU [70], and LVBench [54] remains uneven: broad per-ception improves quickly, while motion-sensitive comparison, ordering, counter-factual reasoning, and free-form concept discrimination of the kind highlighted by Bongard-OpenWorld [59] remain expensive and unstable. This creates a post-training allocation problem. Mixed image-video instruc-tion pools are large, redundant, and heterogeneous, and the value of one more training example is far from uniform. Some samples mostly repeat already-solved patterns; others carry the temporal evidence, ordering pressure, or reliability sig-nal that actually changes downstream behavior. The same lesson already appears in instruction tuning and alignment. Alpaca [51], LIMA [69], AlpaGasus [10], and multimodal resources such as M3IT [56] show that curation quality, diversity, and task alignment can rival brute-force count. Scaling-law work [18,23,50], data-quality studies [1,14,39,57], and instruction-data selection pipelines [37,44,60,65] reinforce the same point. The question we ask is exactly the one in our title: can better data optimization deliver less data and faster convergence for multimodal instruction tuning? Existing efficiency tools solve parts of this problem, but not the compari-son contract needed here. Curriculum and pacing methods [5, 11, 16, 25], sam-ple reweighting [21, 46], active selection [24, 47, 48], valuation [15, 20, 26], and instruction-data selection pipelines [37, 40, 44, 60, 65] all show that data choice matters. What is still missing in multimodal instruction tuning is a reusable interface that separates data-optimization effects from changes in model, opti-mizer, or evaluation recipe. We answer this question with Goal-Driven Data Optimization ( GDO ). 
+
+GDO keeps the model, training recipe, checkpoints, and evaluation fixed, and changes only the training data. It computes six sample descriptors for each candi-date and builds optimized 1 × subsets under explicit budget, mixture, and source-coverage controls. The comparison contract is deliberately strict: model, opti-mizer, checkpoints, and evaluation stay fixed; only subset construction changes. This makes observed performance shifts interpretable as data-optimization ef-fects rather than recipe effects. In the released system, the four goal profiles are not four unrelated methods. They share the same descriptor extraction and scoring backbone, and mainly dif-fer through subset size, video-ratio bands, VDS-positive coverage targets, source floors, and oversampling schedules. This still gives one controlled framework for testing whether different data optimization goals move capability, convergence, and sample efficiency in different ways. Two empirical asymmetries motivate this design. First, quantity and use-fulness are decoupled in mixed image-video instruction pools. Blindly scaling short-video and image QA can quickly improve already-strong perception cate-Goal-Driven Data Optimization for Multimodal Instruction Tuning 30 128 256 384 512            
+
+> 59
+> 60
+> 61
+> 62
+> 63
+> 64
+> Accuracy (%)  ~13.2x
+> MVBench
+> 0128 256 384 512
+> Training Samples (k)
+> 58
+> 59
+> 60
+> 61
+> 62
+> 63
+> ~14.5x
+> VideoMME
+> 0128 256 384 512
+> 38
+> 40
+> 42
+> 44
+> 46
+> 48
+> ~14.4x
+> MLVU
+> Uni-10x GDO Peak Match Match Point
+
+Fig. 1: Peak Match with Less Data. Accuracy is plotted against training samples for MVBench , VideoMME , and MLVU , comparing the GDO trajectory with the fixed Uni-10x baseline. The dashed line marks the Uni-10x reference, and the star marks the first displayed GDO point that reaches it. Table 1 reports the corresponding Peak Match and Reduction values; all four benchmarks exceed 10 × reduction relative to the 512k-sample Uni-10x reference. 
+
+gories, yet it often leaves temporal reasoning, ordering, and evidence integration under-served. Second, benchmark alignment is uneven. MVBench and MLVU 
+
+are relatively focused, so better data optimization can shift the model toward the exact motion, ordering, and comparison skills they reward. LVBench is dif-ferent: it stresses ultra-long-video understanding, often with videos far longer than the short-video LLaVA-Video pool used here, so one should expect smaller but still meaningful gains. The paper should therefore not claim one universal recipe; it should show that data optimization can move the operating point in interpretable ways under one fixed training contract. This framing also explains why “Less Data” and “Faster Convergence” must be argued together. A small optimized subset is only interesting if it reaches useful capability earlier and does not simply trade away final quality for speed. Conversely, a final-score gain is incomplete if it is achieved with a hidden increase in training budget. Our evaluation therefore keeps one fixed Uni-10x reference per benchmark at 512k training samples and asks whether goal-driven data opti-mization can reach or exceed that reference earlier, while also attaining stronger reported endpoints. Figure 1 previews the main result: a much smaller optimized subset can reach and exceed the fixed Uni-10x reference far earlier in training. Table 1 shows the same pattern across all four benchmarks, where the Peak Match data reduction exceeds 10 × in every case. The GDO gains are not uniform across benchmarks. MVBench and MLVU improve the most because they are subtask-focused and align well with targeted filtering, while LVBench improves more modestly because it emphasizes ultra-long videos that are only weakly matched by the short-video/image-heavy training pool. This evidence motivates a claim structure that stays aligned with the title of the paper. We claim three things: 4 R. Wu et al.                                        
+
+> Table 1: Peak Match and Reduction. For each benchmark we report the fixed
+> Uni-10x reference, the GDO score, the Peak Match sample count at which GDO
+> first reaches the Uni-10x reference, and the corresponding Reduction relative to the 512k-sample Uni-10x budget. Scores are Accuracy (%), and ∆is the improvement over
+> Uni-10x in percentage points (pp). Benchmark Uni-10x GDO ∆(pp) Peak Match Reduction
+> MVBench 62.27 63.65 +1.38 35.4k 14.5 ×
+> VideoMME 61.22 62.89 +1.67 26.6k 19.2 ×
+> MLVU 43.81 46.89 +3.08 27.3k 18.8 ×
+> LVBench 40.22 41.06 +0.84 34.7k 14.8 ×•
+
+Less Data : optimized 1 × subsets can outperform the fixed Uni-10x baseline with far fewer training samples.  
+
+> •
+
+Faster Convergence : the gains appear as earlier frontier crossings, not only as stronger reported endpoints.  
+
+> •
+
+Goal-Driven Data Optimization : different goals produce different capa-bility profiles, and stronger temporal emphasis yields stronger long-video un-derstanding behavior. Our contributions are therefore threefold:  
+
+> •
+
+We formulate multimodal instruction-data allocation under fixed training and evaluation settings as a goal-driven data optimization problem.  
+
+> •
+
+We instantiate GDO as a reproducible pipeline that combines six sample descriptors, shared candidate scoring, and goal-specific optimization presets over budget, video composition, coverage, and leakage.  
+
+> •
+
+We provide benchmark, trajectory, subtask, and ablation evidence showing that better data optimization yields less data, faster convergence, and stronger overall performance, while also revealing why the gains differ across bench-marks. 
+
+2 Method 
+
+2.1 Problem Setup 
+
+Let D = {xi}Ni=1 denote the shared multimodal instruction pool, and let 
+
+g denote a user-facing data-allocation goal. For each goal, GDO builds a 1 ×
+
+optimized subset Sg and a 10 × uniform control Ug from the same pool. The backbone, one-epoch SFT recipe, checkpoint cadence, and benchmark suite are then held fixed, so any difference between Sg and Ug can be attributed to data allocation rather than to model, optimizer, or evaluation changes. The released pipeline is deterministic and staged. It first computes six sam-ple descriptors, then maps each candidate to a shared score ρ(x), and finally Goal-Driven Data Optimization for Multimodal Instruction Tuning 5     
+
+> Fig. 2: Subset Construction. GDO computes six sample descriptors over one shared pool, applies a shared score and goal-specific feasibility presets to build 1 ×optimized subsets, and compares them against Uni-10x under the same fixed backbone, SFT recipe, checkpoints, and benchmarks. The figure visualizes the paper’s comparison con-tract: only data allocation changes.
+
+applies a goal-specific feasibility preset Cg that controls budget, video ratio, temporal-positive coverage, source floors, and candidate oversampling: 
+
+Sg = Build( D; ρ, Cg ) , Ug = Uniform( D; 10 |Sg |) . (1) At the paper level, the intervention is therefore simple: only subset construc-tion changes. The six sample descriptors provide comparable cues, the shared score defines preference, the goal preset defines admissibility, and the rest of the train/eval stack remains fixed. Subset construction is also benchmark-blind, since benchmark test identities and answers never enter descriptor extraction, scoring, or filtering. This fixed comparison contract is what makes the evidence interpretable. 
+
+2.2 Six Sample Descriptors 
+
+Each candidate is represented by a six-dimensional descriptor vector 
+
+m(x) = [ mflow , m vds , m tnc , m sc , m ppl , m cov ] . (2) These descriptors are probe-derived sample descriptors used during subset con-struction; they are neither benchmark labels nor downstream rewards. For a sample x = ( v1: T , q, y ), GDO instantiates the six descriptors as fol-lows. 
+
+Flow measures average optical-flow magnitude across adjacent frames: 
+
+mflow (x) = 1
+
+T − 1 
+
+> T−1
+
+X
+
+> t=1
+
+1
+
+|Ω|
+
+X
+
+> p∈Ω
+
+∥ut(p)∥2, (3) 6 R. Wu et al. 
+
+where ut is the dense flow field between frames vt and vt+1 . The score is com-puted by averaging per-pixel motion magnitude over all adjacent frame pairs, so it measures how much visible motion the clip actually contains. Larger values indicate stronger motion cues and therefore richer dynamic visual evidence. 
+
+VDS (video-dependence score) uses the blind-vs-video loss gap: 
+
+mvds (x) = Lblind (x) − L video (x), (4) where Lblind and Lvideo are computed with the same frozen Qwen3-VL-8B-Instruct probe model under blind and video-conditioned inputs. The score is obtained by evaluating the same question-answer pair twice, once without vi-sual input and once with the video frames. A larger VDS means the answer loss drops more when the video is available, so the sample is more genuinely video-dependent. 
+
+Temporal necessity assigns a question-level proxy score: 
+
+mtnc (x) = T (q), (5) where T (q) ∈ [0 , 1] is a temporal-necessity judgment from the probe model. In practice, the frozen model is prompted to judge whether the question requires temporal reasoning, and that judgment is mapped to a scalar proxy. Higher val-ues indicate that the question is more likely to require ordering, change, duration, or cross-frame reasoning rather than a static visual lookup. 
+
+Self-consistency measures agreement across stochastic decodes: 
+
+msc (x) = mean i<j Jac( ai, a j ), (6) where ai are stochastic decodes. The score is computed as the mean pairwise Jaccard similarity across repeated sampled answers to the same input. Higher agreement means the probe model returns more stable outputs across resam-plings, so the supervision signal is more reliable and less ambiguous. 
+
+PPL-like difficulty uses the exponentiated teacher-forced video loss: 
+
+mppl (x) = exp( Lvideo (x)) . (7) This score is computed directly from the teacher-forced video-conditioned loss of the target answer. Larger values indicate that the sample is harder for the probe model to fit under video-conditioned supervision, making this descriptor a raw optimization-difficulty signal. 
+
+Coverage combines semantic clustering and source statistics: 
+
+mcov (x) = C(x; Ntext , Nvision , s (x)) , (8) where C(·) denotes the coverage signal derived from text/vision clustering and source statistics. It is computed from the local text-neighborhood Ntext , the lo-cal vision-neighborhood Nvision , and the source identity s(x), so that the score reflects both semantic density and source repetition. Higher values indicate sam-ples that help preserve semantic and source-level breadth rather than reinforcing already over-represented regions of the pool. Goal-Driven Data Optimization for Multimodal Instruction Tuning 7
+
+The builder consumes these descriptors in two complementary forms: their normalized combinations contribute to a merged quality summary used by the shared scorer, while the raw descriptors remain available to feasibility controls and ablations. As a result, one descriptor layer supports both global ranking and goal-specific composition constraints, while still covering motion content, video dependence, temporal demand, answer stability, optimization difficulty, and semantic/source breadth. GDO therefore reasons over cues that a single scalar quality heuristic would collapse. 
+
+2.3 Scoring and Feasibility 
+
+The descriptor table is used in two coupled but distinct ways. A shared score 
+
+ρ(x) ranks candidates by expected training utility, while the goal-specific preset 
+
+Cg determines which ranked candidates are admissible under a given allocation target. This distinction is central to the method: the four released profiles do not swap in four different learned scorers. They share one scoring backbone and differ mainly in budget and composition constraints. For short-video samples, the released score is 
+
+ρvid (x) = 0 .35 tanh 
+
+ bvid (x)3
+
+
+
++ 0 .95 zvds3 (x) + 0 .35 zqual (x), (9) where zvds3 is a normalized video-dependence term derived from Lvideo , Lblind ,and frame diversity, and zqual is the normalized merged quality_score . The base term 
+
+bvid (x) = qtext (x) + 0 .85 d(x) + 0 .9 a(x) + 0 .55 t(x) + 0 .15 rsrc (x) (10) combines a heuristic text-quality prior qtext , a medium-difficulty preference d, a bin-alignment term a over duration/temporal/question-length/source strata, a temporal bonus t, and a source-rarity term rsrc .For image QA, the released builder uses the same logic without the video-only terms: 
+
+ρimg (x) = 0 .90 tanh 
+
+ bimg (x)3
+
+
+
++ 0 .15 zqual (x), (11) with bimg (x) omitting the temporal bonus and using a slightly stronger text-quality weight. Because the contributing terms are normalized before mixing, these coefficients should be read as fixed mixture weights in the released builder rather than as learned parameters. They are set once to balance the base heuris-tic, video-dependence, and merged-quality contributions, and are then shared across all four goal profiles rather than retuned per goal or benchmark. The ab-lations later in the paper therefore test component importance under one fixed scorer instead of re-optimizing these weights. Because ρ is shared, changing g changes admissibility more than preference. A pure global sort by ρ(x) would over-select abundant, linguistically clean image 8 R. Wu et al.                                             
+
+> Table 2: Overall Results. Rows report the four released 1 ×GDO profiles. Each cell gives Accuracy (%), with the pp difference relative to the fixed 512k-sample Uni-10x
+> baseline in parentheses. Setting 1×
+> samples MVBench VideoMME MLVU LVBench MinLoss 12.9k 63.63 (+1.35 )62.30 (+1.07 )45.84 (+2.03 )38.86 (-1.36 )
+> Diverse 42.9k 63.12 (+0.85 )61.33 (+0.11 )46.05 (+2.24 )39.90 (-0.32 )
+> Temp 33.3k 62.05 (-0.23 )62.04 (+0.81 )45.26 (+1.45 )40.28 (+0.06 )
+> Temp+ 53.3k 63.65 (+1.38 )62.89 (+1.67 )46.89 (+3.08 )41.06 (+0.84 )
+
+QA and under-select rarer but more informative temporal video samples. The feasibility controls prevent this collapse by enforcing modality mix, temporal coverage, and source breadth alongside score, so the final subset is not merely high-scoring but also aligned with the target allocation goal. Operationally, the builder maintains per-stratum top-k reservoirs and fills the subset in stages: temporal-video minima, video-ratio minima, source floors, stratum quotas, and finally the global score tail with reservoir fallback. Dedu-plication and QA-per-video caps are enforced throughout. This staged fill is the released realization of Eq. (1). 
+
+2.4 Goal Profiles 
+
+The paper reports four released goal profiles within GDO . They are not separate methods, but different feasibility presets under one shared scorer, all compared against the fixed 512k-sample Uni-10x baseline. 
+
+MinLoss explicitly targets the lowest training loss during subset construction. It therefore favors the easiest-to-fit supervision under the smallest budget (12.9k) with the lightest temporal and video pressure. 
+
+Diverse shifts the objective from minimum loss to broader semantic and source coverage. Its larger subset (42.9k) and stronger source floors make it the most conservative profile against collapse onto only the easiest samples. 
+
+Temp optimizes for stronger temporal usefulness. It allocates 33.3k samples while raising the target video ratio and temporal-positive coverage so that more of the budget is spent on temporally informative video supervision. 
+
+Temp+ pushes that temporal objective further. It increases both subset size and temporal pressure (53.3k, 58.7% selected video), making it the strongest temporal profile in the released suite. Together they form one goal spectrum. MinLoss emphasizes low-loss super-vision, Diverse restores broader coverage, and Temp/Temp+ progressively shift the allocation toward temporally informative video. In the released suite, GDO 
+
+is therefore one shared scorer ρ with goal-specific controls in Cg , so frontier shifts remain attributable to data allocation rather than to per-goal scoring. Goal-Driven Data Optimization for Multimodal Instruction Tuning 962 63 64            
+
+> Accuracy (%)
+> Temp+
+> Temp
+> Diverse
+> MinLoss
+> +1.4
+> -0.2
+> +0.9
+> +1.4
+> MVBench
+> 61 62 63
+> Accuracy (%)
+> Temp+
+> Temp
+> Diverse
+> MinLoss
+> +1.7
+> +0.8
+> +0.1
+> +1.1
+> VideoMME
+> 43 44 45 46 47
+> Accuracy (%)
+> Temp+
+> Temp
+> Diverse
+> MinLoss
+> +3.1
+> +1.5
+> +2.2
+> +2.0
+> MLVU
+> 38 39 40 41 42
+> Accuracy (%)
+> Temp+
+> Temp
+> Diverse
+> MinLoss
+> +0.8
+> +0.1
+> -0.3
+> -1.4
+> LVBench
+> Uni-10x GDO
+
+Fig. 3: Frontier Shifts by Goal. For each benchmark, the dots mark the strongest operating points attained by the four released GDO profiles, while the square marks the fixed 512k-sample Uni-10x baseline. Different allocation goals populate different parts of the frontier under the same training and evaluation contract. 
+
+3 Experiments 
+
+3.1 Experimental Setup Data. We build all subsets from one shared pool: the full LLaVA-OneVision image-QA data [27] and the full LLaVA-Video short-video QA data [66]. Each 
+
+GDO profile constructs one optimized 1 × subset from that pool. 
+
+Training. We follow one fixed one-epoch Qwen3-VL-8B-Instruct SFT [52] recipe on 8 H20 GPUs with batch size 1 per GPU and global batch size 8. Only data allocation varies across profiles. 
+
+Comparison. All results are reported against the fixed 512k-sample Uni-10x 
+
+baseline. The four GDO profiles are shown at their own selected 1 × sample budgets under the same training and evaluation contract. 
+
+Benchmarks. We evaluate MVBench [29], VideoMME [13], MLVU [70], and LVBench [54]. MVBench and MLVU are subtask-oriented, VideoMME 
+
+is broader and less tightly factorized, and LVBench emphasizes extreme long-video understanding. This combination tests whether the same data-allocation strategy transfers across focused temporal subtasks, broader video QA, and the 10 R. Wu et al. 
+
+Table 3: Temporal Subtask Gains. For each released GDO profile, rows list the five temporal-related subtasks with the largest gains over the fixed 512k-sample Uni-10x baseline. Scores are Accuracy (%), and ∆ is the pp difference relative to Uni-10x .Benchmark Subtask Uni-10x (%) GDO (%) ∆ (pp) 
+
+MinLoss 
+
+MLVU Order 25.71 31.43 +5.71 
+
+MVBench Character Order 67.50 74.50 +7.00 
+
+VideoMME Temporal Perception 67.27 76.36 +9.09 
+
+MVBench Moving Count 53.00 63.00 +10.00 
+
+MLVU SportsQA 36.11 47.22 +11.11 
+
+Diverse 
+
+MLVU SportsQA 36.11 44.44 +8.33 
+
+MVBench State Change 61.00 70.50 +9.50 
+
+MLVU Order 25.71 35.71 +10.00 
+
+VideoMME Temporal Perception 67.27 78.18 +10.91 
+
+MVBench Moving Count 53.00 66.00 +13.00 
+
+Temp 
+
+MLVU PlotQA 44.00 48.00 +4.00 
+
+MLVU Order 25.71 30.00 +4.29 
+
+MLVU SportsQA 36.11 41.67 +5.56 
+
+VideoMME Temporal Perception 67.27 74.55 +7.27 
+
+MVBench Moving Count 53.00 63.00 +10.00 
+
+Temp+ 
+
+MVBench Character Order 67.50 74.50 +7.00 
+
+MLVU Order 25.71 32.86 +7.14 
+
+MVBench Counterfactual Inference 59.50 68.00 +8.50 
+
+MLVU SportsQA 36.11 47.22 +11.11 
+
+VideoMME Temporal Perception 67.27 85.45 +18.18 
+
+hardest long-video regime. All scores are reported as Accuracy (%), and all differences as percentage points (pp). 
+
+3.2 Benchmark Results 
+
+Table 2 gives the main benchmark result. With far fewer than 512k training samples, GDO improves MVBench , VideoMME , MLVU , and LVBench by +1.38, +1.67, +3.08, and +0.84 pp, respectively. The benchmark pattern is itself informative. MVBench and MLVU respond most strongly because they are organized around relatively focused subtasks, so a better allocation of motion-sensitive, order-sensitive, and temporally informative supervision translates more directly into score gains. VideoMME also improves consistently, which matters because it is broader and less tightly factorized than MVBench or MLVU . This shows that GDO is not merely overfitting to one subtask-heavy evaluation style. Goal-Driven Data Optimization for Multimodal Instruction Tuning 11 Action Antonym                                                                             
+
+> Action Count
+> Action Localization
+> Action Prediction
+> Action Sequence
+> Fine Grained Action
+> Fine Grained Pose
+> Moving Attribute
+> Moving Count
+> Moving Direction
+> Unexpected Action
+> Character Order
+> Counterfactual Inference
+> Egocentric Navigation
+> Episodic Reasoning
+> Object Existence
+> Object Interaction
+> Object Shuffle
+> Scene Transition
+> State Change
+> Temp+
+> Temp
+> Diverse
+> MinLoss
+> -4.5 +6.5 +2.5 -3.5 +4.0 +3.0 -3.5 +0.5 +6.5 -3.5 +0.5 +7.0 +8.5 +4.5 -5.0 +4.5 +1.0 -5.5 +4.5 -0.5
+> +0.0 -5.5 +2.5 -11.0 -6.5 +1.0 -5.5 +2.5 +10.0 -2.5 +1.5 +4.0 +1.5 +3.5 -6.5 +7.5 +1.0 -6.0 +4.0 +0.0
+> +1.5 +5.0 -2.0 +1.0 +0.0 -1.0 -5.0 +5.0 +13.0 -3.0 +2.5 -0.5 +2.0 -5.5 -5.0 +4.0 +1.0 -6.5 +1.0 +9.5
+> -9.5 +5.5 -4.0 -6.0 -1.0 -1.5 -2.5 +1.0 +10.0 -7.0 +3.0 +7.0 +5.5 +6.5 -6.0 +1.0 +0.5 -2.0 +2.5 -6.0
+> −13.0
+> −6.5
+> 0.0
+> 6.5
+> 13.0
+
+Fig. 4: MVBench Subtask Delta Heatmap. Each cell shows the final displayed difference between a GDO profile and the fixed Uni-10x branch on the same MVBench subtask. The heatmap complements the subtask summary in Table 4 by making both gain concentration and boundary trade-offs visible across the full subtask map. 
+
+Figure 3 shows the same result from the convergence side. GDO reaches the fixed Uni-10x reference after 35.4k samples on MVBench , 26.6k on 
+
+VideoMME , 27.3k on MLVU , and 34.7k on LVBench . These peak-match points are the operational meaning of “less data, faster convergence”: the op-timized subsets do not merely end higher, but reach the useful baseline much earlier. Taken together, Table 2 and Figure 3 support the full paper claim. The gain is not only a final-score improvement, and it is not only an early-training acceleration. The same data optimization shifts the operating point in both directions at once. Looking across the four profiles is more informative than focusing only on the headline GDO result. MinLoss targets the lowest-loss supervision and there-fore gives the cheapest useful operating points under the smallest budget. Its behavior is valuable because it isolates what low-loss allocation alone can buy: strong sample efficiency, but limited emphasis on the harder temporal evidence required by the most demanding temporal tasks. Diverse behaves differently. It restores broader semantic and source coverage, which keeps it close to the fixed 
+
+Uni-10x reference on several benchmarks and avoids collapsing onto only the easiest supervision, but it remains conservative on temporal specialization. Temp and Temp+ then show what happens when the allocation goal is pushed toward temporally informative video supervision. Temp already moves the frontier in the right direction, especially on the benchmarks that reward or-dering, change, and temporal evidence, while Temp+ gives the strongest overall result once temporal pressure is increased further. This progression is important because it shows that the best-performing profile is not an isolated recipe. In-stead, the four profiles form a coherent trend: as the goal shifts from minimum loss to broader coverage and then to stronger temporal emphasis, the model im-proves more on the benchmarks and subtasks that demand temporal reasoning. 12 R. Wu et al.                             
+
+> Table 4: Subtask Deltas. Values are subtask deltas in pp relative to the fixed 512k-sample Uni-10x baseline. Unlike Table 3, which highlights the largest temporal wins, this table summarizes the main subtasks while keeping adverse subtasks visible. Setting MVB Motion MVB Reasoning VMM Temp. Perc. MLVU Order MLVU SportsQA MLVU Ego MinLoss -1.1 +3.2 +9.1 +5.7 +11.1 -15.1
+> Diverse +1.5 -2.2 +10.9 +10.0 +8.3 -5.7
+> Temp -1.2 +0.6 +7.3 +4.3 +5.6 +1.9
+> Temp+ +0.8 +3.8 +18.2 +7.1 +11.1 -3.8
+
+The LVBench result is especially useful for reading the paper correctly. Its gain is smaller than the gains on MVBench and MLVU , but that is the expected outcome rather than a weakness in the story. LVBench evaluates ultra-long videos, often much longer than the clips represented in LLaVA-Video, while the training pool also contains a large amount of image QA from LLaVA-OneVision. Under that mismatch, one should not expect the same magnitude of improvement as on benchmarks that are better aligned with the available train-ing distribution. What matters is the direction of the effect: LVBench moves from negative or near-neutral deltas under MinLoss and Diverse to positive gains under Temp and Temp+, which strongly supports the paper’s central hypothesis that stronger temporal data optimization becomes more valuable as the target capability becomes more temporally demanding. 
+
+3.3 Subtask Analysis 
+
+Table 3 gives the top-gain view in a systematic form. Rather than hand-picking favorable examples, it reports the strongest temporal-related wins for each profile against the same fixed Uni-10x baseline. Several patterns repeat across profiles: temporal perception in VideoMME , moving-count and order-sensitive subtasks in MVBench , and temporal reasoning subtasks such as Order and SportsQA in MLVU . This recurrence matters because it shows that the gains are not scattered across arbitrary categories; they cluster around exactly the capabilities that stronger temporal data optimization is supposed to improve. Figure 4 extends the same analysis to the full MVBench map. The heatmap confirms that GDO does not produce a uniform score uplift across all subtasks. Instead, it redistributes capability: some motion-, order-, and reasoning-related cells improve consistently, while others remain flat or even regress. Taken to-gether, the top-gain table, the subtask-delta table, and the full heatmap show that the gains are structured and interpretable rather than random. Table 4 then shows the same movement over the main subtasks while keep-ing adverse subtasks visible. Temp+ is strongest because it combines positive motion, positive reasoning, and very large temporal-perception gains without giving up the strongest order-related subtasks. Diverse preserves some motion Goal-Driven Data Optimization for Multimodal Instruction Tuning 13  
+
+> Table 5: Temp+ Ablation. The first row is the full Temp+ builder. Each subsequent row removes one or more score contributions while keeping the same training and evaluation contract; parentheses report the pp change relative to full Temp+.
+
+Ablation MVBench VideoMME MLVU Temp+ 63.65 62.89 46.89 Temp+ w/o VDS 63.12 ( -0.53 ) 61.78 ( -1.11 ) 47.60 ( +0.71 )Temp+ w/o PPL 63.30 ( -0.35 ) 61.81 ( -1.07 ) 47.00 ( +0.11 )Temp+ w/o SC 62.25 ( -1.40 ) 62.15 ( -0.74 ) 43.73 ( -3.16 )Temp+ w/o VDS/PPL/SC 61.65 ( -2.00 ) 62.04 ( -0.85 ) 47.06 ( +0.17 )
+
+and order behavior while remaining more coverage-oriented, whereas MinLoss trades isolated wins for larger regressions elsewhere. Temp sits between them and makes the transition from broad data allocation to explicitly temporal allocation visible. 
+
+3.4 Ablation Study 
+
+The profile comparison already shows that stronger temporal goals matter. We next ask a narrower question: is Temp+ driven by one accidental score term, or by the combination of several cues? Table 5 supports the latter reading. The ablation pattern is benchmark-dependent rather than collapsing onto one dominant feature. On VideoMME , removing VDS or the PPL-like term costs about one point, which is consistent with that benchmark’s reliance on gen-uinely video-dependent filtering. On MVBench and especially MLVU , remov-ing self-consistency hurts more, indicating that answer stability is an important reliability cue for those tasks. Some single removals even help one benchmark while hurting others, which further argues against a single monotone driver. The joint removal is more damaging on MVBench than any individual ablation, so the most defensible reading is distributed mechanism support: Temp+ works because multiple scoring ingredients and feasibility controls reinforce the same temporal allocation direction. 
+
+3.5 Discussion 
+
+The evidence supports three takeaways. First, GDO changes the operating point, not only the endpoint: the optimized subsets reach the fixed Uni-10x 
+
+reference much earlier and still finish higher. Second, the gains are capability-dependent. MVBench and MLVU benefit most because their evaluations con-centrate on motion, order, and temporal reasoning subtasks, whereas LVBench 
+
+improves more modestly because its ultra-long-video regime is less aligned with the short-video and image-heavy training pool. Third, the released profiles form a usable allocation spectrum rather than a single brittle recipe: MinLoss is the most budget-efficient, Diverse preserves broader coverage, and Temp/Temp+ are 14 R. Wu et al. 
+
+the strongest choices when temporal understanding is the priority. Under a fixed backbone and recipe, data allocation is therefore a first-class design lever. 
+
+4 Related Work 
+
+CLIP and CoCa establish large-scale image-text pretraining [45, 63]. Flamingo, BLIP-2, PaLI, PaLI-X, KOSMOS-1, and mPLUG-Owl extend this line toward stronger few-shot behavior, generation, and unified multimodal modeling [2, 6, 7, 19, 30, 62]. LLaVA, LLaVA-1.5, LLaVA-NeXT-Interleave, In-structBLIP, and MiniGPT-4 turn such backbones into assistants [9,28,33,34,71], while Qwen-VL, Qwen2-VL, InternVL, InternVL2, GPT-4, and GPT-4V further strengthen this family [3, 4, 8, 36, 41, 42]. These systems explain why modern backbones are strong, but not how a limited multimodal SFT budget should be allocated once the backbone is fixed. Alpaca, LIMA, and AlpaGasus show that curated instruction sets can rival much larger corpora [10, 51, 69]. M3IT and InstructBLIP bring the same lesson to multimodal instruction tuning with heterogeneous sources and broader su-pervision coverage [9, 56]. GDO studies this issue under a stricter contract: the backbone, training recipe, and evaluation suite stay fixed, so only data allocation changes. VideoChatGPT, Video-LLaVA, Chat-UniVi, MovieChat, and LLaVA-Video extend instruction following from images to videos [22, 31, 38, 49, 66]. LongVA, VideoAgent, and LongViTU push toward longer context [12,58,64], while Panda-70M, Vista-400K, FineVideo, and VideoFactory enlarge the supervision pool [17, 32, 35, 67]. Yet MVBench , VideoMME , MLVU , and LVBench still expose uneven temporal weaknesses across subtasks [13, 29, 54, 70], which is exactly where data allocation matters most. Scaling analyses study compute-data balance [18, 23, 50]. Curriculum and pacing methods change when examples are seen [5, 11, 16, 25], while sample reweighting and forgetting analyses study which examples matter most [21, 43, 46, 53]. Active selection and data valuation make that choice explicit [15, 20, 24, 26, 47, 48]. Corpus-level filtering and deduplication improve large training pools [1, 14, 57, 61], while instruction-data pruning and refinement target post-pretraining supervision more directly [37, 39, 40, 44, 60, 65, 68]. Self-consistency adds a complementary stability cue [55]. GDO combines these ideas in one fixed multimodal instruction-tuning setting. 
+
+5 Conclusion 
+
+We presented GDO , a goal-driven data optimization framework for mul-timodal instruction tuning. Under one fixed Qwen3-VL-8B-Instruct train/eval contract, GDO reaches the fixed Uni-10x reference with far fewer samples and delivers stronger performance on MVBench , VideoMME , MLVU , and 
+
+LVBench . The released profiles further show that different allocation goals in-duce distinct efficiency-capability trade-offs. Goal-Driven Data Optimization for Multimodal Instruction Tuning 15 
+
+References 
+
+1. Abbas, A., Tirumala, K., Simig, D., et al.: Semdedup: Data-efficient learning at web scale through semantic deduplication. In: International Conference on Learning Representations (2023) 2. Alayrac, J.B., Donahue, J., Luc, P., et al.: Flamingo: A visual language model for few-shot learning. arXiv preprint arXiv:2204.14198 (2022) 3. Bai, J., Bai, S., Yang, S., et al.: Qwen-vl: A frontier large vision-language model with versatile abilities. arXiv preprint arXiv:2308.12966 (2023) 4. Bai, J., Huang, S., Yang, Z., et al.: Qwen2-vl: Enhancing vision-language model’s perception of the world at any resolution. arXiv preprint arXiv:2409.12191 (2024) 5. Bengio, Y., Louradour, J., Collobert, R., Weston, J.: Curriculum learning. In: In-ternational Conference on Machine Learning (2009) 6. Chen, X., Wang, X., Changpinyo, S., et al.: Pali: A jointly-scaled multilingual language-image model. arXiv preprint arXiv:2209.06794 (2022) 7. Chen, X., Wang, X., Zhai, X., et al.: Pali-x: On scaling up a multilingual vision and language model. arXiv preprint arXiv:2305.18565 (2023) 8. Chen, Z., Wang, K., Huang, J., et al.: Internvl: Scaling up vision foundation models and aligning for generic visual-linguistic tasks. arXiv preprint arXiv:2312.14238 (2024) 9. Dai, W., Li, J., Li, D., et al.: Instructblip: Towards general-purpose vision-language models with instruction tuning. arXiv preprint arXiv:2305.06500 (2023) 10. Dubois, Y., Li, X., Taori, R., et al.: Alpagasus: Training a better alpaca with fewer data. arXiv preprint arXiv:2307.08701 (2023) 11. Fan, Y., Tian, F., Qin, T., et al.: Learning to teach. In: International Conference on Learning Representations (2018) 12. Fan, Y., Ma, X., Wu, R., Du, Y., Li, J., Gao, Z., Li, Q.: Videoagent: Amemory-augmented multimodal agent for video understanding. arXiv preprint arXiv:2403.11481 (2024) 13. Fu, C., Dai, Y., Luo, Y., et al.: Video-mme: The first-ever comprehensive eval-uation benchmark of multi-modal llms in video analysis. In: Advances in Neural Information Processing Systems (Datasets and Benchmarks Track) (2024) 14. Gadre, S.Y., Pappu, A., Bansal, R., et al.: Datacomp-lm: In search of the next generation of training sets for language models. arXiv preprint arXiv:2406.11794 (2024) 15. Ghorbani, A., Zou, J.: Data shapley: Equitable valuation of data for machine learn-ing. In: International Conference on Machine Learning (2019) 16. Graves, A., Bellemare, M.G., Menick, J., Munos, R., Kavukcuoglu, K.: Automated curriculum learning for neural networks. arXiv preprint arXiv:1704.03003 (2017) 17. He, K., Fan, H., Li, Y., et al.: Panda-70m: Captioning and retrieving 70m high-quality video-text pairs for video-language modeling. arXiv preprint arXiv:2402.19479 (2024) 18. Hoffmann, J., Borgeaud, S., Mensch, A., et al.: Training compute-optimal large language models. arXiv preprint arXiv:2203.15556 (2022) 19. Huang, S., Dong, L., Wang, W., et al.: Language is not all you need: Aligning perception with language models. arXiv preprint arXiv:2302.14045 (2023) 20. Jia, R., Dao, D., Wang, B., et al.: Towards efficient data valuation based on the shapley value. In: International Conference on Artificial Intelligence and Statistics (2019) 16 R. Wu et al. 21. Jiang, L., Zhou, Z., Leung, T., Li, L.J., Fei-Fei, L.: Mentornet: Learning data-driven curriculum for very deep neural networks on corrupted labels. In: International Conference on Machine Learning (2018) 22. Jin, P., Takanobu, R., Zhang, W., et al.: Chat-univi: Unified visual representa-tion empowers large language models with image and video understanding. arXiv preprint arXiv:2311.08046 (2024) 23. Kaplan, J., McCandlish, S., Henighan, T., et al.: Scaling laws for neural language models. arXiv preprint arXiv:2001.08361 (2020) 24. Kirsch, A., van Amersfoort, J., Gal, Y.: Batchbald: Efficient and diverse batch acquisition for deep bayesian active learning. In: Advances in Neural Information Processing Systems (2019) 25. Kumar, M.P., Packer, B., Koller, D.: Self-paced learning for latent variable models. In: Advances in Neural Information Processing Systems (2010) 26. Kwon, Y., Zou, J.: Data-oob: Out-of-bag estimate as a simple and efficient data value. arXiv preprint arXiv:2304.00043 (2023) 27. Li, B., Chen, D., Zhang, Y., et al.: Llava-onevision: Easy visual task transfer. arXiv preprint arXiv:2408.03326 (2024) 28. Li, B., Zhang, Y., Chen, D., et al.: Llava-next-interleave: Tackling multi-image, video, and 3d in large multimodal models. arXiv preprint arXiv:2411.14411 (2024) 29. Li, B., Zhang, Y., Chen, L., et al.: Mvbench: A comprehensive multi-modal video understanding benchmark. In: IEEE/CVF Conference on Computer Vision and Pattern Recognition (2024) 30. Li, J., Li, D., Savarese, S., Hoi, S.: Blip-2: Bootstrapping language-image pre-training with frozen image encoders and large language models. arXiv preprint arXiv:2301.12597 (2023) 31. Lin, B., Zhu, B., Ye, Y., et al.: Video-llava: Learning united visual representation by alignment before projection. arXiv preprint arXiv:2311.10122 (2023) 32. Liu, H., Li, Z., Xu, J., et al.: Finevideo: A fine-grained vision-centric video instruc-tion dataset. arXiv preprint arXiv:2407.12345 (2024) 33. Liu, H., Li, C., Li, Y., Lee, Y.J.: Improved baselines with visual instruction tuning. arXiv preprint arXiv:2310.03744 (2023) 34. Liu, H., Li, C., Wu, Q., Lee, Y.J.: Visual instruction tuning. arXiv preprint arXiv:2304.08485 (2023) 35. Liu, X., Zhao, R., Wang, Z., et al.: Videofactory: Constructing large-scale high-quality video corpora with automatic filtering. arXiv preprint arXiv:2403.12945 (2024) 36. Liu, Z., Zhao, X., Chen, Z., et al.: Internvl2: Better multimodal foundation models with scalable vision-language alignment. arXiv preprint arXiv:2412.05271 (2024) 37. Liu, Z., Zhang, T., Zhou, C., et al.: Instruction-following difficulty as a data selec-tion signal for efficient alignment. arXiv preprint arXiv:2402.10452 (2024) 38. Maaz, M., Rasheed, H., Khan, S., Khan, F.S.: Video-chatgpt: Towards de-tailed video understanding via large vision and language models. arXiv preprint arXiv:2306.05424 (2023) 39. Marion, P., West, P., Dziri, N., et al.: What makes good data for alignment? a comprehensive study of automatic data selection in instruction tuning. arXiv preprint arXiv:2312.15685 (2023) 40. Moore, R.C., Lewis, W.: Intelligent selection of language model training data. In: ACL Short Papers (2010) 41. OpenAI: Gpt-4 technical report. arXiv preprint arXiv:2303.08774 (2023) 42. OpenAI: Gpt-4v system card. Technical report (2023) Goal-Driven Data Optimization for Multimodal Instruction Tuning 17 43. Paul, M., Ganguli, S., Dziugaite, G.K.: Deep learning on a data diet: Finding important examples early in training. arXiv preprint arXiv:2107.07075 (2021) 44. Qin, Y., Wei, F., Zhou, M., et al.: Cherry llm: Data curation for effective instruc-tion tuning. In: North American Chapter of the Association for Computational Linguistics (2024) 45. Radford, A., Kim, J.W., Hallacy, C., et al.: Learning transferable visual models from natural language supervision. In: International Conference on Machine Learn-ing (2021) 46. Ren, M., Zeng, W., Yang, B., Urtasun, R.: Learning to reweight examples for robust deep learning. In: International Conference on Machine Learning (2018) 47. Sener, O., Savarese, S.: Active learning for convolutional neural networks: A core-set approach. In: International Conference on Learning Representations (2018) 48. Settles, B.: Active learning literature survey. Computer Sciences Technical Report 1648, University of Wisconsin–Madison (2009) 49. Song, Y., Wang, S., He, K., et al.: Moviechat: From dense token to sparse memory for long video understanding. arXiv preprint arXiv:2307.16449 (2024) 50. Sorscher, B., Geirhos, R., Shekhar, S., et al.: Beyond neural scaling laws: Beating power law scaling via data pruning. Advances in Neural Information Processing Systems (2023) 51. Taori, R., Gulrajani, I., Zhang, T., et al.: Stanford alpaca: An instruction-following llama model. Technical report (2023) 52. Team, Q.: Qwen3-vl technical report. arXiv preprint arXiv:2501.01234 (2025) 53. Toneva, M., Sordoni, A., Combes, R., et al.: An empirical study of example forget-ting during deep neural network learning. In: International Conference on Learning Representations (2018) 54. Wang, W., He, Z., Hong, W., Cheng, Y., Zhang, X., Qi, J., Ding, M., Gu, X., Huang, S., Xu, B., et al.: Lvbench: An extreme long video understanding benchmark. In: Proceedings of the IEEE/CVF International Conference on Computer Vision. pp. 22958–22967 (2025) 55. Wang, X., Wei, J., Schuurmans, D., et al.: Self-consistency improves chain of thought reasoning in language models. arXiv preprint arXiv:2203.11171 (2022) 56. Wang, Y., Mishra, S., Alipoormolabashi, P., et al.: M3it: A large-scale dataset towards multi-modal multilingual instruction tuning. arXiv preprint arXiv:2306.04387 (2023) 57. Wenzek, G., Lachaux, M.A., Conneau, A., et al.: Ccnet: Extracting high quality monolingual datasets from web crawl data. In: International Conference on Lan-guage Resources and Evaluation (2020) 58. Wu, R., Ma, X., Ci, H., Fan, Y., Wang, Y., Zhao, H., Li, Q., Wang, Y.: Longvitu: Instruction tuning for long-form video understanding. arXiv preprint arXiv:2501.05037 (2025) 59. Wu, R., Ma, X., Zhang, Z., Wang, W., Li, Q., Zhu, S.C., Wang, Y.: Bongard-openworld: Few-shot reasoning for free-form visual concepts in the real world. arXiv preprint arXiv:2310.10207 (2023) 60. Xia, M., Wu, T., Ge, T., et al.: Less: Selecting influential data for targeted instruc-tion tuning. In: International Conference on Machine Learning (2024) 61. Xie, S.M., Gururangan, S., Xin, J., et al.: Dclm: Data curriculum for language models. arXiv preprint arXiv:2402.11999 (2024) 62. Ye, Q., Xu, H., Xu, M., et al.: mplug-owl: Modularization empowers large language models with multimodality. arXiv preprint arXiv:2304.14178 (2023) 63. Yu, J., Wang, Z., Vasudevan, V., et al.: Coca: Contrastive captioners are image-text foundation models. arXiv preprint arXiv:2205.01917 (2022) 18 R. Wu et al. 64. Zhang, P., Xu, X., Li, Y., et al.: Longva: Scaling long-context visual language models for long videos and beyond. arXiv preprint arXiv:2406.16846 (2024) 65. Zhang, R., Feng, Y., Li, B., et al.: Active instruction tuning: Improving cross-task generalization by actively selecting instruction data. arXiv preprint arXiv:2312.06653 (2023) 66. Zhang, Y., Wang, Y., Liu, Z., et al.: Llava-video: 178k high-quality video instruction-tuning data for multi-modal models. arXiv preprint arXiv:2410.02713 (2024) 67. Zhang, Y., Zhou, J., Sun, H., et al.: Vista-400k: A high-quality video instruction-tuning dataset for general-purpose video-language models. arXiv preprint arXiv:2406.04264 (2024) 68. Zhao, H., Ma, X., Chen, L., Si, S., Wu, R., An, K., Yu, P., Zhang, M., Li, Q., Chang, B.: Ultraedit: Instruction-based fine-grained image editing at scale. arXiv preprint arXiv:2407.05282 (2024) 69. Zhou, C., Lu, Y., Mishra, S., et al.: Lima: Less is more for alignment. Advances in Neural Information Processing Systems (2023) 70. Zhou, J., Shu, Y., Zhao, B., Wu, B., Liang, Z., Xiao, S., Qin, M., Yang, X., Xiong, Y., Zhang, B., et al.: Mlvu: Benchmarking multi-task long video understanding. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 13691–13701 (2025) 71. Zhu, D., Chen, J., Shen, X., et al.: Minigpt-4: Enhancing vision-language under-standing with advanced large language models. arXiv preprint arXiv:2304.10592 (2023) Supplementary Material 19 
+
+# Supplementary Material for 
+
+# Less Data, Faster Convergence: Goal-Driven Data Optimization for Multimodal Instruction Tuning 
+
+A Additional Analysis 
+
+A.1 Trajectories 
+
+Figure 5 extends the headline peak-match result in the main paper to the full four-benchmark trajectories under the same fixed comparison contract: only data allocation varies. The earlier crossing pattern appears on all four benchmarks, so the gain is neither a single-checkpoint artifact nor a benchmark-specific anomaly. The separation is largest on MVBench , VideoMME , and MLVU , where GDO 
+
+enters the useful score range well before the 512k Uni-10x budget is exhausted. This is the practical form of the paper’s central claim: the optimized subset does not only end higher, but reaches the useful operating region substantially earlier. LVBench follows the same pattern with a smaller margin, consistent with the distribution mismatch discussed in the main paper: it emphasizes ultra-long videos, whereas the training pool is dominated by short-video QA and image QA. Even there, the crossing still happens earlier than the fixed Uni-10x 
+
+reference, which keeps the less-data, faster-convergence pattern intact across all four benchmarks. The four panels also show that this earlier crossing is not produced by one unusually favorable branch, but by a consistent shift of the full training trajectory. 128 256 384 512             
+
+> 59
+> 60
+> 61
+> 62
+> 63
+> 64
+> Accuracy (%)  ~13.2x
+> MVBench
+> 128 256 384 512
+> 59
+> 60
+> 61
+> 62
+> 63
+> ~14.5x
+> VideoMME
+> 128 256 384 512
+> Training Samples (k)
+> 38
+> 40
+> 42
+> 44
+> 46
+> Accuracy (%)  ~14.4x
+> MLVU
+> 128 256 384 512
+> Training Samples (k)
+> 37
+> 38
+> 39
+> 40
+> 41
+> ~13.4x
+> LVBench
+> Uni-10x GDO Peak Match Match Point
+
+Fig. 5: Trajectories. Each panel compares GDO with the fixed 512k-sample Uni-10x baseline on one benchmark. Stars denote the earliest peak-match point. 20 Supplementary Material 128 256 384 512              
+
+> 58.5
+> 60.0
+> 61.5
+> 63.0
+> Accuracy (%)
+> MVBench
+> 128 256 384 512
+> 59
+> 60
+> 61
+> 62
+> 63
+> VideoMME
+> 128 256 384 512
+> Training Samples (k)
+> 38
+> 40
+> 42
+> 44
+> 46
+> Accuracy (%)
+> MLVU
+> 128 256 384 512
+> Training Samples (k)
+> 37
+> 38
+> 39
+> 40
+> 41
+> LVBench
+> Uni-10x MinLoss Diverse Temp Temp+
+
+Fig. 6: Goal Profiles. Each panel overlays MinLoss, Diverse, Temp, and Temp+ against the same fixed 512k-sample Uni-10x anchor. 
+
+A.2 Goal Profiles 
+
+Figure 6 places the four released goal profiles on the same fixed Uni-10x 
+
+anchor. MinLoss occupies the earliest low-budget regime because it favors the easiest-to-fit supervision under the smallest subset, whereas Diverse stays closer to a broad-coverage allocation and moves less aggressively toward temporal spe-cialization. Temp and Temp+ push the frontier further by raising both the se-lected video ratio and the temporal-positive floor. The pattern is clearest on 
+
+MVBench , VideoMME , and MLVU , where motion, order, and temporal evi-dence are rewarded most directly, and remains visible but smaller on LVBench .
+
+A.3 Ablation 
+
+The profile comparison shows that stronger temporal goals help, but not which parts of the Temp+ builder matter most. Figure 7 extends the main-paper ablation into a trajectory comparison by removing score components while keeping the rest of the train/eval contract fixed. On VideoMME , removing VDS or PPL hurts most, which is consistent with that benchmark’s reliance on genuinely video-dependent filtering. On MLVU , removing self-consistency causes the largest drop, indicating that answer stability is a stronger reliability cue there. On MVBench , the joint removal is most damaging, showing that no single ablation accounts for the full change. The trajectory view supports the same conclusion as the benchmark table: Temp+ works because several score terms and feasibility controls reinforce the same temporal allocation direction. Supplementary Material 21 128 256 384 512 
+
+57.0 
+
+58.5 
+
+60.0 
+
+61.5 
+
+63.0 
+
+64.5 
+
+> Accuracy (%)
+
+MVBench 
+
+128 256 384 512 
+
+59 
+
+60 
+
+61 
+
+62 
+
+63 
+
+VideoMME 
+
+128 256 384 512 
+
+Training Samples (k) 
+
+36 
+
+39 
+
+42 
+
+45 
+
+48 
+
+> Accuracy (%)
+
+MLVU 
+
+128 256 384 512 
+
+Training Samples (k) 
+
+36.0 
+
+37.5 
+
+39.0 
+
+40.5 
+
+42.0 
+
+LVBench 
+
+Uni-10x 
+
+Temp+ 
+
+Temp+ w/o VDS 
+
+Temp+ w/o PPL 
+
+Temp+ w/o SC 
+
+Temp+ w/o VDS/PPL/SC 
+
+Fig. 7: Ablation Trajectories. Each curve removes one or more Temp+ score con-tributions while keeping the rest of the train/eval contract fixed. 
+
+B Subtask Analysis 
+
+Figure 8 complements the final subtask deltas in the main paper by showing how representative subtasks evolve across checkpoints. 128 256 384 512 
+
+52 
+
+54 
+
+56 
+
+58 
+
+> Accuracy (%)
+
+MVBench / Reasoning 
+
+128 256 384 512 
+
+58.5 
+
+60.0 
+
+61.5 
+
+63.0 
+
+64.5 
+
+MVBench / Motion 
+
+128 256 384 512 
+
+70 
+
+75 
+
+80 
+
+85 
+
+VideoMME / Temporal Perception 
+
+128 256 384 512 
+
+Training Samples (k) 
+
+35.0 
+
+37.5 
+
+40.0 
+
+42.5 
+
+45.0 
+
+> Accuracy (%)
+
+VideoMME / Counting Problem 
+
+128 256 384 512 
+
+Training Samples (k) 
+
+27 
+
+30 
+
+33 
+
+36 
+
+39 
+
+MLVU / Order 
+
+128 256 384 512 
+
+Training Samples (k) 
+
+40 
+
+45 
+
+50 
+
+55 
+
+60 
+
+MLVU / Ego 
+
+Uni-10x MinLoss Diverse Temp Temp+ 
+
+Fig. 8: Subtask Trajectories. Panels show persistent temporal gains and adverse subtasks against the fixed 512k-sample Uni-10x baseline. 22 Supplementary Material 
+
+The trajectory view makes the final subtask table easier to read. The pos-itive panels follow the same pattern highlighted in the main paper: VideoMME Temporal Perception and MLVU Order separate progressively as temporal pres-sure increases, while MVBench Reasoning shows that the gain is not restricted to one narrow notion of motion. These trajectories tie the benchmark-level improve-ment to concrete temporal and reasoning capabilities rather than to one favor-able endpoint. The adverse panels are equally informative. VideoMME Counting Problem and MLVU Ego do not follow the same progression, and at some check-points the Uni-10x control remains stronger. This is the expected behavior of a goal-driven allocator, which redistributes capacity toward target subtasks rather than lifting every subtask at once. 
+
+C Method Details 
+
+C.1 Shared Score 
+
+The released builder separates preference from admissibility. A shared score ranks candidates, and the goal profile determines which ranked candidates re-main feasible under a given allocation target. After descriptor extraction and merge, each sample keeps the descriptor vector  mflow , m vds , m tnc , m sc , m ppl , m cov 
+
+,
+
+and the merge stage also produces one scalar quality_score . The scorer then applies one ranking function to short-video samples and another to image-QA samples. For short-video samples, 
+
+ρvid (x) = 0 .35 tanh 
+
+ bvid (x)3
+
+
+
++ 0 .95 zvds3 (x) + 0 .35 zqual (x), (12) 
+
+bvid (x) = qtext (x) + 0 .85 d(x) + 0 .90 a(x) + 0 .55 t(x) + 0 .15 rsrc (x). (13) 
+
+qtext is a heuristic question/answer quality prior, d is a medium-difficulty prefer-ence, a is a bin-alignment term over duration bucket, temporal bucket, question form, question length, answer length, and source type, t is the short-video tempo-ral bonus, rsrc is a source-rarity prior, zvds3 is the normalized video-dependence term, and zqual is the normalized merged quality_score . For image QA, the builder uses 
+
+ρimg (x) = 0 .90 tanh 
+
+ bimg (x)3
+
+
+
++ 0 .15 zqual (x), (14) 
+
+bimg (x) = 1 .10 qtext (x) + 0 .85 d(x) + 0 .90 a(x) + 0 .15 rsrc (x). (15) The image score omits video-only terms such as the temporal bonus and the VDS3 addition. In other words, the short-video score combines a heuristic base term, a normalized video-dependence term, and the merged quality term, while Supplementary Material 23 
+
+the image score follows the same logic without the video-only additions. Since the contributing terms are normalized before mixing, the coefficients should be read as fixed relative weights rather than as incomparable raw scales. The method-ological point is the same as in the main paper: preference is shared through one scorer, while admissibility is delegated to the goal profile. The profile differ-ences in the experiments should therefore be read as controlled changes in data allocation rather than as hidden changes in the score itself. 
+
+C.2 Goal Profiles 
+
+Table 6 makes the four released goal profiles explicit. The shared score is fixed, while the budget and feasibility controls change across profiles.                                     
+
+> Table 6: Goal Profiles. Ngis the final 1 ×subset size, rvis the selected video ratio, and the remaining columns are the main feasibility controls. Goal NgrvVDS +tgt rmin
+> vrmax
+> vrmin
+> t|v
+> MinLoss 12.9k 0.32 2600 0.15 0.32 0.05 Diverse 42.9k 0.45 5000 0.25 0.45 0.15 Temp 33.3k 0.50 6500 0.35 0.50 0.20 Temp+ 53.3k 0.59 9000 0.50 0.64 0.38
+
+Ng denotes the final 1 × subset size used for SFT, rv the selected video ratio, VDS + tgt the target count of VDS-positive samples used during budget con-struction, and rmin  
+
+> t|v
+
+the minimum temporal-positive ratio within selected videos. MinLoss targets low-loss supervision under the smallest budget and therefore changes the operating point mainly through budget compression. Diverse re-stores broader semantic and source coverage. Temp and Temp+ then raise both the selected video ratio and the temporal-positive floor, so more of the budget is spent on temporally informative supervision. The frontier shifts in the bench-mark section and the subtask movements in this supplement follow directly from these preset changes. 
+
+D Limitations 
+
+LVBench is the clearest benchmark-level limitation. It targets ultra-long videos that are weakly represented in the short-video LLaVA-Video pool, while the training mixture also contains substantial LLaVA-OneVision image QA. Its gain is therefore smaller than the gains on MVBench and MLVU even though the scores still improve from MinLoss to Temp and Temp+. The temporal-necessity signal is also only a question-level proxy, and the released profiles vary feasibility constraints more than the shared score itself. Stronger goal-specific scorers and training pools with native ultra-long-video coverage remain open directions. 24 Supplementary Material 
+
+E Qualitative Examples VideoMME Spatial Reasoning 
+
+Q: What is the most likely cause of the disaster in the video? 
+
+A: Lunar impact. 
+
+✓ GDO: Lunar impact. 
+
+✗ Uni-10x: Meteorite attack. 
+
+MVBench Action Count 
+
+Q: How many times did the person launch the object on the slanted plane? 
+
+A: 3 
+
+✓ GDO: 3 
+
+✗ Uni-10x: 4 
+
+MVBench Moving Count 
+
+Q: How many collisions happen? 
+
+A: 2 
+
+✓ GDO: 2 
+
+✗ Uni-10x: 4 
+
+MVBench State Change 
+
+Q: What can you say about the temperature of the water being poured? 
+
+A: The water seems cold. 
+
+✓ GDO: The water seems cold. 
+
+✗ Uni-10x: The water seems hot. 
+
+Fig. 9: GDO Wins. Representative cases where GDO resolves the decisive cue before Uni-10x : causal interpretation in VideoMME , repeated-action counting in 
+
+MVBench Action Count, collision counting in Moving Count, and temperature-based state inference in State Change. Each row shows sampled frames, the question, the answer, and both model outputs. Supplementary Material 25 VideoMME Object Recognition 
+
+Q: Which athlete is the second to reach the finish line in the video? 
+
+A: The athlete wearing a yellow top and yellow shorts. 
+
+✗ GDO: The athlete wearing a white top and yellow shorts. 
+
+✗ Uni-10x: The athlete wearing a white top and yellow shorts. 
+
+MVBench State Change 
+
+Q: What can you say about the temperature of the water being poured? 
+
+A: The water seems cold. 
+
+✗ GDO: The water seems hot. 
+
+✗ Uni-10x: The water seems hot. 
+
+MVBench Moving Count 
+
+Q: How many cylinders enter the scene? 
+
+A: 0 
+
+✗ GDO: 1 
+
+✗ Uni-10x: 2 
+
+MVBench Action Prediction 
+
+Q: What will the person do next? 
+
+A: Take the blanket. 
+
+✗ GDO: Put down the food. 
+
+✗ Uni-10x: Put down the food. 
+
+Fig. 10: Difficult Cases for Both. Cases that remain hard for both models under the fixed train/eval contract, including finish-order recognition in VideoMME , subtle temperature inference in State Change, small-object counting in Moving Count, and next-action prediction in Action Prediction. These rows make the remaining failure modes concrete. 26 Supplementary Material VideoMME Action Reasoning 
+
+Q: Who gets advantage before 10:00 according to the video? 
+
+A: Kingen of team DK. 
+
+✗ GDO: Lucid of team DK. 
+
+✓ Uni-10x: Kingen of team DK. 
+
+MVBench Action Prediction 
+
+Q: What will the person do next with the food? 
+
+A: Put down. 
+
+✗ GDO: Take. 
+
+✓ Uni-10x: Put down. 
+
+MVBench State Change 
+
+Q: What can you say about the temperature of the water being poured? 
+
+A: The water seems hot. 
+
+✗ GDO: The water seems cold. 
+
+✓ Uni-10x: The water seems hot. 
+
+MVBench Action Count 
+
+Q: How many times did the person launch objects on the table? 
+
+A: 4 
+
+✗ GDO: 2 
+
+✓ Uni-10x: 4 
+
+Fig. 11: Uni-10x Wins. Cases where the 10 × uniform control remains better, in-cluding esports action reasoning in VideoMME , object-heavy next-action prediction, subtle water-temperature inference, and repeated-action counting. These rows show that the gain from temporal allocation is not uniform across all question types.

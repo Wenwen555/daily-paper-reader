@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-001.webp",
+      "caption": "Figure 1. Illustration of NA-VQA sample. NA-VQA consists of a question from a full movie, the key evidence scenes collected from different parts of the timeline, and the final answer. This example shows how NA-VQA tests a model’s ability to connect scattered events and recover the full sequence of what happened.",
+      "page": 1,
+      "index": 1,
+      "width": 466,
+      "height": 267
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-002.webp",
+      "caption": "Figure 2. Video-NaRA pipeline. We begin by generating a short description for every clip using Qwen-VL 2.5 (7B). Using both the clip and its description, the model groups clips into narrative slots and builds a structured narrative memory. Given a query, the retrieval module selects the most relevant clips, which are then passed to a fine-tuned reasoner (Qwen-VL 2.5 7B) to produce the final answer.",
+      "page": 2,
+      "index": 2,
+      "width": 786,
+      "height": 396
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-003.webp",
+      "caption": "Table 2. Performance comparison across different distance ranges on NA-VQA benchmark. Best results excluding proprietary models are highlighted. You can find further results in Appendix.",
+      "page": 7,
+      "index": 3,
+      "width": 981,
+      "height": 554
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-004.webp",
+      "caption": "Table 1. Comparison of video QA datasets. Our dataset provides comprehensive coverage across all reasoning types and evaluation dimensions. Abbreviations: #QA=Number of QA pairs, Avg=Average video duration, Multi-hop=Multihop reasoning, Evidence Local.=Evidence Localization, Goal.=Goal-based, Caus.=Causal, Hypo.=Hypothetical, Char.=Character, Narr.=Narrative, Theme=Thematic, Social=Social reasoning ✓ indicates feature presence, – indicates absence.",
+      "page": 3,
+      "index": 4,
+      "width": 848,
+      "height": 405
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-005.webp",
+      "caption": "Figure 3. NA-VQA dataset creation pipeline. We start with raw movie data, extract event-level descriptions, generate an initial set of QA pairs using LLM, validate them through deeper analysis, and finally refine the QA outputs using an LLM-based refiner. This multi-stage process ensures high-quality, narrative-grounded VQA annotations for long-form movie videos.",
+      "page": 4,
+      "index": 5,
+      "width": 877,
+      "height": 231
+    },
+    {
+      "url": "assets/figures/arxiv/2603.19481v1/fig-006.webp",
+      "caption": "Figure 4. Comprehensive question analysis showing: (a) distribution by scene distance categories (short, medium, far), (b) distribution by number of evidence scenes required per question, and (c) distribution by reasoning type (Narrative, causal, theme etc.).",
+      "page": 5,
+      "index": 6,
+      "width": 802,
+      "height": 287
+    }
+  ]
+}
